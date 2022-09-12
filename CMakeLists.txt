@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.1.0)
 
-project(mathematiques-et-physique-pour-le-jeu-video-projet-de-session)
+project(physics-engine)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(mathematiques-et-physique-pour-le-jeu-video-projet-de-session
+set(CMAKE_BUILD_TYPE Debug)
+
+add_executable(physics-engine
   src/main.cpp
 
   src/vector3D.cpp
@@ -15,4 +17,4 @@ add_executable(mathematiques-et-physique-pour-le-jeu-video-projet-de-session
   include/particule.hpp
 )
 
-target_link_libraries(mathematiques-et-physique-pour-le-jeu-video-projet-de-session m)
+target_link_libraries(physics-engine m)
