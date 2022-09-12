@@ -1,4 +1,4 @@
-# AccessModifierOffset: -2
+AccessModifierOffset: -2
 IndentAccessModifiers: true
 AlignAfterOpenBracket: BlockIndent
 AlignConsecutiveMacros: false
