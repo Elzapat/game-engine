@@ -12,36 +12,36 @@ class Vector3D {
         float x, y, z;
 
     public:
-        Vector3D(float x_ = 0.0, float y_ = 0.0, float z_ = 0.0) noexcept;
+        Vector3D(float x_ = 0.0, float y_ = 0.0, float z_ = 0.0);
         ~Vector3D();
 
-        void set_x(const float x) noexcept;
-        void set_y(const float y) noexcept;
-        void set_z(const float z) noexcept;
+        void set_x(const float x);
+        void set_y(const float y);
+        void set_z(const float z);
 
-        float get_x() const noexcept;
-        float get_y() const noexcept;
-        float get_z() const noexcept;
+        float get_x() const;
+        float get_y() const;
+        float get_z() const;
 
-        float norm() const noexcept;
-        void normalize() noexcept;
-        void invert() noexcept;
-        void translate(const Vector3D translation) noexcept;
+        float norm() const;
+        void normalize();
+        void invert();
+        void translate(Vector3D const& translation);
         // TODO: when Quaternions are implemented
-        // void rotate(Quaternion rotation) noexcept;
-        void scale(const float scale) noexcept;
+        // void rotate(Quaternion rotation) ;
+        void scale(const float scale);
 
-        Vector3D operator+(const Vector3D& rhs) const noexcept;
-        Vector3D& operator+=(const Vector3D& rhs) noexcept;
-        Vector3D operator-(const Vector3D& rhs) const noexcept;
-        Vector3D& operator-=(const Vector3D& rhs) noexcept;
-        Vector3D operator*(const float& rhs) const noexcept;
-        Vector3D& operator*=(const float& rhs) noexcept;
+        Vector3D operator+(const Vector3D& rhs) const;
+        Vector3D& operator+=(const Vector3D& rhs);
+        Vector3D operator-(const Vector3D& rhs) const;
+        Vector3D& operator-=(const Vector3D& rhs);
+        Vector3D operator*(const float& rhs) const;
+        Vector3D& operator*=(const float& rhs);
 
-        float dot(const Vector3D& rhs) const noexcept;
-        Vector3D cross(const Vector3D& rhs) const noexcept;
+        float dot(const Vector3D& rhs) const;
+        Vector3D cross(const Vector3D& rhs) const;
 
         friend std::ostream& operator<<(std::ostream& os, const Vector3D& rhs);
 };
 
-#endif  // VECTOR3D_HPP
+#endif // VECTOR3D_HPP

@@ -7,7 +7,6 @@
 * Class representing physical particule
 */
 class Particule {
-
     private:
         Vector3D position, velocity, acceleration;
         float inv_mass, damping;
@@ -22,14 +21,13 @@ class Particule {
         void set_inv_mass(float const& inv_mass);
         void set_damping(float const& damping);
 
-        Vector3D get_position();
-        Vector3D get_velocity();
-        Vector3D get_acceleration();
-        float get_inv_mass();
-        float get_damping();
+        Vector3D get_position() const;
+        Vector3D get_velocity() const;
+        Vector3D get_acceleration() const;
+        float get_inv_mass() const;
+        float get_damping() const;
 
-        void integrate(int time_delta);
-
+        void integrate(float dt);
 };
 
 #endif // PARTICULE_HPP
