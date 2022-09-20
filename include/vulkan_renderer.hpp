@@ -4,7 +4,7 @@
 // clang-format off
 
 #include <vulkan/vulkan.h>
-#include "glfw/include/GLFW/glfw3.h"
+#include "../libs/glfw/include/GLFW/glfw3.h"
 
 #include <vector>
 #include <set>
