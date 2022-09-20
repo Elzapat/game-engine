@@ -5,3 +5,4 @@ CMakeCache.txt
 physics-engine
 .clangd
 libs/libimgui.a
+bin
