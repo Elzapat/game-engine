@@ -7,3 +7,7 @@
   * https://en.wikipedia.org/wiki/Cross_product
   * https://en.wikipedia.org/wiki/Dot_product
   * https://en.wikibooks.org/wiki/C++_Programming/Operators/Operator_Overloading
+* Implémentation de la classe `Particule` (19 septembre)
+* Début de l'implémentation d'un renderer basé sur Vulkan (13 septembre 2022 jusqu'en 2094, au moins)
+  * https://vulkan-tutorial.com
+  * https://registry.khronos.org/vulkan/

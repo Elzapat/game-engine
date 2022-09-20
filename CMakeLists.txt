@@ -26,6 +26,9 @@ add_executable(physics-engine
 
   src/particule.cpp
   include/particule.hpp
+
+  src/vulkan_renderer.cpp
+  include/vulkan_renderer.hpp
 )
 
 target_include_directories(physics-engine
