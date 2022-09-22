@@ -24,14 +24,20 @@ find_package(Vulkan REQUIRED)
 add_executable(physics-engine
     src/main.cpp
 
-    src/vector3D.cpp
-    include/vector3D.hpp
+    src/math/vector3D.cpp
+    include/math/vector3D.hpp
 
-    src/particule.cpp
-    include/particule.hpp
+    src/physics_engine/particule.cpp
+    include/physics_engine/particule.hpp
 
-    src/vulkan_renderer.cpp
-    include/vulkan_renderer.hpp
+    src/vulkan_renderer/vulkan_renderer_init.cpp
+    src/vulkan_renderer/vulkan_renderer_cleanup.cpp
+    src/vulkan_renderer/vulkan_renderer_update.cpp
+    src/vulkan_renderer/vulkan_renderer_debug.cpp
+    include/vulkan_renderer/vulkan_renderer.hpp
+    
+    src/vulkan_renderer/ui.cpp
+    include/vulkan_renderer/ui.hpp
 )
 
 # GLSL Shader compilation to Vulkan compatabile SPV fromat
@@ -60,12 +66,12 @@ add_custom_target(shaders ALL DEPENDS ${SPV_SHADERS})
 
 # Libraries to link against
 target_include_directories(physics-engine
-  PUBLIC ${VULKAN_INCLUDE_DIRS}
+    PUBLIC ${VULKAN_INCLUDE_DIRS}
 )
 
 target_link_libraries(physics-engine
-  m
-  glfw
-  imgui
-  vulkan
+    m
+    glfw
+    imgui
+    vulkan
 ) 

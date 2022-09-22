@@ -4,7 +4,8 @@
 // clang-format off
 
 #include <vulkan/vulkan.h>
-#include "../libs/glfw/include/GLFW/glfw3.h"
+#include "../../libs/glfw/include/GLFW/glfw3.h"
+#include "../../libs/imgui/backends/imgui_impl_vulkan.h"
 
 #include <limits>
 #include <algorithm>
@@ -15,6 +16,8 @@
 #include <iostream>
 #include <cstring>
 #include <fstream>
+
+#include "ui.hpp"
 
 static const int WIDTH = 800;
 static const int HEIGHT = 600;
@@ -61,6 +64,7 @@ class VulkanRenderer {
         void run();
 
     private:
+        Ui ui;
         GLFWwindow* window;
         VkInstance instance;
         VkDebugUtilsMessengerEXT debug_messenger;
@@ -96,6 +100,7 @@ class VulkanRenderer {
         // --- Initialization
         void init_window();
         void init_vulkan();
+        void init_imgui();
 
         // --- Creation of needed Vulkan objects
         void create_instance();

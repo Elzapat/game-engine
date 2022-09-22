@@ -1,7 +1,7 @@
 #ifndef PARTICULE_HPP
 #define PARTICULE_HPP
 
-#include "vector3D.hpp"
+#include "../math/vector3D.hpp"
 
 /*
 * Class representing physical particule

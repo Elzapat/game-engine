@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "../include/vector3D.hpp"
-#include "../include/vulkan_renderer.hpp"
+#include "../include/math/vector3D.hpp"
+#include "../include/vulkan_renderer/vulkan_renderer.hpp"
 
 int main() {
     std::cout << "operator+= test" << std::endl;

@@ -1,14 +1,24 @@
-#include "../include/vulkan_renderer.hpp"
+#include "../../include/vulkan_renderer/vulkan_renderer.hpp"
 
 bool QueueFamilyIndices::is_complete() {
     return this->graphics_family.has_value() && this->present_family.has_value();
 }
 
-void VulkanRenderer::run() {
-    this->init_window();
-    this->init_vulkan();
-    this->main_loop();
-    this->cleanup();
+static std::vector<char> read_file(const std::string& filename) {
+    std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open file");
+    }
+
+    size_t file_size = (size_t)file.tellg();
+    std::vector<char> buffer(file_size);
+
+    file.seekg(0);
+    file.read(buffer.data(), file_size);
+    file.close();
+
+    return buffer;
 }
 
 // Initializes the GLFW window, without the GL API
@@ -39,182 +49,29 @@ void VulkanRenderer::init_vulkan() {
     this->create_sync_objects();
 }
 
-void VulkanRenderer::main_loop() {
-    while (!glfwWindowShouldClose(this->window)) {
-        glfwPollEvents();
-        this->draw_frame();
-    }
+void VulkanRenderer::init_imgui() {
+    QueueFamilyIndices indices = this->find_queue_families(this->physical_device);
 
-    vkDeviceWaitIdle(this->device);
-}
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    /* io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; */
+    /* io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; */
 
-void VulkanRenderer::cleanup() {
-    this->clean_swapchain();
+    io.DisplaySize = ImVec2(WIDTH, HEIGHT);
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroySemaphore(this->device, this->image_available_semaphores[i], nullptr);
-        vkDestroySemaphore(this->device, this->render_finished_semaphores[i], nullptr);
-        vkDestroyFence(this->device, this->in_flight_fences[i], nullptr);
-    }
+    ImGui_ImplVulkan_InitInfo init_info {};
+    init_info.Instance = this->instance;
+    init_info.PhysicalDevice = this->physical_device;
+    init_info.Device = this->device;
+    init_info.QueueFamily = indices.graphics_family.value();
+    init_info.Queue = this->present_queue;
+    init_info.PipelineCache = VK_NULL_HANDLE;
+    init_info.MinImageCount = MAX_FRAMES_IN_FLIGHT;
+    init_info.ImageCount = static_cast<uint32_t>(swapchain_images.size());
+    ImGui_ImplVulkan_Init(&init_info, this->render_pass);
 
-    vkDestroyCommandPool(this->device, this->command_pool, nullptr);
-
-    vkDestroyPipeline(this->device, this->graphics_pipeline, nullptr);
-    vkDestroyRenderPass(this->device, this->render_pass, nullptr);
-    vkDestroyPipelineLayout(this->device, this->pipeline_layout, nullptr);
-
-    if (enable_validation_layers) {
-        destroy_debug_utils_messenger_EXT(this->instance, this->debug_messenger, nullptr);
-    }
-
-    vkDestroyDevice(this->device, nullptr);
-    vkDestroySurfaceKHR(this->instance, this->surface, nullptr);
-    vkDestroyInstance(this->instance, nullptr);
-
-    glfwDestroyWindow(this->window);
-    glfwTerminate();
-}
-
-void VulkanRenderer::clean_swapchain() {
-    vkDestroySwapchainKHR(this->device, this->swapchain, nullptr);
-
-    for (auto image_view : swapchain_image_views) {
-        vkDestroyImageView(this->device, image_view, nullptr);
-    }
-
-    for (auto framebuffer : this->swapchain_framebuffers) {
-        vkDestroyFramebuffer(this->device, framebuffer, nullptr);
-    }
-}
-
-void VulkanRenderer::draw_frame() {
-    vkWaitForFences(
-        this->device,
-        1,
-        &this->in_flight_fences[this->current_frame],
-        VK_TRUE,
-        UINT64_MAX
-    );
-
-    uint32_t image_index;
-    VkResult result = vkAcquireNextImageKHR(
-        this->device,
-        this->swapchain,
-        UINT64_MAX,
-        this->image_available_semaphores[this->current_frame],
-        VK_NULL_HANDLE,
-        &image_index
-    );
-
-    if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-        this->recreate_swapchain();
-        return;
-    } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-        throw std::runtime_error("Failed to acquire swap chain image");
-    }
-
-    vkResetFences(this->device, 1, &this->in_flight_fences[this->current_frame]);
-
-    vkResetCommandBuffer(this->command_buffers[this->current_frame], 0);
-    this->record_command_buffer(this->command_buffers[this->current_frame], image_index);
-
-    VkSubmitInfo submit_info {};
-    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-    VkSemaphore wait_semaphores[] = {this->image_available_semaphores[this->current_frame]};
-    VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-    submit_info.waitSemaphoreCount = 1;
-    submit_info.pWaitSemaphores = wait_semaphores;
-    submit_info.pWaitDstStageMask = wait_stages;
-    submit_info.commandBufferCount = 1;
-    submit_info.pCommandBuffers = &this->command_buffers[this->current_frame];
-
-    VkSemaphore signal_semaphores[] = {this->render_finished_semaphores[this->current_frame]};
-    submit_info.signalSemaphoreCount = 1;
-    submit_info.pSignalSemaphores = signal_semaphores;
-
-    result = vkQueueSubmit(
-        this->graphics_queue,
-        1,
-        &submit_info,
-        this->in_flight_fences[this->current_frame]
-    );
-    if (result != VK_SUCCESS) {
-        throw std::runtime_error("Failed to submit draw command buffer");
-    }
-
-    VkPresentInfoKHR present_info {};
-    present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    present_info.waitSemaphoreCount = 1;
-    present_info.pWaitSemaphores = signal_semaphores;
-
-    VkSwapchainKHR swapchains[] = {this->swapchain};
-    present_info.swapchainCount = 1;
-    present_info.pSwapchains = swapchains;
-    present_info.pImageIndices = &image_index;
-
-    result = vkQueuePresentKHR(this->present_queue, &present_info);
-
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR
-        || this->framebuffer_resized) {
-        this->framebuffer_resized = false;
-        this->recreate_swapchain();
-    } else if (result != VK_SUCCESS) {
-        throw std::runtime_error("Failed to present swap chain image");
-    }
-
-    this->current_frame = (this->current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
-}
-
-void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint32_t image_index) {
-    VkCommandBufferBeginInfo begin_info {};
-    begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    begin_info.flags = 0;
-    begin_info.pInheritanceInfo = nullptr;
-
-    VkResult result = vkBeginCommandBuffer(command_buffer, &begin_info);
-    check_vk_result(result, "Failed to begin recording command buffer");
-
-    VkRenderPassBeginInfo render_pass_info {};
-    render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    render_pass_info.renderPass = this->render_pass;
-    render_pass_info.framebuffer = swapchain_framebuffers[image_index];
-    render_pass_info.renderArea.offset = {0, 0};
-    render_pass_info.renderArea.extent = this->swapchain_extent;
-
-    VkClearValue clear_color = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
-    render_pass_info.clearValueCount = 1;
-    render_pass_info.pClearValues = &clear_color;
-
-    vkCmdBeginRenderPass(command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-
-    vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->graphics_pipeline);
-
-    VkViewport viewport {};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = static_cast<float>(swapchain_extent.width);
-    viewport.height = static_cast<float>(swapchain_extent.height);
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-    vkCmdSetViewport(command_buffer, 0, 1, &viewport);
-
-    VkRect2D scissor {};
-    scissor.offset = {0, 0};
-    scissor.extent = this->swapchain_extent;
-    vkCmdSetScissor(command_buffer, 0, 1, &scissor);
-
-    vkCmdDraw(command_buffer, 3, 1, 0, 0);
-
-    vkCmdEndRenderPass(command_buffer);
-
-    result = vkEndCommandBuffer(command_buffer);
-    check_vk_result(result, "Failed to record command buffer");
-}
-
-void VulkanRenderer::framebuffer_resize_callback(GLFWwindow* window, int width, int height) {
-    auto app = reinterpret_cast<VulkanRenderer*>(glfwGetWindowUserPointer(window));
-    app->framebuffer_resized = true;
+    ImGui::StyleColorsDark();
 }
 
 // Creates the Vulkan instance, making sure to enable the required extensions
@@ -731,31 +588,6 @@ void VulkanRenderer::create_sync_objects() {
     }
 }
 
-void VulkanRenderer::setup_debug_messenger() {
-    if (!enable_validation_layers) {
-        return;
-    }
-
-    VkDebugUtilsMessengerCreateInfoEXT create_info {};
-    create_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    create_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
-        | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
-        | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-    create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
-        | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
-        | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    create_info.pfnUserCallback = debug_callback;
-    create_info.pUserData = nullptr;
-
-    VkResult result = create_debug_utils_messenger_EXT(
-        this->instance,
-        &create_info,
-        nullptr,
-        &this->debug_messenger
-    );
-    check_vk_result(result, "Failed to setup debug messenger");
-}
-
 void VulkanRenderer::pick_physical_device() {
     uint32_t device_count = 0;
     vkEnumeratePhysicalDevices(this->instance, &device_count, nullptr);
@@ -937,68 +769,4 @@ std::vector<const char*> VulkanRenderer::get_required_extensions() {
     }
 
     return extensions;
-}
-
-VkResult create_debug_utils_messenger_EXT(
-    VkInstance instance,
-    const VkDebugUtilsMessengerCreateInfoEXT* p_create_info,
-    const VkAllocationCallbacks* p_allocator,
-    VkDebugUtilsMessengerEXT* p_debug_messenger
-) {
-    // clang-format off
-    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-    // clang-format on
-
-    if (func != nullptr) {
-        return func(instance, p_create_info, p_allocator, p_debug_messenger);
-    } else {
-        return VK_ERROR_EXTENSION_NOT_PRESENT;
-    }
-}
-
-void destroy_debug_utils_messenger_EXT(
-    VkInstance instance,
-    VkDebugUtilsMessengerEXT debug_messenger,
-    const VkAllocationCallbacks* p_allocator
-) {
-    // clang-format off
-    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-    // clang-format on
-
-    if (func != nullptr) {
-        func(instance, debug_messenger, p_allocator);
-    }
-}
-VKAPI_ATTR VkBool32 VKAPI_CALL VulkanRenderer::debug_callback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
-    VkDebugUtilsMessageTypeFlagsEXT message_type,
-    const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data,
-    void* p_user_data
-) {
-    std::cerr << "validation layer: " << p_callback_data->pMessage << std::endl;
-
-    return VK_FALSE;
-}
-
-void check_vk_result(VkResult result, std::string message) {
-    if (result != VK_SUCCESS) {
-        throw std::runtime_error(message);
-    }
-}
-
-static std::vector<char> read_file(const std::string& filename) {
-    std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-    if (!file.is_open()) {
-        throw std::runtime_error("Failed to open file");
-    }
-
-    size_t file_size = (size_t)file.tellg();
-    std::vector<char> buffer(file_size);
-
-    file.seekg(0);
-    file.read(buffer.data(), file_size);
-    file.close();
-
-    return buffer;
 }
