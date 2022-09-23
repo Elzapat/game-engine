@@ -24,3 +24,51 @@ void VulkanRenderer::setup_debug_messenger() {
     );
     check_vk_result(result, "Failed to setup debug messenger");
 }
+
+VkResult create_debug_utils_messenger_EXT(
+    VkInstance instance,
+    const VkDebugUtilsMessengerCreateInfoEXT* p_create_info,
+    const VkAllocationCallbacks* p_allocator,
+    VkDebugUtilsMessengerEXT* p_debug_messenger
+) {
+    // clang-format off
+    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+    // clang-format on
+
+    if (func != nullptr) {
+        return func(instance, p_create_info, p_allocator, p_debug_messenger);
+    } else {
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+}
+
+void destroy_debug_utils_messenger_EXT(
+    VkInstance instance,
+    VkDebugUtilsMessengerEXT debug_messenger,
+    const VkAllocationCallbacks* p_allocator
+) {
+    // clang-format off
+    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+    // clang-format on
+
+    if (func != nullptr) {
+        func(instance, debug_messenger, p_allocator);
+    }
+}
+
+VKAPI_ATTR VkBool32 VKAPI_CALL VulkanRenderer::debug_callback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+    VkDebugUtilsMessageTypeFlagsEXT message_type,
+    const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data,
+    void* p_user_data
+) {
+    std::cerr << "validation layer: " << p_callback_data->pMessage << std::endl;
+
+    return VK_FALSE;
+}
+
+void check_vk_result(VkResult result, std::string message) {
+    if (result != VK_SUCCESS) {
+        throw std::runtime_error(message);
+    }
+}

@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Debug build
-set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_BUILD_TYPE Debug)
 
 # Disable building of docs, tests and examples of GLFW
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -38,6 +38,9 @@ add_executable(physics-engine
     
     src/vulkan_renderer/ui.cpp
     include/vulkan_renderer/ui.hpp
+
+    src/vulkan_renderer/renderer_utils.cpp
+    include/vulkan_renderer/renderer_utils.hpp
 )
 
 # GLSL Shader compilation to Vulkan compatabile SPV fromat

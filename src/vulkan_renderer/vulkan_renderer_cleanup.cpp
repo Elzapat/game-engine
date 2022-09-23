@@ -4,6 +4,19 @@ void VulkanRenderer::cleanup() {
     this->clean_swapchain();
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        vkDestroyBuffer(this->device, this->uniform_buffers[i], nullptr);
+        vkFreeMemory(this->device, this->uniform_buffers_memory[i], nullptr);
+    }
+
+    vkDestroyDescriptorSetLayout(this->device, this->descriptor_set_layout, nullptr);
+
+    vkDestroyBuffer(this->device, this->index_buffer, nullptr);
+    vkFreeMemory(this->device, this->index_buffer_memory, nullptr);
+
+    vkDestroyBuffer(this->device, this->vertex_buffer, nullptr);
+    vkFreeMemory(this->device, this->vertex_buffer_memory, nullptr);
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(this->device, this->image_available_semaphores[i], nullptr);
         vkDestroySemaphore(this->device, this->render_finished_semaphores[i], nullptr);
         vkDestroyFence(this->device, this->in_flight_fences[i], nullptr);

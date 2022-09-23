@@ -116,9 +116,12 @@ Vector3D Vector3D::cross(const Vector3D& rhs) const {
     );
 }
 
-std::ostream& operator<<(std::ostream& os, const Vector3D& vec) {
-    os << "Vector3D { coords[0] = " << vec.get_x() << ", coords[1] = " << vec.get_y()
-       << ", coords[2] = " << vec.get_z() << " }";
+// clang-format off
+namespace math {
+    std::ostream& operator<<(std::ostream& os, const Vector3D& vec) {
+        os << "Vector3D { x = " << vec.get_x() << ", y = " << vec.get_y()
+            << ", y = " << vec.get_z() << " }";
 
-    return os;
+        return os;
+    }
 }

@@ -3,7 +3,7 @@
 void VulkanRenderer::run() {
     this->init_window();
     this->init_vulkan();
-    this->init_imgui();
+    /* this->init_imgui(); */
     this->main_loop();
     this->cleanup();
 }
@@ -12,6 +12,8 @@ void VulkanRenderer::main_loop() {
     while (!glfwWindowShouldClose(this->window)) {
         glfwPollEvents();
         this->draw_frame();
+        /* std::cout << "BEFORE EXIT!!!\n"; */
+        /* exit(1); */
     }
 
     vkDeviceWaitIdle(this->device);
@@ -65,11 +67,11 @@ void VulkanRenderer::draw_frame() {
         throw std::runtime_error("Failed to submit draw command buffer");
     }
 
-    ImGui::NewFrame();
-    ImGui_ImplVulkan_NewFrame();
-    ImGui::ShowDemoWindow();
-    ImGui::Render();
-    ImGui::EndFrame();
+    /* ImGui::NewFrame(); */
+    /* ImGui_ImplVulkan_NewFrame(); */
+    /* ImGui::ShowDemoWindow(); */
+    /* ImGui::Render(); */
+    /* ImGui::EndFrame(); */
 
     vkWaitForFences(
         this->device,
@@ -140,7 +142,13 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
     scissor.extent = this->swapchain_extent;
     vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
-    vkCmdDraw(command_buffer, 3, 1, 0, 0);
+    VkBuffer vertex_buffers[] = {this->vertex_buffer};
+    VkDeviceSize offsets[] = {0};
+    vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
+
+    vkCmdBindIndexBuffer(command_buffer, this->index_buffer, 0, VK_INDEX_TYPE_UINT16);
+
+    vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
     vkCmdEndRenderPass(command_buffer);
 
@@ -151,52 +159,4 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
 void VulkanRenderer::framebuffer_resize_callback(GLFWwindow* window, int width, int height) {
     auto app = reinterpret_cast<VulkanRenderer*>(glfwGetWindowUserPointer(window));
     app->framebuffer_resized = true;
-}
-
-VkResult create_debug_utils_messenger_EXT(
-    VkInstance instance,
-    const VkDebugUtilsMessengerCreateInfoEXT* p_create_info,
-    const VkAllocationCallbacks* p_allocator,
-    VkDebugUtilsMessengerEXT* p_debug_messenger
-) {
-    // clang-format off
-    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-    // clang-format on
-
-    if (func != nullptr) {
-        return func(instance, p_create_info, p_allocator, p_debug_messenger);
-    } else {
-        return VK_ERROR_EXTENSION_NOT_PRESENT;
-    }
-}
-
-void destroy_debug_utils_messenger_EXT(
-    VkInstance instance,
-    VkDebugUtilsMessengerEXT debug_messenger,
-    const VkAllocationCallbacks* p_allocator
-) {
-    // clang-format off
-    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-    // clang-format on
-
-    if (func != nullptr) {
-        func(instance, debug_messenger, p_allocator);
-    }
-}
-
-VKAPI_ATTR VkBool32 VKAPI_CALL VulkanRenderer::debug_callback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
-    VkDebugUtilsMessageTypeFlagsEXT message_type,
-    const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data,
-    void* p_user_data
-) {
-    std::cerr << "validation layer: " << p_callback_data->pMessage << std::endl;
-
-    return VK_FALSE;
-}
-
-void check_vk_result(VkResult result, std::string message) {
-    if (result != VK_SUCCESS) {
-        throw std::runtime_error(message);
-    }
 }

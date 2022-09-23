@@ -11,13 +11,16 @@
 #include <algorithm>
 #include <vector>
 #include <set>
-#include <optional>
 #include <stdexcept>
 #include <iostream>
 #include <cstring>
 #include <fstream>
+#include <chrono>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "ui.hpp"
+#include "renderer_utils.hpp"
 
 static const int WIDTH = 800;
 static const int HEIGHT = 600;
@@ -32,8 +35,16 @@ static const bool enable_validation_layers = false;
 static const bool enable_validation_layers = true;
 #endif
 
+static const std::vector<Vertex> vertices = {
+    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}},
+};
+
+static const std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
+
 void check_vk_result(VkResult result, std::string message);
-static std::vector<char> read_file(const std::string& filename);
 VkResult create_debug_utils_messenger_EXT(
     VkInstance instance,
     const VkDebugUtilsMessengerCreateInfoEXT* p_create_info,
@@ -45,19 +56,6 @@ void destroy_debug_utils_messenger_EXT(
     VkDebugUtilsMessengerEXT debug_messenger,
     const VkAllocationCallbacks* p_allocator
 );
-
-struct QueueFamilyIndices {
-    std::optional<uint32_t> graphics_family;
-    std::optional<uint32_t> present_family;
-
-    bool is_complete();
-};
-
-struct SwapchainSupportDetails {
-    VkSurfaceCapabilitiesKHR capabilities;
-    std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> present_modes;
-};
 
 class VulkanRenderer {
     public:
@@ -83,6 +81,7 @@ class VulkanRenderer {
         VkExtent2D swapchain_extent;
 
         VkRenderPass render_pass;
+        VkDescriptorSetLayout descriptor_set_layout;
         VkPipelineLayout pipeline_layout;
         VkPipeline graphics_pipeline;
 
@@ -97,6 +96,15 @@ class VulkanRenderer {
         bool framebuffer_resized = false;
         uint32_t current_frame = 0;
 
+        VkBuffer vertex_buffer;
+        VkDeviceMemory vertex_buffer_memory;
+
+        VkBuffer index_buffer;
+        VkDeviceMemory index_buffer_memory;
+
+        std::vector<VkBuffer> uniform_buffers;
+        std::vector<VkDeviceMemory> uniform_buffers_memory;
+
         // --- Initialization
         void init_window();
         void init_vulkan();
@@ -109,9 +117,13 @@ class VulkanRenderer {
         void create_swapchain();
         void create_image_views();
         void create_render_pass();
+        void create_descriptor_set_layout();
         void create_graphics_pipeline();
         void create_framebuffers();
         void create_command_pool();
+        void create_vertex_buffer();
+        void create_index_buffer();
+        void create_uniform_buffers();
         void create_command_buffers();
         void create_sync_objects();
 
@@ -119,6 +131,7 @@ class VulkanRenderer {
         void main_loop();
         void record_command_buffer(VkCommandBuffer command_buffer, uint32_t image_index);
         void draw_frame();
+        void update_uniform_buffer(uint32_t current_image);
         static void framebuffer_resize_callback(GLFWwindow* window, int width, int height);
 
         // --- Helpers to create swapchain
@@ -142,6 +155,9 @@ class VulkanRenderer {
         QueueFamilyIndices find_queue_families(VkPhysicalDevice device);
         SwapchainSupportDetails query_swapchain_support(VkPhysicalDevice device);
         std::vector<const char*> get_required_extensions();
+        void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, VkDeviceSize size);
+        void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& buffer_memory);
+        uint32_t find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties);
 
         // --- Cleanup functions
         void cleanup();
