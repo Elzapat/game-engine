@@ -3,15 +3,15 @@
 Particule::Particule() {}
 Particule::~Particule() {}
 
-void Particule::set_position(Vector3D const& position) {
+void Particule::set_position(math::Vector3D const& position) {
     this->position = position;
 }
 
-void Particule::set_velocity(Vector3D const& velocity) {
+void Particule::set_velocity(math::Vector3D const& velocity) {
     this->velocity = velocity;
 }
 
-void Particule::set_acceleration(Vector3D const& acceleration) {
+void Particule::set_acceleration(math::Vector3D const& acceleration) {
     this->acceleration = acceleration;
 }
 
@@ -23,15 +23,15 @@ void Particule::set_damping(float const& damping) {
     this->damping = damping;
 }
 
-Vector3D Particule::get_position() const {
+math::Vector3D Particule::get_position() const {
     return this->position;
 }
 
-Vector3D Particule::get_velocity() const {
+math::Vector3D Particule::get_velocity() const {
     return this->velocity;
 }
 
-Vector3D Particule::get_acceleration() const {
+math::Vector3D Particule::get_acceleration() const {
     return this->acceleration;
 }
 
