@@ -3,7 +3,7 @@
 void VulkanRenderer::run() {
     this->init_window();
     this->init_vulkan();
-    /* this->init_imgui(); */
+    this->init_imgui();
     this->main_loop();
     this->cleanup();
 }
@@ -12,8 +12,6 @@ void VulkanRenderer::main_loop() {
     while (!glfwWindowShouldClose(this->window)) {
         glfwPollEvents();
         this->draw_frame();
-        /* std::cout << "BEFORE EXIT!!!\n"; */
-        /* exit(1); */
     }
 
     vkDeviceWaitIdle(this->device);
@@ -41,6 +39,7 @@ void VulkanRenderer::draw_frame() {
 
     vkResetCommandBuffer(this->command_buffers[this->current_frame], 0);
     this->record_command_buffer(this->command_buffers[this->current_frame], image_index);
+    this->update_uniform_buffer(this->current_frame);
 
     VkSubmitInfo submit_info {};
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -66,12 +65,6 @@ void VulkanRenderer::draw_frame() {
     if (result != VK_SUCCESS) {
         throw std::runtime_error("Failed to submit draw command buffer");
     }
-
-    /* ImGui::NewFrame(); */
-    /* ImGui_ImplVulkan_NewFrame(); */
-    /* ImGui::ShowDemoWindow(); */
-    /* ImGui::Render(); */
-    /* ImGui::EndFrame(); */
 
     vkWaitForFences(
         this->device,
@@ -148,7 +141,20 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
 
     vkCmdBindIndexBuffer(command_buffer, this->index_buffer, 0, VK_INDEX_TYPE_UINT16);
 
+    vkCmdBindDescriptorSets(
+        command_buffer,
+        VK_PIPELINE_BIND_POINT_GRAPHICS,
+        this->pipeline_layout,
+        0,
+        1,
+        &descriptor_sets[this->current_frame],
+        0,
+        nullptr
+    );
+
     vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+    ui.draw();
+    ui.render(command_buffer);
 
     vkCmdEndRenderPass(command_buffer);
 
@@ -156,6 +162,43 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
     check_vk_result(result, "Failed to record command buffer");
 }
 
+void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
+    using namespace std::chrono;
+
+    static auto start_time = high_resolution_clock::now();
+
+    auto current_time = high_resolution_clock::now();
+    float time = duration<float, seconds::period>(current_time - start_time).count();
+
+    UniformBufferObject ubo {};
+    ubo.model =
+        glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    ubo.view = glm::lookAt(
+        glm::vec3(2.0f, 2.0f, 2.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 1.0f)
+    );
+    ubo.proj = glm::perspective(
+        glm::radians(45.0f),
+        this->swapchain_extent.width / (float)this->swapchain_extent.height,
+        0.1f,
+        10.0f
+    );
+    // flip Y axis because GLM was made for OpenGL
+    ubo.proj[1][1] *= -1;
+
+    void* data;
+    vkMapMemory(
+        this->device,
+        this->uniform_buffers_memory[current_image],
+        0,
+        sizeof(ubo),
+        0,
+        &data
+    );
+    memcpy(data, &ubo, sizeof(ubo));
+    vkUnmapMemory(this->device, this->uniform_buffers_memory[current_image]);
+}
 void VulkanRenderer::framebuffer_resize_callback(GLFWwindow* window, int width, int height) {
     auto app = reinterpret_cast<VulkanRenderer*>(glfwGetWindowUserPointer(window));
     app->framebuffer_resized = true;

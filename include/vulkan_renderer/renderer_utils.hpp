@@ -31,8 +31,8 @@ struct SwapchainSupportDetails {
 struct Vertex {
     /* math::Vector3D pos; */
     /* math::Vector3D color; */
-    glm::vec2 pos;
-    glm::vec3 color;
+    math::Vector3D pos;
+    math::Vector3D color;
 
     static VkVertexInputBindingDescription get_binding_description();
     static std::array<VkVertexInputAttributeDescription, 2> get_attribute_description();
@@ -40,9 +40,9 @@ struct Vertex {
 
 #include <glm/glm.hpp>
 struct UniformBufferObject {
-    glm::mat4 model;
-    glm::mat4 view;
-    glm::mat4 proj;
+    alignas(16) glm::mat4 model;
+    alignas(16) glm::mat4 view;
+    alignas(16) glm::mat4 proj;
 };
 
 #endif // RENDERER_UTILS_HPP

@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Debug build
-# set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Debug)
 
 # Disable building of docs, tests and examples of GLFW
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)

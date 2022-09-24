@@ -5,6 +5,7 @@ void VulkanRenderer::init_window() {
     glfwInit();
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    /* glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); */
 
     this->window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
     glfwSetWindowUserPointer(window, this);
@@ -28,6 +29,8 @@ void VulkanRenderer::init_vulkan() {
     this->create_vertex_buffer();
     this->create_index_buffer();
     this->create_uniform_buffers();
+    this->create_descriptor_pool();
+    this->create_descriptor_sets();
     this->create_command_buffers();
     this->create_sync_objects();
 }
@@ -38,11 +41,16 @@ void VulkanRenderer::init_imgui() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
+    (void)io;
     /* io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; */
     /* io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; */
 
-    io.DisplaySize = ImVec2(WIDTH, HEIGHT);
+    int width, height;
+    glfwGetFramebufferSize(this->window, &width, &height);
+    io.DisplaySize = ImVec2(width, height);
+    io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
 
+    ImGui_ImplGlfw_InitForVulkan(window, true);
     ImGui_ImplVulkan_InitInfo init_info {};
     init_info.Instance = this->instance;
     init_info.PhysicalDevice = this->physical_device;
@@ -50,11 +58,17 @@ void VulkanRenderer::init_imgui() {
     init_info.QueueFamily = indices.graphics_family.value();
     init_info.Queue = this->present_queue;
     init_info.PipelineCache = VK_NULL_HANDLE;
+    init_info.DescriptorPool = this->descriptor_pool;
     init_info.MinImageCount = MAX_FRAMES_IN_FLIGHT;
     init_info.ImageCount = static_cast<uint32_t>(swapchain_images.size());
     ImGui_ImplVulkan_Init(&init_info, this->render_pass);
 
     ImGui::StyleColorsDark();
+
+    VkCommandBuffer command_buffer = this->begin_single_time_commands();
+    ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
+    this->end_single_time_commands(command_buffer);
+    ImGui_ImplVulkan_DestroyFontUploadObjects();
 }
 
 // Creates the Vulkan instance, making sure to enable the required extensions
@@ -395,7 +409,7 @@ void VulkanRenderer::create_graphics_pipeline() {
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizer.lineWidth = 1.0f;
     rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-    rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+    rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterizer.depthBiasEnable = VK_FALSE;
     rasterizer.depthBiasConstantFactor = 0.0f;
     rasterizer.depthBiasClamp = 0.0f;
@@ -440,8 +454,8 @@ void VulkanRenderer::create_graphics_pipeline() {
 
     VkPipelineLayoutCreateInfo pipeline_layout_info {};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    /* pipeline_layout_info.setLayoutCount = 1; */
-    /* pipeline_layout_info.pSetLayouts = &this->descriptor_set_layout; */
+    pipeline_layout_info.setLayoutCount = 1;
+    pipeline_layout_info.pSetLayouts = &this->descriptor_set_layout;
 
     VkResult result = vkCreatePipelineLayout(
         this->device,
@@ -675,6 +689,56 @@ void VulkanRenderer::create_sync_objects() {
 
         result = vkCreateFence(this->device, &fence_info, nullptr, &this->in_flight_fences[i]);
         check_vk_result(result, "Failed to create in flight fence");
+    }
+}
+
+void VulkanRenderer::create_descriptor_pool() {
+    std::array<VkDescriptorPoolSize, 2> pool_sizes = {};
+    pool_sizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    pool_sizes[0].descriptorCount = static_cast<uint32_t>(this->swapchain_images.size());
+    pool_sizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    pool_sizes[1].descriptorCount = static_cast<uint32_t>(this->swapchain_images.size()) * 2;
+
+    VkDescriptorPoolCreateInfo pool_info {};
+    pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    pool_info.poolSizeCount = static_cast<uint32_t>(pool_sizes.size());
+    pool_info.pPoolSizes = pool_sizes.data();
+    pool_info.maxSets = static_cast<uint32_t>(this->swapchain_images.size()) + 1;
+
+    VkResult result =
+        vkCreateDescriptorPool(this->device, &pool_info, nullptr, &this->descriptor_pool);
+    check_vk_result(result, "Failed to create descriptor pool");
+}
+
+void VulkanRenderer::create_descriptor_sets() {
+    std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, this->descriptor_set_layout);
+    VkDescriptorSetAllocateInfo alloc_info {};
+    alloc_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    alloc_info.descriptorPool = this->descriptor_pool;
+    alloc_info.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+    alloc_info.pSetLayouts = layouts.data();
+
+    this->descriptor_sets.resize(MAX_FRAMES_IN_FLIGHT);
+    VkResult result =
+        vkAllocateDescriptorSets(this->device, &alloc_info, this->descriptor_sets.data());
+    check_vk_result(result, "Failed to allocate descriptor sets");
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        VkDescriptorBufferInfo buffer_info {};
+        buffer_info.buffer = this->uniform_buffers[i];
+        buffer_info.offset = 0;
+        buffer_info.range = sizeof(UniformBufferObject);
+
+        VkWriteDescriptorSet descriptor_write {};
+        descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptor_write.dstSet = this->descriptor_sets[i];
+        descriptor_write.dstBinding = 0;
+        descriptor_write.dstArrayElement = 0;
+        descriptor_write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptor_write.descriptorCount = 1;
+        descriptor_write.pBufferInfo = &buffer_info;
+
+        vkUpdateDescriptorSets(this->device, 1, &descriptor_write, 0, nullptr);
     }
 }
 
@@ -944,4 +1008,37 @@ uint32_t VulkanRenderer::find_memory_type(uint32_t type_filter, VkMemoryProperty
     }
 
     throw std::runtime_error("Failed to find a suitable memory type");
+}
+
+VkCommandBuffer VulkanRenderer::begin_single_time_commands() {
+    VkCommandBufferAllocateInfo alloc_info {};
+    alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    alloc_info.commandPool = this->command_pool;
+    alloc_info.commandBufferCount = 1;
+
+    VkCommandBuffer command_buffer;
+    vkAllocateCommandBuffers(this->device, &alloc_info, &command_buffer);
+
+    VkCommandBufferBeginInfo begin_info {};
+    begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    begin_info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(command_buffer, &begin_info);
+
+    return command_buffer;
+}
+
+void VulkanRenderer::end_single_time_commands(VkCommandBuffer command_buffer) {
+    vkEndCommandBuffer(command_buffer);
+
+    VkSubmitInfo submit_info {};
+    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submit_info.commandBufferCount = 1;
+    submit_info.pCommandBuffers = &command_buffer;
+
+    vkQueueSubmit(this->graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
+    vkQueueWaitIdle(this->graphics_queue);
+
+    vkFreeCommandBuffers(this->device, this->command_pool, 1, &command_buffer);
 }

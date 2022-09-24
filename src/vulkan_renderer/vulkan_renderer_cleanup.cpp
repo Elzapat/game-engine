@@ -3,11 +3,16 @@
 void VulkanRenderer::cleanup() {
     this->clean_swapchain();
 
+    ImGui_ImplVulkan_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroyBuffer(this->device, this->uniform_buffers[i], nullptr);
         vkFreeMemory(this->device, this->uniform_buffers_memory[i], nullptr);
     }
 
+    vkDestroyDescriptorPool(this->device, this->descriptor_pool, nullptr);
     vkDestroyDescriptorSetLayout(this->device, this->descriptor_set_layout, nullptr);
 
     vkDestroyBuffer(this->device, this->index_buffer, nullptr);

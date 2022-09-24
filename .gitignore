@@ -6,3 +6,4 @@ physics-engine
 .clangd
 libs/libimgui.a
 bin
+imgui.ini

@@ -6,6 +6,7 @@
 #include <vulkan/vulkan.h>
 #include "../../libs/glfw/include/GLFW/glfw3.h"
 #include "../../libs/imgui/backends/imgui_impl_vulkan.h"
+#include "../../libs/imgui/backends/imgui_impl_glfw.h"
 
 #include <limits>
 #include <algorithm>
@@ -36,10 +37,10 @@ static const bool enable_validation_layers = true;
 #endif
 
 static const std::vector<Vertex> vertices = {
-    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}},
+    {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+    {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+    {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}},
 };
 
 static const std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
@@ -105,6 +106,9 @@ class VulkanRenderer {
         std::vector<VkBuffer> uniform_buffers;
         std::vector<VkDeviceMemory> uniform_buffers_memory;
 
+        VkDescriptorPool descriptor_pool;
+        std::vector<VkDescriptorSet> descriptor_sets;
+
         // --- Initialization
         void init_window();
         void init_vulkan();
@@ -126,6 +130,8 @@ class VulkanRenderer {
         void create_uniform_buffers();
         void create_command_buffers();
         void create_sync_objects();
+        void create_descriptor_pool();
+        void create_descriptor_sets();
 
         // --- Update what's on the screen
         void main_loop();
@@ -158,6 +164,8 @@ class VulkanRenderer {
         void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, VkDeviceSize size);
         void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& buffer_memory);
         uint32_t find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties);
+        VkCommandBuffer begin_single_time_commands();
+        void end_single_time_commands(VkCommandBuffer command_buffer);
 
         // --- Cleanup functions
         void cleanup();
