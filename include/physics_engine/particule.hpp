@@ -13,6 +13,13 @@ class Particule {
 
     public:
         Particule();
+        Particule(
+            math::Vector3D pos,
+            math::Vector3D vel,
+            math::Vector3D accel,
+            float _inv_mass,
+            float _damping
+        );
         ~Particule();
 
         void set_position(math::Vector3D const& position);

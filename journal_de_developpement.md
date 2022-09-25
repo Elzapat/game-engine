@@ -11,3 +11,7 @@
 * Début de l'implémentation d'un renderer basé sur Vulkan (13 septembre 2022 jusqu'en 2094, au moins)
   * https://vulkan-tutorial.com
   * https://registry.khronos.org/vulkan/
+* Implémentation de l'UI avec `ImGui` intégré à Vulkan
+    * https://github.com/ocornut/imgui/blob/master/examples/example_glfw_vulkan/main.cpp
+    * https://github.com/felipunky/DigitalSignature/blob/master/DigitalSignature/main.cpp
+* Implémentation de `PhysicWorld`

@@ -1,6 +1,8 @@
 #include "../../include/vulkan_renderer/vulkan_renderer.hpp"
 
 void VulkanRenderer::run() {
+    // Add one particule and use it for testing while instancing is being implemented
+    this->physic_world.add_particule(Particule());
     this->init_window();
     this->init_vulkan();
     this->init_imgui();
@@ -9,9 +11,19 @@ void VulkanRenderer::run() {
 }
 
 void VulkanRenderer::main_loop() {
+    using namespace std::chrono;
+
+    auto last_frame = high_resolution_clock::now();
+    auto current_frame = high_resolution_clock::now();
+
     while (!glfwWindowShouldClose(this->window)) {
+        current_frame = high_resolution_clock::now();
+        float dt = duration<float, seconds::period>(current_frame - last_frame).count();
+        last_frame = current_frame;
+
         glfwPollEvents();
         this->draw_frame();
+        this->physic_world.update(dt);
     }
 
     vkDeviceWaitIdle(this->device);
@@ -153,7 +165,7 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
     );
 
     vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-    ui.draw();
+    ui.draw(1, this->physic_world.get_particules_ref()[0]);
     ui.render(command_buffer);
 
     vkCmdEndRenderPass(command_buffer);
@@ -171,10 +183,16 @@ void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
     float time = duration<float, seconds::period>(current_time - start_time).count();
 
     UniformBufferObject ubo {};
-    ubo.model =
-        glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    // !Temporarily using the one particule while I learn instancing or a way to draw multiple objects
+    // Also temporarily update
+    Particule& particule = this->physic_world.get_particules_ref()[0];
+    math::Vector3D pos = particule.get_position();
+    /* std::cout << pos << std::endl; */
+
+    ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(pos.get_x(), pos.get_y(), pos.get_z()));
+    /* * glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)); */
     ubo.view = glm::lookAt(
-        glm::vec3(2.0f, 2.0f, 2.0f),
+        glm::vec3(10.0f, 0.0f, 0.5f),
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f, 0.0f, 1.0f)
     );

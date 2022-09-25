@@ -9,8 +9,12 @@ class PhysicWorld {
     public:
         void update(float dt);
 
+        void add_particule(const Particule particule);
+
+        std::vector<Particule> get_particules() const;
+        std::vector<Particule>& get_particules_ref();
+
     private:
-        float gravity = 9.8f;
         std::vector<Particule> particules;
 };
 

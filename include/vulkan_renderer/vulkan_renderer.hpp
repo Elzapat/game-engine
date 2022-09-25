@@ -36,14 +36,14 @@ static const bool enable_validation_layers = false;
 static const bool enable_validation_layers = true;
 #endif
 
-static const std::vector<Vertex> vertices = {
-    {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
+static std::vector<Vertex> vertices = {
+    {{-0.5f, -0.5f, -0.0f}, {1.0f, 0.0f, 0.0f}},
     {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
     {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
     {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}},
 };
 
-static const std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
+static const std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0, 0};
 
 void check_vk_result(VkResult result, std::string message);
 VkResult create_debug_utils_messenger_EXT(
@@ -64,6 +64,8 @@ class VulkanRenderer {
 
     private:
         Ui ui;
+        PhysicWorld physic_world;
+
         GLFWwindow* window;
         VkInstance instance;
         VkDebugUtilsMessengerEXT debug_messenger;

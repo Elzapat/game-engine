@@ -1,6 +1,25 @@
 #include "../../include/physics_engine/particule.hpp"
 
-Particule::Particule() {}
+Particule::Particule() :
+    position(math::Vector3D()),
+    velocity(math::Vector3D()),
+    acceleration(math::Vector3D()),
+    inv_mass(0.0f),
+    damping(0.9999f) {}
+
+Particule::Particule(
+    math::Vector3D pos,
+    math::Vector3D vel,
+    math::Vector3D accel,
+    float _inv_mass,
+    float _damping
+) :
+    position(pos),
+    velocity(vel),
+    acceleration(accel),
+    inv_mass(_inv_mass),
+    damping(_damping) {}
+
 Particule::~Particule() {}
 
 void Particule::set_position(math::Vector3D const& position) {
@@ -49,5 +68,10 @@ void Particule::integrate(float dt) {
     /* this->velocity = (this->acceleration) * time_delta + this->velocity; */
 
     this->position += this->velocity * dt;
-    this->velocity = (this->velocity * this->damping) + (this->acceleration * dt);
+    this->velocity += (this->velocity * this->damping - this->velocity) * dt;
+    this->velocity += this->acceleration * dt;
+
+    std::cout << (this->velocity * this->damping) << std::endl;
+    std::cout << "pos: " << this->position << std::endl;
+    std::cout << "vel: " << this->velocity << std::endl;
 }

@@ -45,4 +45,8 @@ struct UniformBufferObject {
     alignas(16) glm::mat4 proj;
 };
 
+struct InstanceData {
+    math::Vector3D position;
+};
+
 #endif // RENDERER_UTILS_HPP

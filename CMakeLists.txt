@@ -30,6 +30,9 @@ add_executable(physics-engine
     src/physics_engine/particule.cpp
     include/physics_engine/particule.hpp
 
+    src/physics_engine/physic_world.cpp
+    include/physics_engine/physic_world.hpp
+
     src/vulkan_renderer/vulkan_renderer_init.cpp
     src/vulkan_renderer/vulkan_renderer_cleanup.cpp
     src/vulkan_renderer/vulkan_renderer_update.cpp

@@ -5,11 +5,16 @@
 #include "../../libs/imgui/backends/imgui_impl_glfw.h"
 #include "../../libs/glfw/include/GLFW/glfw3.h"
 
+#include "../math/vector3D.hpp"
+#include "../physics_engine/physic_world.hpp"
+#include "../physics_engine/particule.hpp"
+
 #include <vulkan/vulkan.h>
+#include <memory>
 
 class Ui {
     public:
-        void draw();
+        void draw(int n_particules, Particule& particule);
         void render(VkCommandBuffer& command_buffer);
         ImGui_ImplVulkanH_Window* get_window_data();
 
