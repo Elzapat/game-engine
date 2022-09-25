@@ -15,11 +15,17 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 # Put the compiled binaries in their respective directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 add_subdirectory(libs)
 
 find_package(Vulkan REQUIRED)
+
+if(WIN32)
+    find_library(VULKAN NAMES Vulkan PATHS "C:/VulkanSDK/1.3.224.1")
+    find_library(GLFW NAMES glfw PATHS "libs/glfw")
+    find_library(GLM NAMES glm PATHS "libs/glm")
+endif()
 
 add_executable(physics-engine
     src/main.cpp
@@ -50,7 +56,7 @@ add_executable(physics-engine
 find_program(glslc_exe NAMES glslc HINTS Vulkan::glslc)
 
 set(SHADER_SOURCE_DIR src/shaders)
-set(SHADER_BINARY_DIR bin/shaders)
+set(SHADER_BINARY_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders)
 
 file(MAKE_DIRECTORY ${SHADER_BINARY_DIR})
 file(GLOB SHADERS ${SHADER_SOURCE_DIR}/*.vert ${SHADER_SOURCE_DIR}/*.frag)
@@ -71,13 +77,16 @@ endforeach()
 add_custom_target(shaders ALL DEPENDS ${SPV_SHADERS})
 
 # Libraries to link against
-target_include_directories(physics-engine
-    PUBLIC ${VULKAN_INCLUDE_DIRS}
-)
+include_directories(physics-engine PUBLIC ${VULKAN_INCLUDE_DIRS})
 
 target_link_libraries(physics-engine
     m
     glfw
     imgui
-    vulkan
-) 
+)
+
+if(WIN32)
+    target_link_libraries(physics-engine Vulkan::Vulkan)
+else()
+    target_link_libraries(physics-engine vulkan)
+endif()

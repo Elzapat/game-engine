@@ -7,3 +7,5 @@ physics-engine
 libs/libimgui.a
 bin
 imgui.ini
+build
+.vscode

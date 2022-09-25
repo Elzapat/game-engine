@@ -1,6 +1,8 @@
 #ifndef RENDERER_UTILS_HPP
 #define RENDERER_UTILS_HPP
 
+// clang-format off
+
 #include "../../include/math/vector3D.hpp"
 
 #include <vector>
