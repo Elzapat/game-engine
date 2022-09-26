@@ -3,7 +3,7 @@ Auteurs : Morgan Van Amerongen, Benoit Lorcy, Tom Gibert
 
 ## Pré-requis pour compilation sous Windows
 * VulkanSDK 1.3.224.1 (https://vulkan.lunarg.com/sdk/home#windows)
-* MSYS2 (https://www.msys2.org/) (pour installer mingz)
+* MSYS2 (https://www.msys2.org/) (pour installer mingw)
 * MinGW (installation avec MSYS)
     * `pacman -S mingw-w64-x86_64-gcc`
     * `pacman -S mingw-w64-x86_64-cmake`
