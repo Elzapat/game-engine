@@ -1,4 +1,5 @@
 # Projet de session du cours Mathématiques et physique pour le jeu vidéo
+Auteurs : Morgan Van Amerongen, Benoit Lorcy, Tom Gibert
 
 ## Pré-requis pour compilation sous Windows
 * VulkanSDK 1.3.224.1 (https://vulkan.lunarg.com/sdk/home#windows)

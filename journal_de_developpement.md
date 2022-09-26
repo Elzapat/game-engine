@@ -15,3 +15,4 @@
     * https://github.com/ocornut/imgui/blob/master/examples/example_glfw_vulkan/main.cpp
     * https://github.com/felipunky/DigitalSignature/blob/master/DigitalSignature/main.cpp
 * Implémentation de `PhysicWorld`
+* Controle des attributs d'une `Particule` avec des sliders
