@@ -1,6 +1,6 @@
 #ifndef PARTICULE_HPP
 #define PARTICULE_HPP
-
+// clang-format off
 #include "../math/vector3D.hpp"
 
 /*
