@@ -19,6 +19,7 @@
 ## Utilisation
 `.\bin\physics-engine.exe` en étant dans la racine du projet (important pour que le programme puisse trouver les shaders compilés).  
 L'interface en haut à droite de l'écran permet de controller le damping, la position, la vélocité et l'accélération d'une particule. Il n'est pas encore possible de faire apparaitre d'autres.
-<div align="center">
-![Interface graphique du programme](./assets/demo.png "Interface graphique du programme")
-</div>
+<p align="center">
+    <img src="./assets/demo.png">
+</p>
+

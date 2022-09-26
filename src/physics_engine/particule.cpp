@@ -63,15 +63,7 @@ float Particule::get_damping() const {
 }
 
 void Particule::integrate(float dt) {
-    /* this->position = (this->acceleration) * pow(time_delta, 2) * 0.5 + this->velocity * time_delta */
-    /*     + this->position; */
-    /* this->velocity = (this->acceleration) * time_delta + this->velocity; */
-
     this->position += this->velocity * dt;
     this->velocity += (this->velocity * this->damping - this->velocity) * dt;
     this->velocity += this->acceleration * dt;
-
-    std::cout << (this->velocity * this->damping) << std::endl;
-    std::cout << "pos: " << this->position << std::endl;
-    std::cout << "vel: " << this->velocity << std::endl;
 }

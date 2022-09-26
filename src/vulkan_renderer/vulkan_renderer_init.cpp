@@ -633,7 +633,6 @@ void VulkanRenderer::create_uniform_buffers() {
     uniform_buffers_memory.resize(MAX_FRAMES_IN_FLIGHT);
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        std::cout << i << std::endl;
         create_buffer(
             buffer_size,
             VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,

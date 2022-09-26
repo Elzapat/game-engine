@@ -54,9 +54,9 @@ void Ui::draw(int n_particules, Particule& particule) {
         particule.set_acceleration(math::Vector3D(accel_x, accel_y, accel_z));
     }
 
-    ImGui::Text("%d particules", n_particules);
-
-    if (ImGui::Button("Spawn new particule")) {}
+    /* ImGui::Text("%d particules", n_particules); */
+    /*  */
+    /* if (ImGui::Button("Spawn new particule")) {} */
 
     ImGui::End();
 
