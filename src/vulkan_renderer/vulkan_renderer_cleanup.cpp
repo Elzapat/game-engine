@@ -1,11 +1,15 @@
 #include "../../include/vulkan_renderer/vulkan_renderer.hpp"
 
 void VulkanRenderer::cleanup() {
-    this->clean_swapchain();
+    this->cleanup_swapchain();
 
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+
+    vkDestroyImageView(this->device, this->depth_image_view, nullptr);
+    vkDestroyImage(this->device, this->depth_image, nullptr);
+    vkFreeMemory(this->device, this->depth_image_memory, nullptr);
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroyBuffer(this->device, this->uniform_buffers[i], nullptr);
@@ -45,7 +49,7 @@ void VulkanRenderer::cleanup() {
     glfwTerminate();
 }
 
-void VulkanRenderer::clean_swapchain() {
+void VulkanRenderer::cleanup_swapchain() {
     vkDestroySwapchainKHR(this->device, this->swapchain, nullptr);
 
     for (auto image_view : swapchain_image_views) {

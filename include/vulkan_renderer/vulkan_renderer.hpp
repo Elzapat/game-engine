@@ -17,6 +17,9 @@
 #include <cstring>
 #include <fstream>
 #include <chrono>
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -37,13 +40,18 @@ static const bool enable_validation_layers = true;
 #endif
 
 static std::vector<Vertex> vertices = {
-    {{-0.5f, -0.5f, -0.0f}, {1.0f, 0.0f, 0.0f}},
-    {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-    {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
-    {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+    {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, -0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+    {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}},
+    {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}},
+    {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}},
 };
 
-static const std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0, 0};
+static const std::vector<uint16_t> indices = {
+    0, 1, 2, 2, 3, 0, // Top side
+    2, 1, 4, 4, 5, 1// Front side
+};
 
 void check_vk_result(VkResult result, std::string message);
 VkResult create_debug_utils_messenger_EXT(
@@ -111,6 +119,10 @@ class VulkanRenderer {
         VkDescriptorPool descriptor_pool;
         std::vector<VkDescriptorSet> descriptor_sets;
 
+        VkImage depth_image;
+        VkDeviceMemory depth_image_memory;
+        VkImageView depth_image_view;
+
         // --- Initialization
         void init_window();
         void init_vulkan();
@@ -134,6 +146,7 @@ class VulkanRenderer {
         void create_sync_objects();
         void create_descriptor_pool();
         void create_descriptor_sets();
+        void create_depth_resources();
 
         // --- Update what's on the screen
         void main_loop();
@@ -168,10 +181,16 @@ class VulkanRenderer {
         uint32_t find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties);
         VkCommandBuffer begin_single_time_commands();
         void end_single_time_commands(VkCommandBuffer command_buffer);
+        VkFormat find_supported_format(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+        VkFormat find_depth_format();
+        void create_image(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& image_memory);
+        VkImageView create_image_view(VkImage image, VkFormat format, VkImageAspectFlags aspect_flags);
+        void transition_image_layout(VkImage image, VkFormat format, VkImageLayout old_layout, VkImageLayout new_layout);
+
 
         // --- Cleanup functions
         void cleanup();
-        void clean_swapchain();
+        void cleanup_swapchain();
 
         // --- Debug functions
         static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(

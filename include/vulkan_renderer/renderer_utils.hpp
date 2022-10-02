@@ -16,6 +16,7 @@
 
 std::vector<char> read_file(const std::string& filename);
 void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, VkDeviceSize size);
+bool has_stencil_component(VkFormat format);
 
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphics_family;
