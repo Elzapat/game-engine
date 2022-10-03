@@ -2,7 +2,7 @@
 
 void VulkanRenderer::run() {
     // Add one particule and use it for testing while instancing is being implemented
-    this->physic_world.add_particule(Particule());
+    this->physic_world.add_particle(Particle());
     this->init_window();
     this->init_vulkan();
     this->init_imgui();
@@ -168,7 +168,7 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
     );
 
     vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-    ui.draw(1, this->physic_world.get_particules_ref()[0]);
+    ui.draw(1, this->physic_world.get_particles_ref()[0]);
     ui.render(command_buffer);
 
     vkCmdEndRenderPass(command_buffer);
@@ -188,8 +188,8 @@ void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
     UniformBufferObject ubo {};
     // !Temporarily using the one particule while I learn instancing or a way to draw multiple objects
     // Also temporarily update
-    Particule& particule = this->physic_world.get_particules_ref()[0];
-    math::Vector3D pos = particule.get_position();
+    Particle& particle = this->physic_world.get_particles_ref()[0];
+    math::Vector3D pos = particle.get_position();
     /* std::cout << pos << std::endl; */
 
     ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(pos.get_x(), pos.get_y(), pos.get_z()));

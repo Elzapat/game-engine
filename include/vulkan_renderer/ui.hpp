@@ -7,14 +7,14 @@
 
 #include "../math/vector3D.hpp"
 #include "../physics_engine/physic_world.hpp"
-#include "../physics_engine/particule.hpp"
+#include "../physics_engine/particle.hpp"
 
 #include <vulkan/vulkan.h>
 #include <memory>
 
 class Ui {
     public:
-        void draw(int n_particules, Particule& particule);
+        void draw(int n_particules, Particle& particule);
         void render(VkCommandBuffer& command_buffer);
         ImGui_ImplVulkanH_Window* get_window_data();
 

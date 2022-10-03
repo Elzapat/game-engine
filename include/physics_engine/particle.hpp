@@ -6,21 +6,21 @@
 /*
 * Class representing physical particule
 */
-class Particule {
+class Particle {
     private:
         math::Vector3D position, velocity, acceleration;
         float inv_mass, damping;
 
     public:
-        Particule();
-        Particule(
+        Particle();
+        Particle(
             math::Vector3D pos,
             math::Vector3D vel,
             math::Vector3D accel,
             float _inv_mass,
             float _damping
         );
-        ~Particule();
+        ~Particle();
 
         void set_position(math::Vector3D const& position);
         void set_velocity(math::Vector3D const& velocity);

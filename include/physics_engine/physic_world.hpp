@@ -3,19 +3,19 @@
 
 #include <vector>
 
-#include "particule.hpp"
+#include "particle.hpp"
 
 class PhysicWorld {
     public:
         void update(float dt);
 
-        void add_particule(const Particule particule);
+        void add_particle(const Particle particle);
 
-        std::vector<Particule> get_particules() const;
-        std::vector<Particule>& get_particules_ref();
+        std::vector<Particle> get_particles() const;
+        std::vector<Particle>& get_particles_ref();
 
     private:
-        std::vector<Particule> particules;
+        std::vector<Particle> particles;
 };
 
 #endif // PHYSIC_WORLD_HPP
