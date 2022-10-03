@@ -10,9 +10,14 @@ class ParticleAnchoredSpring : ParticleForceGenerator {
         float rest_length;
 
     public:
-        ParticleAnchoredSpring(math::Vector3D _anchor, float _k, float _rest_length);
+        ParticleAnchoredSpring(
+            math::Vector3D _anchor,
+            float _k,
+            float _rest_length
+        );
+        ~ParticleAnchoredSpring();
 
-        void UpdateForce(Particle* particle, float duration);
+        void update_force(Particle* particle, float duration);
 };
 
 #endif

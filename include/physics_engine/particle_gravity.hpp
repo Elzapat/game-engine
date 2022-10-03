@@ -9,8 +9,9 @@ class ParticleGravity : ParticleForceGenerator {
 
     public:
         ParticleGravity(math::Vector3D _gravity);
+        ~ParticleGravity();
 
-        void UpdateForce(Particle* particle, float duration);
+        void update_force(Particle* particle, float duration);
 };
 
 #endif

@@ -10,9 +10,14 @@ class ParticleSpring : ParticleForceGenerator {
         float rest_length;
 
     public:
-        ParticleSpring(Particle* other, float k, float rest_length);
-        
-        void UpdateForce(Particle* particle, float duration);
+        ParticleSpring(
+            Particle* _other,
+            float _k,
+            float _rest_length
+        );
+        ~ParticleSpring();
+
+        void update_force(Particle* particle, float duration);
 };
 
 #endif

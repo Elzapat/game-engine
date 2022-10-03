@@ -12,9 +12,14 @@ class ParticleBuoyancy : ParticleForceGenerator {
     float liquid_density;
 
     public:
-        ParticleBuoyancy(float max_depth, float volume, float water_height, float liquid_density);
+        ParticleBuoyancy(
+            float _max_depth,
+            float _volume,
+            float _water_height,
+            float _liquid_density);
+        ~ParticleBuoyancy();
         
-        void UpdateForce(Particle* particle, float duration);
+        void update_force(Particle* particle, float duration);
 };
 
 #endif
