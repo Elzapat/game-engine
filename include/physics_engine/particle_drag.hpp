@@ -9,7 +9,9 @@ class ParticleDrag : ParticleForceGenerator {
         float k2;
     
     public:
-        void UpdateForce(Particle* particle, float duration);
+        ParticleDrag(float _k1, float _k2);
+        ~ParticleDrag();
+        void update_force(Particle* particle, float duration);
 };
 
 #endif
