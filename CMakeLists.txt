@@ -33,11 +33,20 @@ add_executable(physics-engine
     src/math/vector3D.cpp
     include/math/vector3D.hpp
 
-    src/physics_engine/particule.cpp
-    include/physics_engine/particule.hpp
+    src/physics_engine/particle.cpp
+    include/physics_engine/particle.hpp
 
     src/physics_engine/physic_world.cpp
     include/physics_engine/physic_world.hpp
+
+    src/physics_engine/particle_force_registry.cpp
+    include/physics_engine/particle_force_registry.hpp
+
+    src/physics_engine/particle_force_generator.cpp
+    include/physics_engine/particle_force_generator.hpp
+
+    src/physics_engine/particle_drag.cpp
+    include/physics_engine/particle_drag.hpp
 
     src/vulkan_renderer/vulkan_renderer_init.cpp
     src/vulkan_renderer/vulkan_renderer_cleanup.cpp

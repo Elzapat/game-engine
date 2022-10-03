@@ -11,7 +11,6 @@ Auteurs : Morgan Van Amerongen, Benoit Lorcy, Tom Gibert
   - `pacman -S mingw-w64-x86_64-cmake`
   - on ajoute `C:\msys64\mingw64\bin` au PATH windows
   - redémarer le PC
-- CMake 3 (https://cmake.org/download/)
 - Clone la repository en faisant attention d'inclure les submodules :
   - `git clone --recursive https://github.com/Elzapat/video-game-physics-engine`
   - Ou si la repository est déjà clonée : `git submodule update --init --recursive`
