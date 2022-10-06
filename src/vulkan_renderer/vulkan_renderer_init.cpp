@@ -39,7 +39,6 @@ void VulkanRenderer::init_vulkan() {
 void VulkanRenderer::init_imgui() {
     QueueFamilyIndices indices = this->find_queue_families(this->physical_device);
 
-    IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
@@ -293,15 +292,11 @@ void VulkanRenderer::create_image_views() {
     this->swapchain_image_views.resize(swapchain_images.size());
 
     for (size_t i = 0; i < this->swapchain_images.size(); i++) {
-        this->swapchain_image_views.resize(swapchain_images.size());
-
-        for (size_t i = 0; i < this->swapchain_images.size(); i++) {
-            this->swapchain_image_views[i] = this->create_image_view(
-                this->swapchain_images[i],
-                this->swapchain_image_format,
-                VK_IMAGE_ASPECT_COLOR_BIT
-            );
-        }
+        this->swapchain_image_views[i] = this->create_image_view(
+            this->swapchain_images[i],
+            this->swapchain_image_format,
+            VK_IMAGE_ASPECT_COLOR_BIT
+        );
     }
 }
 
@@ -421,8 +416,8 @@ void VulkanRenderer::create_graphics_pipeline() {
     rasterizer.rasterizerDiscardEnable = VK_FALSE;
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizer.lineWidth = 1.0f;
-    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-    rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    rasterizer.cullMode = VK_CULL_MODE_NONE;
+    rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
     rasterizer.depthBiasEnable = VK_FALSE;
     rasterizer.depthBiasConstantFactor = 0.0f;
     rasterizer.depthBiasClamp = 0.0f;
@@ -530,10 +525,21 @@ void VulkanRenderer::create_descriptor_set_layout() {
     ubo_layout_binding.descriptorCount = 1;
     ubo_layout_binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
+    VkDescriptorSetLayoutBinding ubo_dyn_layout_binding {};
+    ubo_dyn_layout_binding.binding = 1;
+    ubo_dyn_layout_binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+    ubo_dyn_layout_binding.descriptorCount = 1;
+    ubo_dyn_layout_binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    std::array<VkDescriptorSetLayoutBinding, 2> set_layout_bindings = {
+        ubo_layout_binding,
+        ubo_dyn_layout_binding,
+    };
+
     VkDescriptorSetLayoutCreateInfo layout_info {};
     layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layout_info.bindingCount = 1;
-    layout_info.pBindings = &ubo_layout_binding;
+    layout_info.bindingCount = static_cast<uint32_t>(set_layout_bindings.size());
+    layout_info.pBindings = set_layout_bindings.data();
 
     VkResult result = vkCreateDescriptorSetLayout(
         this->device,
@@ -651,20 +657,35 @@ void VulkanRenderer::create_index_buffer() {
 }
 
 void VulkanRenderer::create_uniform_buffers() {
-    VkDeviceSize buffer_size = sizeof(UniformBufferObject);
+    this->create_buffer(
+        sizeof(UboVS),
+        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+        this->uniform_buffers.view,
+        this->uniform_buffers.view_buffer_memory
+    );
 
-    uniform_buffers.resize(MAX_FRAMES_IN_FLIGHT);
-    uniform_buffers_memory.resize(MAX_FRAMES_IN_FLIGHT);
+    VkPhysicalDeviceProperties properties {};
+    vkGetPhysicalDeviceProperties(this->physical_device, &properties);
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        create_buffer(
-            buffer_size,
-            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-            this->uniform_buffers[i],
-            this->uniform_buffers_memory[i]
-        );
+    size_t min_ubo_alignment = properties.limits.minUniformBufferOffsetAlignment;
+    this->dynamic_alignment = sizeof(glm::mat4);
+
+    if (min_ubo_alignment > 0) {
+        this->dynamic_alignment =
+            (this->dynamic_alignment + min_ubo_alignment - 1) & ~(min_ubo_alignment - 1);
     }
+
+    size_t buffer_size = MAX_OBJECT_INSTANCES * sizeof(glm::mat4);
+    this->ubo_data_dynamic.model = (glm::mat4*)aligned_alloc(this->dynamic_alignment, buffer_size);
+
+    this->create_buffer(
+        buffer_size,
+        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+        this->uniform_buffers.dynamic,
+        this->uniform_buffers.dynamic_buffer_memory
+    );
 }
 
 void VulkanRenderer::create_command_buffers() {
@@ -716,11 +737,13 @@ void VulkanRenderer::create_sync_objects() {
 }
 
 void VulkanRenderer::create_descriptor_pool() {
-    std::array<VkDescriptorPoolSize, 2> pool_sizes = {};
+    std::array<VkDescriptorPoolSize, 3> pool_sizes = {};
     pool_sizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     pool_sizes[0].descriptorCount = static_cast<uint32_t>(this->swapchain_images.size());
     pool_sizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     pool_sizes[1].descriptorCount = static_cast<uint32_t>(this->swapchain_images.size()) * 2;
+    pool_sizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+    pool_sizes[2].descriptorCount = 1;
 
     VkDescriptorPoolCreateInfo pool_info {};
     pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -734,35 +757,50 @@ void VulkanRenderer::create_descriptor_pool() {
 }
 
 void VulkanRenderer::create_descriptor_sets() {
-    std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, this->descriptor_set_layout);
     VkDescriptorSetAllocateInfo alloc_info {};
     alloc_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     alloc_info.descriptorPool = this->descriptor_pool;
-    alloc_info.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-    alloc_info.pSetLayouts = layouts.data();
+    alloc_info.descriptorSetCount = 1;
+    alloc_info.pSetLayouts = &this->descriptor_set_layout;
 
-    this->descriptor_sets.resize(MAX_FRAMES_IN_FLIGHT);
-    VkResult result =
-        vkAllocateDescriptorSets(this->device, &alloc_info, this->descriptor_sets.data());
+    VkResult result = vkAllocateDescriptorSets(this->device, &alloc_info, &this->descriptor_set);
     check_vk_result(result, "Failed to allocate descriptor sets");
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        VkDescriptorBufferInfo buffer_info {};
-        buffer_info.buffer = this->uniform_buffers[i];
-        buffer_info.offset = 0;
-        buffer_info.range = sizeof(UniformBufferObject);
+    std::array<VkWriteDescriptorSet, 2> descriptor_writes {};
 
-        VkWriteDescriptorSet descriptor_write {};
-        descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptor_write.dstSet = this->descriptor_sets[i];
-        descriptor_write.dstBinding = 0;
-        descriptor_write.dstArrayElement = 0;
-        descriptor_write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        descriptor_write.descriptorCount = 1;
-        descriptor_write.pBufferInfo = &buffer_info;
+    VkDescriptorBufferInfo buffer_info {};
+    buffer_info.buffer = this->uniform_buffers.view;
+    buffer_info.offset = 0;
+    buffer_info.range = sizeof(UboVS);
 
-        vkUpdateDescriptorSets(this->device, 1, &descriptor_write, 0, nullptr);
-    }
+    descriptor_writes[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptor_writes[0].dstSet = this->descriptor_set;
+    descriptor_writes[0].dstBinding = 0;
+    descriptor_writes[0].dstArrayElement = 0;
+    descriptor_writes[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptor_writes[0].descriptorCount = 1;
+    descriptor_writes[0].pBufferInfo = &buffer_info;
+
+    VkDescriptorBufferInfo dyn_buffer_info {};
+    dyn_buffer_info.buffer = this->uniform_buffers.dynamic;
+    dyn_buffer_info.offset = 0;
+    dyn_buffer_info.range = sizeof(glm::mat4*);
+
+    descriptor_writes[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptor_writes[1].dstSet = this->descriptor_set;
+    descriptor_writes[1].dstBinding = 1;
+    descriptor_writes[1].dstArrayElement = 0;
+    descriptor_writes[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+    descriptor_writes[1].descriptorCount = 1;
+    descriptor_writes[1].pBufferInfo = &dyn_buffer_info;
+
+    vkUpdateDescriptorSets(
+        this->device,
+        static_cast<uint32_t>(descriptor_writes.size()),
+        descriptor_writes.data(),
+        0,
+        nullptr
+    );
 }
 
 void VulkanRenderer::create_depth_resources() {

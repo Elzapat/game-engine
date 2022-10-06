@@ -1,5 +1,9 @@
 #include "../../include/vulkan_renderer/vulkan_renderer.hpp"
 
+VulkanRenderer::~VulkanRenderer() {
+    /* this->cleanup(); */
+}
+
 void VulkanRenderer::cleanup() {
     this->cleanup_swapchain();
 
@@ -11,10 +15,10 @@ void VulkanRenderer::cleanup() {
     vkDestroyImage(this->device, this->depth_image, nullptr);
     vkFreeMemory(this->device, this->depth_image_memory, nullptr);
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroyBuffer(this->device, this->uniform_buffers[i], nullptr);
-        vkFreeMemory(this->device, this->uniform_buffers_memory[i], nullptr);
-    }
+    vkDestroyBuffer(this->device, this->uniform_buffers.view, nullptr);
+    vkFreeMemory(this->device, this->uniform_buffers.view_buffer_memory, nullptr);
+    vkDestroyBuffer(this->device, this->uniform_buffers.dynamic, nullptr);
+    vkFreeMemory(this->device, this->uniform_buffers.dynamic_buffer_memory, nullptr);
 
     vkDestroyDescriptorPool(this->device, this->descriptor_pool, nullptr);
     vkDestroyDescriptorSetLayout(this->device, this->descriptor_set_layout, nullptr);
@@ -50,6 +54,10 @@ void VulkanRenderer::cleanup() {
 }
 
 void VulkanRenderer::cleanup_swapchain() {
+    vkDestroyImageView(this->device, this->depth_image_view, nullptr);
+    vkDestroyImage(this->device, this->depth_image, nullptr);
+    vkFreeMemory(this->device, this->depth_image_memory, nullptr);
+
     vkDestroySwapchainKHR(this->device, this->swapchain, nullptr);
 
     for (auto image_view : swapchain_image_views) {

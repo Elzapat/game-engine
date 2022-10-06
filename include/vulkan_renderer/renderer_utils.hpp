@@ -13,6 +13,7 @@
 #include <array>
 #include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
+#include <memory>
 
 std::vector<char> read_file(const std::string& filename);
 void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, VkDeviceSize size);
@@ -42,10 +43,29 @@ struct Vertex {
 };
 
 #include <glm/glm.hpp>
+/*
 struct UniformBufferObject {
     alignas(16) glm::mat4 model;
     alignas(16) glm::mat4 view;
     alignas(16) glm::mat4 proj;
+};
+*/
+
+struct UniformBuffers {
+    VkBuffer view;
+    VkDeviceMemory view_buffer_memory;
+
+    VkBuffer dynamic;
+    VkDeviceMemory dynamic_buffer_memory;
+};
+
+struct UboVS {
+    glm::mat4 view;
+    glm::mat4 projection;
+};
+
+struct UboDataDynamic {
+    glm::mat4* model;
 };
 
 struct InstanceData {

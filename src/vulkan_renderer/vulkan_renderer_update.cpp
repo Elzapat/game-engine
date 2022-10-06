@@ -7,7 +7,6 @@ void VulkanRenderer::run() {
     this->init_vulkan();
     this->init_imgui();
     this->main_loop();
-    this->cleanup();
 }
 
 void VulkanRenderer::main_loop() {
@@ -156,18 +155,23 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
 
     vkCmdBindIndexBuffer(command_buffer, this->index_buffer, 0, VK_INDEX_TYPE_UINT16);
 
-    vkCmdBindDescriptorSets(
-        command_buffer,
-        VK_PIPELINE_BIND_POINT_GRAPHICS,
-        this->pipeline_layout,
-        0,
-        1,
-        &descriptor_sets[this->current_frame],
-        0,
-        nullptr
-    );
+    for (uint32_t j = 0; j < MAX_OBJECT_INSTANCES; j++) {
+        uint32_t dynamic_offset = j * static_cast<uint32_t>(this->dynamic_alignment);
 
-    vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+        vkCmdBindDescriptorSets(
+            command_buffer,
+            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            this->pipeline_layout,
+            0,
+            1,
+            &this->descriptor_set,
+            1,
+            &dynamic_offset
+        );
+
+        vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+    }
+
     ui.draw(1, this->physic_world.get_particles_ref()[0]);
     ui.render(command_buffer);
 
@@ -178,48 +182,79 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
 }
 
 void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
-    using namespace std::chrono;
+    static uint32_t animation_timer = 0;
+    uint32_t dim = static_cast<uint32_t>(pow(MAX_OBJECT_INSTANCES, (1.0f / 3.0f)));
+    glm::vec3 offset(5.0f);
 
-    static auto start_time = high_resolution_clock::now();
+    for (uint32_t x = 0; x < dim; x++) {
+        for (uint32_t y = 0; y < dim; y++) {
+            for (uint32_t z = 0; z < dim; z++) {
+                uint32_t index = x * dim * dim + y * dim + z;
 
-    auto current_time = high_resolution_clock::now();
-    float time = duration<float, seconds::period>(current_time - start_time).count();
+                // Aligned offset
+                glm::mat4* modelMat = (glm::mat4*)((
+                    (uint64_t)this->ubo_data_dynamic.model + (index * this->dynamic_alignment)
+                ));
 
-    UniformBufferObject ubo {};
-    // !Temporarily using the one particule while I learn instancing or a way to draw multiple objects
-    // Also temporarily update
-    Particle& particle = this->physic_world.get_particles_ref()[0];
-    math::Vector3D pos = particle.get_position();
-    /* std::cout << pos << std::endl; */
+                // Update matrices
+                glm::vec3 pos = glm::vec3(
+                    -((dim * offset.x) / 2.0f) + offset.x / 2.0f + x * offset.x,
+                    -((dim * offset.y) / 2.0f) + offset.y / 2.0f + y * offset.y,
+                    -((dim * offset.z) / 2.0f) + offset.z / 2.0f + z * offset.z
+                );
+                *modelMat = glm::translate(glm::mat4(1.0f), pos);
+                *modelMat = glm::rotate(*modelMat, 45.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+                *modelMat = glm::rotate(*modelMat, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+                *modelMat = glm::rotate(*modelMat, 15.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+            }
+        }
+    }
 
-    ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(pos.get_x(), pos.get_y(), pos.get_z()));
-    /* * glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)); */
-    ubo.view = glm::lookAt(
-        glm::vec3(10.0f, 0.0f, 0.5f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 0.0f, 1.0f)
+    void* data;
+    vkMapMemory(
+        this->device,
+        this->uniform_buffers.dynamic_buffer_memory,
+        0,
+        MAX_OBJECT_INSTANCES * sizeof(glm::mat4),
+        0,
+        &data
     );
-    ubo.proj = glm::perspective(
+    memcpy(data, this->ubo_data_dynamic.model, MAX_OBJECT_INSTANCES * sizeof(glm::mat4));
+    VkMappedMemoryRange memory_range = {};
+    memory_range.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+    memory_range.memory = this->uniform_buffers.dynamic_buffer_memory;
+    memory_range.offset = 0;
+    memory_range.size = MAX_OBJECT_INSTANCES * sizeof(glm::mat4);
+
+    vkFlushMappedMemoryRanges(this->device, 1, &memory_range);
+
+    vkUnmapMemory(this->device, this->uniform_buffers.dynamic_buffer_memory);
+
+    UboVS ubo_vs {};
+    ubo_vs.projection = glm::perspective(
         glm::radians(45.0f),
         this->swapchain_extent.width / (float)this->swapchain_extent.height,
         0.1f,
         10.0f
     );
-    // flip Y axis because GLM was made for OpenGL
-    ubo.proj[1][1] *= -1;
+    ubo_vs.view = glm::lookAt(
+        glm::vec3(this->ui.camera_x, this->ui.camera_y, this->ui.camera_z),
+        glm::vec3(5.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 1.0f)
+    );
 
-    void* data;
     vkMapMemory(
         this->device,
-        this->uniform_buffers_memory[current_image],
+        this->uniform_buffers.view_buffer_memory,
         0,
-        sizeof(ubo),
+        sizeof(ubo_vs),
         0,
         &data
     );
-    memcpy(data, &ubo, sizeof(ubo));
-    vkUnmapMemory(this->device, this->uniform_buffers_memory[current_image]);
+    memcpy(data, &ubo_vs, sizeof(ubo_vs));
+    vkUnmapMemory(this->device, this->uniform_buffers.view_buffer_memory);
 }
+
 void VulkanRenderer::framebuffer_resize_callback(GLFWwindow* window, int width, int height) {
     auto app = reinterpret_cast<VulkanRenderer*>(glfwGetWindowUserPointer(window));
     app->framebuffer_resized = true;

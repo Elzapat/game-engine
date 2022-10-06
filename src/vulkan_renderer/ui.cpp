@@ -54,6 +54,12 @@ void Ui::draw(int n_particles, Particle& particle) {
         particle.set_acceleration(math::Vector3D(accel_x, accel_y, accel_z));
     }
 
+    if (ImGui::CollapsingHeader("Camera")) {
+        ImGui::SliderFloat("camera_x", &this->camera_x, -20.0, 20.0);
+        ImGui::SliderFloat("camera_y", &this->camera_y, -20.0, 20.0);
+        ImGui::SliderFloat("camera_z", &this->camera_z, -20.0, 20.0);
+    }
+
     /* ImGui::Text("%d particules", n_particules); */
     /*  */
     /* if (ImGui::Button("Spawn new particule")) {} */

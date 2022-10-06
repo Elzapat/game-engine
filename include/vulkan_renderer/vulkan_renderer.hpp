@@ -17,6 +17,7 @@
 #include <cstring>
 #include <fstream>
 #include <chrono>
+#include <cstdlib>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -29,6 +30,7 @@
 static const int WIDTH = 800;
 static const int HEIGHT = 600;
 static const int MAX_FRAMES_IN_FLIGHT = 2;
+static const int MAX_OBJECT_INSTANCES = 50;
 
 static const std::vector<const char*> validation_layers = {"VK_LAYER_KHRONOS_validation"};
 static const std::vector<const char*> device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
@@ -40,17 +42,18 @@ static const bool enable_validation_layers = true;
 #endif
 
 static std::vector<Vertex> vertices = {
-    {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}},
-    {{0.5f, -0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-    {{0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-    {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}},
-    {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}},
-    {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}},
+    {{-1.0f, -1.0f,  1.0f}, {1.0f, 0.0f, 0.0f}},
+    {{ 1.0f, -1.0f,  1.0f}, {0.0f, 1.0f, 0.0f}},
+    {{ 1.0f,  1.0f,  1.0f}, {0.0f, 0.0f, 1.0f}},
+    {{-1.0f,  1.0f,  1.0f}, {0.0f, 0.0f, 0.0f}},
+    {{-1.0f, -1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}},
+    {{ 1.0f, -1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
+    {{ 1.0f,  1.0f, -1.0f}, {0.0f, 0.0f, 1.0f}},
+    {{-1.0f,  1.0f, -1.0f}, {0.0f, 0.0f, 0.0f}},
 };
 
 static const std::vector<uint16_t> indices = {
-    0, 1, 2, 2, 3, 0, // Top side
-    2, 1, 4, 4, 5, 1// Front side
+    0,1,2, 2,3,0, 1,5,6, 6,2,1, 7,6,5, 5,4,7, 4,0,3, 3,7,4, 4,5,1, 1,0,4, 3,2,6, 6,7,3
 };
 
 void check_vk_result(VkResult result, std::string message);
@@ -68,6 +71,7 @@ void destroy_debug_utils_messenger_EXT(
 
 class VulkanRenderer {
     public:
+        ~VulkanRenderer();
         void run();
 
     private:
@@ -113,11 +117,12 @@ class VulkanRenderer {
         VkBuffer index_buffer;
         VkDeviceMemory index_buffer_memory;
 
-        std::vector<VkBuffer> uniform_buffers;
-        std::vector<VkDeviceMemory> uniform_buffers_memory;
+        UniformBuffers uniform_buffers;
+        UboDataDynamic ubo_data_dynamic;
+        size_t dynamic_alignment;
 
         VkDescriptorPool descriptor_pool;
-        std::vector<VkDescriptorSet> descriptor_sets;
+        VkDescriptorSet descriptor_set;
 
         VkImage depth_image;
         VkDeviceMemory depth_image_memory;
