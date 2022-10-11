@@ -1,7 +1,15 @@
 #include "../../include/vulkan_renderer/vulkan_renderer.hpp"
 
+GLFWwindow* VulkanRenderer::init() {
+    GLFWwindow* window = this->init_window();
+    this->init_vulkan();
+    this->init_imgui();
+
+    return window;
+}
+
 // Initializes the GLFW window, without the GL API
-void VulkanRenderer::init_window() {
+GLFWwindow* VulkanRenderer::init_window() {
     glfwInit();
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -10,6 +18,8 @@ void VulkanRenderer::init_window() {
     this->window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
     glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, this->framebuffer_resize_callback);
+
+    return this->window;
 }
 
 // Initialiazes all the needed Vulkan objets
@@ -416,7 +426,7 @@ void VulkanRenderer::create_graphics_pipeline() {
     rasterizer.rasterizerDiscardEnable = VK_FALSE;
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizer.lineWidth = 1.0f;
-    rasterizer.cullMode = VK_CULL_MODE_NONE;
+    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
     rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
     rasterizer.depthBiasEnable = VK_FALSE;
     rasterizer.depthBiasConstantFactor = 0.0f;
@@ -676,8 +686,9 @@ void VulkanRenderer::create_uniform_buffers() {
             (this->dynamic_alignment + min_ubo_alignment - 1) & ~(min_ubo_alignment - 1);
     }
 
-    size_t buffer_size = MAX_OBJECT_INSTANCES * sizeof(glm::mat4);
-    this->ubo_data_dynamic.model = (glm::mat4*)aligned_alloc(this->dynamic_alignment, buffer_size);
+    size_t buffer_size = MAX_OBJECT_INSTANCES * dynamic_alignment;
+    this->ubo_data_dynamic.model =
+        (glm::mat4*)std::aligned_alloc(this->dynamic_alignment, buffer_size);
 
     this->create_buffer(
         buffer_size,

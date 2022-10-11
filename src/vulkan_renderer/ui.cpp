@@ -55,9 +55,13 @@ void Ui::draw(int n_particles, Particle& particle) {
     }
 
     if (ImGui::CollapsingHeader("Camera")) {
-        ImGui::SliderFloat("camera_x", &this->camera_x, -20.0, 20.0);
-        ImGui::SliderFloat("camera_y", &this->camera_y, -20.0, 20.0);
-        ImGui::SliderFloat("camera_z", &this->camera_z, -20.0, 20.0);
+        ImGui::SliderFloat("eye_x", &this->eye_x, -50.0, 50.0);
+        ImGui::SliderFloat("eye_y", &this->eye_y, -50.0, 50.0);
+        ImGui::SliderFloat("eye_z", &this->eye_z, -50.0, 50.0);
+
+        ImGui::SliderFloat("look_at_x", &this->look_at_x, -50.0, 50.0);
+        ImGui::SliderFloat("look_at_y", &this->look_at_y, -50.0, 50.0);
+        ImGui::SliderFloat("look_at_z", &this->look_at_z, -50.0, 50.0);
     }
 
     /* ImGui::Text("%d particules", n_particules); */

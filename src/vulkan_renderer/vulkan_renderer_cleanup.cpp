@@ -2,6 +2,7 @@
 
 VulkanRenderer::~VulkanRenderer() {
     /* this->cleanup(); */
+    vkDeviceWaitIdle(this->device);
 }
 
 void VulkanRenderer::cleanup() {

@@ -17,9 +17,12 @@ class Ui {
         void draw(int n_particules, Particle& particule);
         void render(VkCommandBuffer& command_buffer);
         ImGui_ImplVulkanH_Window* get_window_data();
-        float camera_x;
-        float camera_y;
-        float camera_z;
+        float eye_x = 0.0f;
+        float eye_y = 0.0f;
+        float eye_z = 0.0f;
+        float look_at_x = 0.0f;
+        float look_at_y = 0.0f;
+        float look_at_z = 0.0f;
 
 
     private:

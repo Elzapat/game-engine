@@ -1,31 +1,7 @@
 #include "../../include/vulkan_renderer/vulkan_renderer.hpp"
 
-void VulkanRenderer::run() {
-    // Add one particule and use it for testing while instancing is being implemented
-    this->physic_world.add_particle(Particle());
-    this->init_window();
-    this->init_vulkan();
-    this->init_imgui();
-    this->main_loop();
-}
-
-void VulkanRenderer::main_loop() {
-    using namespace std::chrono;
-
-    auto last_frame = high_resolution_clock::now();
-    auto current_frame = high_resolution_clock::now();
-
-    while (!glfwWindowShouldClose(this->window)) {
-        current_frame = high_resolution_clock::now();
-        float dt = duration<float, seconds::period>(current_frame - last_frame).count();
-        last_frame = current_frame;
-
-        glfwPollEvents();
-        this->draw_frame();
-        this->physic_world.update(dt);
-    }
-
-    vkDeviceWaitIdle(this->device);
+void VulkanRenderer::draw() {
+    this->draw_frame();
 }
 
 void VulkanRenderer::draw_frame() {
@@ -172,7 +148,8 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
         vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
     }
 
-    ui.draw(1, this->physic_world.get_particles_ref()[0]);
+    Particle temp = Particle();
+    ui.draw(1, temp);
     ui.render(command_buffer);
 
     vkCmdEndRenderPass(command_buffer);
@@ -182,32 +159,12 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
 }
 
 void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
-    static uint32_t animation_timer = 0;
-    uint32_t dim = static_cast<uint32_t>(pow(MAX_OBJECT_INSTANCES, (1.0f / 3.0f)));
-    glm::vec3 offset(5.0f);
+    for (int i = 0; i < MAX_OBJECT_INSTANCES; i++) {
+        uint32_t index = i * this->dynamic_alignment;
+        glm::mat4* model_mat = (glm::mat4*)((uint64_t)this->ubo_data_dynamic.model + index);
 
-    for (uint32_t x = 0; x < dim; x++) {
-        for (uint32_t y = 0; y < dim; y++) {
-            for (uint32_t z = 0; z < dim; z++) {
-                uint32_t index = x * dim * dim + y * dim + z;
-
-                // Aligned offset
-                glm::mat4* modelMat = (glm::mat4*)((
-                    (uint64_t)this->ubo_data_dynamic.model + (index * this->dynamic_alignment)
-                ));
-
-                // Update matrices
-                glm::vec3 pos = glm::vec3(
-                    -((dim * offset.x) / 2.0f) + offset.x / 2.0f + x * offset.x,
-                    -((dim * offset.y) / 2.0f) + offset.y / 2.0f + y * offset.y,
-                    -((dim * offset.z) / 2.0f) + offset.z / 2.0f + z * offset.z
-                );
-                *modelMat = glm::translate(glm::mat4(1.0f), pos);
-                *modelMat = glm::rotate(*modelMat, 45.0f, glm::vec3(1.0f, 1.0f, 0.0f));
-                *modelMat = glm::rotate(*modelMat, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-                *modelMat = glm::rotate(*modelMat, 15.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-            }
-        }
+        const float offset = 5.0;
+        *model_mat = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, i * offset, 0.0f));
     }
 
     void* data;
@@ -215,16 +172,16 @@ void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
         this->device,
         this->uniform_buffers.dynamic_buffer_memory,
         0,
-        MAX_OBJECT_INSTANCES * sizeof(glm::mat4),
+        MAX_OBJECT_INSTANCES * dynamic_alignment,
         0,
         &data
     );
-    memcpy(data, this->ubo_data_dynamic.model, MAX_OBJECT_INSTANCES * sizeof(glm::mat4));
+    memcpy(data, this->ubo_data_dynamic.model, MAX_OBJECT_INSTANCES * dynamic_alignment);
     VkMappedMemoryRange memory_range = {};
     memory_range.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
     memory_range.memory = this->uniform_buffers.dynamic_buffer_memory;
     memory_range.offset = 0;
-    memory_range.size = MAX_OBJECT_INSTANCES * sizeof(glm::mat4);
+    memory_range.size = MAX_OBJECT_INSTANCES * dynamic_alignment;
 
     vkFlushMappedMemoryRanges(this->device, 1, &memory_range);
 
@@ -235,11 +192,11 @@ void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
         glm::radians(45.0f),
         this->swapchain_extent.width / (float)this->swapchain_extent.height,
         0.1f,
-        10.0f
+        100.0f
     );
     ubo_vs.view = glm::lookAt(
-        glm::vec3(this->ui.camera_x, this->ui.camera_y, this->ui.camera_z),
-        glm::vec3(5.0f, 0.0f, 0.0f),
+        glm::vec3(this->ui.eye_x, this->ui.eye_y, this->ui.eye_z),
+        glm::vec3(this->ui.look_at_x, this->ui.look_at_y, this->ui.look_at_z),
         glm::vec3(0.0f, 0.0f, 1.0f)
     );
 

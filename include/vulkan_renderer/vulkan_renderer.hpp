@@ -30,7 +30,7 @@
 static const int WIDTH = 800;
 static const int HEIGHT = 600;
 static const int MAX_FRAMES_IN_FLIGHT = 2;
-static const int MAX_OBJECT_INSTANCES = 50;
+static const int MAX_OBJECT_INSTANCES = 125;
 
 static const std::vector<const char*> validation_layers = {"VK_LAYER_KHRONOS_validation"};
 static const std::vector<const char*> device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
@@ -72,7 +72,8 @@ void destroy_debug_utils_messenger_EXT(
 class VulkanRenderer {
     public:
         ~VulkanRenderer();
-        void run();
+        GLFWwindow* init();
+        void draw();
 
     private:
         Ui ui;
@@ -129,7 +130,7 @@ class VulkanRenderer {
         VkImageView depth_image_view;
 
         // --- Initialization
-        void init_window();
+        GLFWwindow* init_window();
         void init_vulkan();
         void init_imgui();
 
