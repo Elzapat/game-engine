@@ -41,7 +41,7 @@ static const bool enable_validation_layers = false;
 static const bool enable_validation_layers = true;
 #endif
 
-static std::vector<Vertex> vertices = {
+static const std::vector<Vertex> vertices = {
     {{-1.0f, -1.0f,  1.0f}, {1.0f, 0.0f, 0.0f}},
     {{ 1.0f, -1.0f,  1.0f}, {0.0f, 1.0f, 0.0f}},
     {{ 1.0f,  1.0f,  1.0f}, {0.0f, 0.0f, 1.0f}},
@@ -119,7 +119,7 @@ class VulkanRenderer {
         VkDeviceMemory index_buffer_memory;
 
         UniformBuffers uniform_buffers;
-        UboDataDynamic ubo_data_dynamic;
+        UboData* ubo_data_dynamic;
         size_t dynamic_alignment;
 
         VkDescriptorPool descriptor_pool;
@@ -128,6 +128,11 @@ class VulkanRenderer {
         VkImage depth_image;
         VkDeviceMemory depth_image_memory;
         VkImageView depth_image_view;
+
+        std::vector<glm::vec3> cubes_colors = std::vector<glm::vec3>(MAX_OBJECT_INSTANCES);
+
+        /* std::vector<Vertex> vertices; */
+        /* std::vector<uint32_t> indices; */
 
         // --- Initialization
         GLFWwindow* init_window();
@@ -153,6 +158,7 @@ class VulkanRenderer {
         void create_descriptor_pool();
         void create_descriptor_sets();
         void create_depth_resources();
+        void create_cubes();
 
         // --- Update what's on the screen
         void main_loop();

@@ -161,10 +161,12 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
 void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
     for (int i = 0; i < MAX_OBJECT_INSTANCES; i++) {
         uint32_t index = i * this->dynamic_alignment;
-        glm::mat4* model_mat = (glm::mat4*)((uint64_t)this->ubo_data_dynamic.model + index);
+        UboData* ubo_data = (UboData*)((uint64_t)this->ubo_data_dynamic + index);
 
-        const float offset = 5.0;
-        *model_mat = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, i * offset, 0.0f));
+        const float offset = 2.0f;
+
+        ubo_data->color = this->cubes_colors[i];
+        ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, i * offset, 0.0f));
     }
 
     void* data;
@@ -176,7 +178,7 @@ void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
         0,
         &data
     );
-    memcpy(data, this->ubo_data_dynamic.model, MAX_OBJECT_INSTANCES * dynamic_alignment);
+    memcpy(data, this->ubo_data_dynamic, MAX_OBJECT_INSTANCES * dynamic_alignment);
     VkMappedMemoryRange memory_range = {};
     memory_range.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
     memory_range.memory = this->uniform_buffers.dynamic_buffer_memory;

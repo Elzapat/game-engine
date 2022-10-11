@@ -64,8 +64,13 @@ struct UboVS {
     glm::mat4 projection;
 };
 
+struct UboData {
+    glm::mat4 model;
+    glm::vec3 color;
+};
+
 struct UboDataDynamic {
-    glm::mat4* model;
+    UboData* data;
 };
 
 struct InstanceData {

@@ -679,7 +679,7 @@ void VulkanRenderer::create_uniform_buffers() {
     vkGetPhysicalDeviceProperties(this->physical_device, &properties);
 
     size_t min_ubo_alignment = properties.limits.minUniformBufferOffsetAlignment;
-    this->dynamic_alignment = sizeof(glm::mat4);
+    this->dynamic_alignment = sizeof(UboData);
 
     if (min_ubo_alignment > 0) {
         this->dynamic_alignment =
@@ -687,8 +687,7 @@ void VulkanRenderer::create_uniform_buffers() {
     }
 
     size_t buffer_size = MAX_OBJECT_INSTANCES * dynamic_alignment;
-    this->ubo_data_dynamic.model =
-        (glm::mat4*)std::aligned_alloc(this->dynamic_alignment, buffer_size);
+    this->ubo_data_dynamic = (UboData*)std::aligned_alloc(this->dynamic_alignment, buffer_size);
 
     this->create_buffer(
         buffer_size,
@@ -697,6 +696,15 @@ void VulkanRenderer::create_uniform_buffers() {
         this->uniform_buffers.dynamic,
         this->uniform_buffers.dynamic_buffer_memory
     );
+
+    // Populate the colors of the cubes with random values
+    for (auto& color : this->cubes_colors) {
+        color = glm::vec3(
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX)
+        );
+    }
 }
 
 void VulkanRenderer::create_command_buffers() {
@@ -837,6 +845,14 @@ void VulkanRenderer::create_depth_resources() {
         VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
     );
 }
+
+/* void VulkanRenderer::create_cubes() { */
+/*     float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX); */
+/*     float g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX); */
+/*     float b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX); */
+/*  */
+/*     std::vector<Vertex> */
+/* } */
 
 void VulkanRenderer::pick_physical_device() {
     uint32_t device_count = 0;

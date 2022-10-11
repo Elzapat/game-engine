@@ -1,3 +1,5 @@
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 
 #include "../include/math/vector3D.hpp"
@@ -5,6 +7,8 @@
 #include "GLFW/glfw3.h"
 
 int main() {
+    srand(time(nullptr));
+
     try {
         using namespace std::chrono;
 
