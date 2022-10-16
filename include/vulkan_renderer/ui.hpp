@@ -14,7 +14,7 @@
 
 class Ui {
     public:
-        void draw(int n_particules, Particle& particule);
+        void draw(int n_particules, Particle& particule, math::Vector3D rotation);
         void render(VkCommandBuffer& command_buffer);
         ImGui_ImplVulkanH_Window* get_window_data();
         float eye_x = 0.0f;
@@ -23,7 +23,8 @@ class Ui {
         float look_at_x = 0.0f;
         float look_at_y = 0.0f;
         float look_at_z = 0.0f;
-
+        float rot_x = 0.0f;
+        float rot_y = 0.0f;
 
     private:
         ImGui_ImplVulkanH_Window main_window_data;

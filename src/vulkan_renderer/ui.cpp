@@ -4,7 +4,7 @@ ImGui_ImplVulkanH_Window* Ui::get_window_data() {
     return &this->main_window_data;
 }
 
-void Ui::draw(int n_particles, Particle& particle) {
+void Ui::draw(int n_particles, Particle& particle, math::Vector3D rotation) {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -62,7 +62,13 @@ void Ui::draw(int n_particles, Particle& particle) {
         ImGui::SliderFloat("look_at_x", &this->look_at_x, -50.0, 50.0);
         ImGui::SliderFloat("look_at_y", &this->look_at_y, -50.0, 50.0);
         ImGui::SliderFloat("look_at_z", &this->look_at_z, -50.0, 50.0);
+
+        ImGui::SliderFloat("rot_x", &this->rot_x, -180.0, 180.0);
+        ImGui::SliderFloat("rot_y", &this->rot_y, -180.0, 180.0);
+    
     }
+
+    ImGui::Text("rotation %f %f %f", rotation.get_x(), rotation.get_y(), rotation.get_z());
 
     /* ImGui::Text("%d particules", n_particules); */
     /*  */

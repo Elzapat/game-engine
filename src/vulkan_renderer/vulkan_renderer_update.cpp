@@ -149,7 +149,7 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
     }
 
     Particle temp = Particle();
-    ui.draw(1, temp);
+    ui.draw(1, temp, this->camera.rotation);
     ui.render(command_buffer);
 
     vkCmdEndRenderPass(command_buffer);
@@ -159,14 +159,27 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
 }
 
 void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
+    float x_i = 0.0f, y_i = 0.0f, z_i = 0.0f;
+
     for (int i = 0; i < MAX_OBJECT_INSTANCES; i++) {
         uint32_t index = i * this->dynamic_alignment;
         UboData* ubo_data = (UboData*)((uint64_t)this->ubo_data_dynamic + index);
 
         const float offset = 2.0f;
 
-        ubo_data->color = this->cubes_colors[i];
-        ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, i * offset, 0.0f));
+        if (i % 4) {
+            ubo_data->color = glm::vec3(1.0f, 0.0f, 0.0f);
+            ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(x_i++ * offset, 0.0f, 0.0f));
+        } else if (i % 3) {
+            ubo_data->color = glm::vec3(0.0f, 1.0f, 0.0f);
+            ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, y_i++ * offset, 0.0f));
+        } else {
+            ubo_data->color = glm::vec3(0.0f, 0.0f, 1.0f);
+            ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, z_i++ * offset));
+        }
+
+        // ubo_data->color = this->cubes_colors[i];
+        // ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(i * offset, 0.0f, 0.0f));
     }
 
     void* data;
@@ -196,11 +209,15 @@ void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
         0.1f,
         100.0f
     );
-    ubo_vs.view = glm::lookAt(
+    ubo_vs.projection[1][1] *= -1.0f;
+    ubo_vs.view = camera.view;
+    /*
+    glm::lookAt(
         glm::vec3(this->ui.eye_x, this->ui.eye_y, this->ui.eye_z),
         glm::vec3(this->ui.look_at_x, this->ui.look_at_y, this->ui.look_at_z),
         glm::vec3(0.0f, 0.0f, 1.0f)
     );
+    */
 
     vkMapMemory(
         this->device,
@@ -214,7 +231,48 @@ void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
     vkUnmapMemory(this->device, this->uniform_buffers.view_buffer_memory);
 }
 
+void VulkanRenderer::update_camera(float dt) {
+    this->camera.keys.forwards = glfwGetKey(this->window, GLFW_KEY_W) == GLFW_PRESS;
+    this->camera.keys.backwards = glfwGetKey(this->window, GLFW_KEY_S) == GLFW_PRESS;
+    this->camera.keys.right = glfwGetKey(this->window, GLFW_KEY_D) == GLFW_PRESS;
+    this->camera.keys.left = glfwGetKey(this->window, GLFW_KEY_A) == GLFW_PRESS;
+    this->camera.keys.up = glfwGetKey(this->window, GLFW_KEY_E) == GLFW_PRESS;
+    this->camera.keys.down = glfwGetKey(this->window, GLFW_KEY_Q) == GLFW_PRESS;
+
+    camera.update(dt);
+}
+
 void VulkanRenderer::framebuffer_resize_callback(GLFWwindow* window, int width, int height) {
-    auto app = reinterpret_cast<VulkanRenderer*>(glfwGetWindowUserPointer(window));
-    app->framebuffer_resized = true;
+    auto renderer = reinterpret_cast<VulkanRenderer*>(glfwGetWindowUserPointer(window));
+    renderer->framebuffer_resized = true;
+}
+
+void VulkanRenderer::mouse_callback(GLFWwindow* window, double x_pos, double z_pos) {
+    auto renderer = reinterpret_cast<VulkanRenderer*>(glfwGetWindowUserPointer(window));
+
+    static int width = 0.0f, height = 0.0f;
+    if (width == 0.0f && height == 0.0f) {
+        glfwGetFramebufferSize(window, &width, &height);
+    }
+
+    static float last_x = static_cast<float>(width) / 2.0f;
+    static float last_z = static_cast<float>(height) / 2.0f;
+
+    static bool first_mouse = true;
+    if (first_mouse) {
+        last_x = x_pos;
+        last_z = z_pos;
+        first_mouse = false;
+    }
+
+    float x_offset = (x_pos - last_x) * renderer->camera.sensitivity;
+    float z_offset = (z_pos - last_z) * renderer->camera.sensitivity;
+
+    last_x = x_pos;
+    last_z = z_pos;
+
+    renderer->camera.rotation.set_x(renderer->camera.rotation.get_x() + x_offset);
+    renderer->camera.rotation.set_z(
+        std::clamp(renderer->camera.rotation.get_z() + z_offset, -89.0f, 89.0f)
+    );
 }

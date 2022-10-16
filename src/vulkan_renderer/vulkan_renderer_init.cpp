@@ -18,6 +18,8 @@ GLFWwindow* VulkanRenderer::init_window() {
     this->window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
     glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, this->framebuffer_resize_callback);
+    glfwSetCursorPosCallback(window, this->mouse_callback);
+    glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     return this->window;
 }

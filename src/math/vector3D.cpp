@@ -35,18 +35,14 @@ float Vector3D::norm() const {
     );
 }
 
-void Vector3D::normalize() {
+Vector3D Vector3D::normalize() {
     float norm = this->norm();
 
-    this->coords[0] /= norm;
-    this->coords[1] /= norm;
-    this->coords[2] /= norm;
+    return Vector3D(this->get_x() / norm, this->get_y() / norm, this->get_z() / norm);
 }
 
-void Vector3D::invert() {
-    this->coords[0] = -this->coords[0];
-    this->coords[1] = -this->coords[1];
-    this->coords[2] = -this->coords[2];
+Vector3D Vector3D::invert() {
+    return Vector3D(-this->get_x(), -this->get_y(), -this->get_z());
 }
 
 /* void translate(Vector3D const& translation) ; */
@@ -54,6 +50,10 @@ void Vector3D::invert() {
 /* // void rotate(Quaternion rotation) ; */
 /* void scale(float scale) ; */
 /*  */
+
+glm::vec3 Vector3D::to_glm_vec3() {
+    return glm::vec3(this->get_x(), this->get_y(), this->get_z());
+}
 
 float* Vector3D::data() {
     return this->coords.data();
@@ -82,7 +82,7 @@ Vector3D Vector3D::operator-(const Vector3D& rhs) const {
 }
 
 Vector3D& Vector3D::operator-=(const Vector3D& rhs) {
-    *this = *this + rhs;
+    *this = *this - rhs;
     return *this;
 }
 

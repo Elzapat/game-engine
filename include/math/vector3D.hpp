@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <array>
+#include <glm/glm.hpp>
 
 namespace math {
     /* 
@@ -26,12 +27,13 @@ namespace math {
             float get_z() const;
 
             float norm() const;
-            void normalize();
-            void invert();
-            void translate(Vector3D const& translation);
+            Vector3D normalize();
+            Vector3D invert();
+            Vector3D translate(Vector3D const& translation);
             // TODO: when Quaternions are implemented
-            // void rotate(Quaternion rotation) ;
-            void scale(const float scale);
+            // Vector3D rotate(Quaternion rotation) ;
+            Vector3D scale(const float scale);
+            glm::vec3 to_glm_vec3();
 
             // Returns the vector data as a pointer to float;
             float* data();

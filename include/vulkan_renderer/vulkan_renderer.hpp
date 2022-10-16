@@ -26,6 +26,7 @@
 
 #include "ui.hpp"
 #include "renderer_utils.hpp"
+#include "camera.hpp"
 
 static const int WIDTH = 800;
 static const int HEIGHT = 600;
@@ -74,6 +75,7 @@ class VulkanRenderer {
         ~VulkanRenderer();
         GLFWwindow* init();
         void draw();
+        void update_camera(float dt);
 
     private:
         Ui ui;
@@ -131,6 +133,8 @@ class VulkanRenderer {
 
         std::vector<glm::vec3> cubes_colors = std::vector<glm::vec3>(MAX_OBJECT_INSTANCES);
 
+        Camera camera;
+
         /* std::vector<Vertex> vertices; */
         /* std::vector<uint32_t> indices; */
 
@@ -160,12 +164,13 @@ class VulkanRenderer {
         void create_depth_resources();
         void create_cubes();
 
-        // --- Update what's on the screen
+        // --- Update renderer
         void main_loop();
         void record_command_buffer(VkCommandBuffer command_buffer, uint32_t image_index);
         void draw_frame();
         void update_uniform_buffer(uint32_t current_image);
         static void framebuffer_resize_callback(GLFWwindow* window, int width, int height);
+        static void mouse_callback(GLFWwindow* window, double x_pos, double z_pos);
 
         // --- Helpers to create swapchain
         VkSurfaceFormatKHR choose_swap_surface_format(const std::vector<VkSurfaceFormatKHR>& available_formats);
