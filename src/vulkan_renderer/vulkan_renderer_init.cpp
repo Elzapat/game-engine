@@ -689,7 +689,7 @@ void VulkanRenderer::create_uniform_buffers() {
     }
 
     size_t buffer_size = MAX_OBJECT_INSTANCES * dynamic_alignment;
-    this->ubo_data_dynamic = (UboData*)std::aligned_alloc(this->dynamic_alignment, buffer_size);
+    this->ubo_data_dynamic = (UboData*)aligned_malloc(buffer_size, this->dynamic_alignment);
 
     this->create_buffer(
         buffer_size,

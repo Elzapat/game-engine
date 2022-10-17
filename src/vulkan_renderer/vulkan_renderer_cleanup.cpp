@@ -8,6 +8,8 @@ VulkanRenderer::~VulkanRenderer() {
 void VulkanRenderer::cleanup() {
     this->cleanup_swapchain();
 
+    aligned_free(this->ubo_data_dynamic);
+
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

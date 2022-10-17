@@ -49,3 +49,23 @@ std::vector<char> read_file(const std::string& filename) {
 bool has_stencil_component(VkFormat format) {
     return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
+
+void* aligned_malloc(size_t size, size_t alignment) {
+    void* data = nullptr;
+
+#if defined(_MSC_VER) || defined(__MINGW32__) || defined(_WIN32)
+    data = _aligned_malloc(size, alignment);
+#else
+    data = aligned_alloc(alignment, size);
+#endif
+
+    return data;
+}
+
+void aligned_free(void* data) {
+#if defined(_MSC_VER) || defined(__MINGW32__) || defined(_WIN32)
+    _aligned_free(data);
+#else
+    free(data);
+#endif
+}

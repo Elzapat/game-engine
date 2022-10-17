@@ -18,6 +18,8 @@
 std::vector<char> read_file(const std::string& filename);
 void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, VkDeviceSize size);
 bool has_stencil_component(VkFormat format);
+void* aligned_malloc(size_t size, size_t alignment);
+void aligned_free(void* data);
 
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphics_family;
