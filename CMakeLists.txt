@@ -62,6 +62,9 @@ add_executable(physics-engine
 
     src/vulkan_renderer/camera.cpp
     include/vulkan_renderer/camera.hpp
+
+    src/time.cpp
+    include/time.hpp
 )
 
 # GLSL Shader compilation to Vulkan compatabile SPV fromat
