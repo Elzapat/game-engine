@@ -149,7 +149,7 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
     }
 
     Particle temp = Particle();
-    ui.draw(1, temp, this->camera.rotation);
+    ui.draw(this->camera);
     ui.render(command_buffer);
 
     vkCmdEndRenderPass(command_buffer);
@@ -250,6 +250,10 @@ void VulkanRenderer::framebuffer_resize_callback(GLFWwindow* window, int width, 
 void VulkanRenderer::mouse_callback(GLFWwindow* window, double x_pos, double z_pos) {
     auto renderer = reinterpret_cast<VulkanRenderer*>(glfwGetWindowUserPointer(window));
 
+    if (renderer->camera.mouse_disabled) {
+        return;
+    }
+
     static int width = 0.0f, height = 0.0f;
     if (width == 0.0f && height == 0.0f) {
         glfwGetFramebufferSize(window, &width, &height);
@@ -258,11 +262,10 @@ void VulkanRenderer::mouse_callback(GLFWwindow* window, double x_pos, double z_p
     static float last_x = static_cast<float>(width) / 2.0f;
     static float last_z = static_cast<float>(height) / 2.0f;
 
-    static bool first_mouse = true;
-    if (first_mouse) {
+    if (renderer->camera.first_mouse) {
         last_x = x_pos;
         last_z = z_pos;
-        first_mouse = false;
+        renderer->camera.first_mouse = false;
     }
 
     float x_offset = (x_pos - last_x) * renderer->camera.sensitivity;
@@ -275,4 +278,22 @@ void VulkanRenderer::mouse_callback(GLFWwindow* window, double x_pos, double z_p
     renderer->camera.rotation.set_z(
         std::clamp(renderer->camera.rotation.get_z() + z_offset, -89.0f, 89.0f)
     );
+}
+
+void VulkanRenderer::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    auto renderer = reinterpret_cast<VulkanRenderer*>(glfwGetWindowUserPointer(window));
+
+    if (key == GLFW_KEY_Y && action == GLFW_PRESS) {
+        glfwSetInputMode(
+            window,
+            GLFW_CURSOR,
+            renderer->camera.mouse_disabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL
+        );
+
+        if (renderer->camera.mouse_disabled) {
+            renderer->camera.first_mouse = true;
+        }
+
+        renderer->camera.mouse_disabled = !renderer->camera.mouse_disabled;
+    }
 }

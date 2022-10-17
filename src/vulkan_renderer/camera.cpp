@@ -16,8 +16,10 @@ Camera::Camera() {
 void Camera::update(float dt) {
     // Update looking direction
     math::Vector3D direction(
-        std::cos(glm::radians(this->rotation.get_x())) * std::cos(glm::radians(this->rotation.get_z())),
-        -std::sin(glm::radians(this->rotation.get_x())) * std::cos(glm::radians(this->rotation.get_z())),
+        std::cos(glm::radians(this->rotation.get_x()))
+            * std::cos(glm::radians(this->rotation.get_z())),
+        -std::sin(glm::radians(this->rotation.get_x()))
+            * std::cos(glm::radians(this->rotation.get_z())),
         -std::sin(glm::radians(this->rotation.get_z()))
     );
     this->front = direction.normalize();

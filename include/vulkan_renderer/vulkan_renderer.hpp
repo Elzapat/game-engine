@@ -171,6 +171,7 @@ class VulkanRenderer {
         void update_uniform_buffer(uint32_t current_image);
         static void framebuffer_resize_callback(GLFWwindow* window, int width, int height);
         static void mouse_callback(GLFWwindow* window, double x_pos, double z_pos);
+        static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
         // --- Helpers to create swapchain
         VkSurfaceFormatKHR choose_swap_surface_format(const std::vector<VkSurfaceFormatKHR>& available_formats);
@@ -203,7 +204,6 @@ class VulkanRenderer {
         void create_image(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& image_memory);
         VkImageView create_image_view(VkImage image, VkFormat format, VkImageAspectFlags aspect_flags);
         void transition_image_layout(VkImage image, VkFormat format, VkImageLayout old_layout, VkImageLayout new_layout);
-
 
         // --- Cleanup functions
         void cleanup();
