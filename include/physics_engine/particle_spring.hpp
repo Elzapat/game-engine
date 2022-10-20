@@ -2,6 +2,7 @@
 #define PARTICLE_SPRING_HPP
 
 #include "particle_force_generator.hpp"
+#include "../time.hpp"
 
 class ParticleSpring : ParticleForceGenerator {
     private:
@@ -17,7 +18,7 @@ class ParticleSpring : ParticleForceGenerator {
         );
         ~ParticleSpring();
 
-        void update_force(Particle* particle, float duration);
+        void update_force(Particle* particle);
 };
 
 #endif

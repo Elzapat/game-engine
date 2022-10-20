@@ -35,13 +35,13 @@ float Vector3D::norm() const {
     );
 }
 
-Vector3D Vector3D::normalize() {
+Vector3D Vector3D::normalize() const {
     float norm = this->norm();
 
     return Vector3D(this->get_x() / norm, this->get_y() / norm, this->get_z() / norm);
 }
 
-Vector3D Vector3D::invert() {
+Vector3D Vector3D::invert() const {
     return Vector3D(-this->get_x(), -this->get_y(), -this->get_z());
 }
 
@@ -102,6 +102,10 @@ Vector3D& Vector3D::operator*=(const float& rhs) {
     this->coords[2] *= rhs;
 
     return *this;
+}
+
+Vector3D Vector3D::operator-() {
+    return this->invert();
 }
 
 float Vector3D::dot(const Vector3D& rhs) const {

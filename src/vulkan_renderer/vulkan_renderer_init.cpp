@@ -27,6 +27,9 @@ GLFWwindow* VulkanRenderer::init_window() {
 
 // Initialiazes all the needed Vulkan objets
 void VulkanRenderer::init_vulkan() {
+    Sphere sphere;
+    vertices = sphere.get_vertices();
+    indices = sphere.get_indices();
     this->create_instance();
     this->setup_debug_messenger();
     this->create_surface();

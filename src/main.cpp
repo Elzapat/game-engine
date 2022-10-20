@@ -24,7 +24,7 @@ int main() {
             glfwPollEvents();
 
             physic_world.update(dt);
-            vulkan_renderer.update_camera(dt);
+            vulkan_renderer.update_camera();
             vulkan_renderer.draw();
         }
     } catch (const std::exception& e) {

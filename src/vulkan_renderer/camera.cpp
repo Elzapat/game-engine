@@ -10,10 +10,10 @@ Camera::Camera() {
 
     this->up = this->direction.cross(this->right);
 
-    this->update(0.0f);
+    this->update();
 }
 
-void Camera::update(float dt) {
+void Camera::update() {
     // Update looking direction
     math::Vector3D direction(
         std::cos(glm::radians(this->rotation.get_x()))
@@ -23,6 +23,8 @@ void Camera::update(float dt) {
         -std::sin(glm::radians(this->rotation.get_z()))
     );
     this->front = direction.normalize();
+
+    float dt = Time::delta_time();
 
     // Update position
     if (this->keys.forwards) {

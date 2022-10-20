@@ -129,7 +129,7 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
 
-    vkCmdBindIndexBuffer(command_buffer, this->index_buffer, 0, VK_INDEX_TYPE_UINT16);
+    vkCmdBindIndexBuffer(command_buffer, this->index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
     for (uint32_t j = 0; j < MAX_OBJECT_INSTANCES; j++) {
         uint32_t dynamic_offset = j * static_cast<uint32_t>(this->dynamic_alignment);
@@ -231,7 +231,7 @@ void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
     vkUnmapMemory(this->device, this->uniform_buffers.view_buffer_memory);
 }
 
-void VulkanRenderer::update_camera(float dt) {
+void VulkanRenderer::update_camera() {
     this->camera.keys.forwards = glfwGetKey(this->window, GLFW_KEY_W) == GLFW_PRESS;
     this->camera.keys.backwards = glfwGetKey(this->window, GLFW_KEY_S) == GLFW_PRESS;
     this->camera.keys.right = glfwGetKey(this->window, GLFW_KEY_D) == GLFW_PRESS;
@@ -239,7 +239,7 @@ void VulkanRenderer::update_camera(float dt) {
     this->camera.keys.up = glfwGetKey(this->window, GLFW_KEY_E) == GLFW_PRESS;
     this->camera.keys.down = glfwGetKey(this->window, GLFW_KEY_Q) == GLFW_PRESS;
 
-    camera.update(dt);
+    camera.update();
 }
 
 void VulkanRenderer::framebuffer_resize_callback(GLFWwindow* window, int width, int height) {
@@ -268,8 +268,10 @@ void VulkanRenderer::mouse_callback(GLFWwindow* window, double x_pos, double z_p
         renderer->camera.first_mouse = false;
     }
 
-    float x_offset = (x_pos - last_x) * renderer->camera.sensitivity;
-    float z_offset = (z_pos - last_z) * renderer->camera.sensitivity;
+    float dt = Time::delta_time();
+
+    float x_offset = (x_pos - last_x) * renderer->camera.sensitivity * dt;
+    float z_offset = (z_pos - last_z) * renderer->camera.sensitivity * dt;
 
     last_x = x_pos;
     last_z = z_pos;

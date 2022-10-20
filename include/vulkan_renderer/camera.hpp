@@ -4,18 +4,19 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "../../include/math/vector3D.hpp"
+#include "../math/vector3D.hpp"
+#include "../time.hpp"
 
 class Camera {
     public:
         Camera();
-        void update(float dt);
+        void update();
 
         bool first_mouse = true;
         bool mouse_disabled = false;
 
         float speed = 3.0f;
-        float sensitivity = 3.0f;
+        float sensitivity = 35.0f;
 
         struct {
             bool left = false;

@@ -3,6 +3,8 @@
 
 #include "particle.hpp"
 #include "particle_force_generator.hpp"
+#include "../time.hpp"
+
 #include <vector>
 #include <algorithm>
 
@@ -13,8 +15,8 @@ class ParticleForceRegistry {
             ParticleForceGenerator* force_generator;
         };
     
-    using Registry = std::vector<ParticleForceEntry>;
-    Registry registry;
+        using Registry = std::vector<ParticleForceEntry>;
+        Registry registry;
 
     public: 
         ParticleForceRegistry();
@@ -23,8 +25,7 @@ class ParticleForceRegistry {
         void add_entry(Particle* particle, ParticleForceGenerator* force_generator);
         void remove_entry(Particle* particle, ParticleForceGenerator* force_generator);
 
-        void update_force(float duration);
-        
+        void update_force();
 };
 
 #endif

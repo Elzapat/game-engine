@@ -27,8 +27,8 @@ namespace math {
             float get_z() const;
 
             float norm() const;
-            Vector3D normalize();
-            Vector3D invert();
+            Vector3D normalize() const;
+            Vector3D invert() const;
             Vector3D translate(Vector3D const& translation);
             // TODO: when Quaternions are implemented
             // Vector3D rotate(Quaternion rotation) ;
@@ -44,6 +44,7 @@ namespace math {
             Vector3D& operator-=(const Vector3D& rhs);
             Vector3D operator*(const float& rhs) const;
             Vector3D& operator*=(const float& rhs);
+            Vector3D operator-();
 
             float dot(const Vector3D& rhs) const;
             Vector3D cross(const Vector3D& rhs) const;

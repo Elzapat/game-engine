@@ -2,6 +2,7 @@
 #define PARTICLE_GRAVITY_HPP
 
 #include "particle_force_generator.hpp"
+#include "../time.hpp"
 
 class ParticleGravity : ParticleForceGenerator {
     private:

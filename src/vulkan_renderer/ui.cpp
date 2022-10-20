@@ -22,7 +22,7 @@ void Ui::draw(Camera& camera) {
 
     if (ImGui::CollapsingHeader("Camera")) {
         ImGui::SliderFloat("Movement speed", &camera.speed, 0.0f, 10.0f);
-        ImGui::SliderFloat("Mouse sensitivity", &camera.sensitivity, 0.0f, 10.0f);
+        ImGui::SliderFloat("Mouse sensitivity", &camera.sensitivity, 0.0f, 70.0f);
     }
 
     /* ImGui::Text("%d particules", n_particules); */

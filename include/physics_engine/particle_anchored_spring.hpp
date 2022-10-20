@@ -2,6 +2,7 @@
 #define PARTICLE_ANCHORED_SPRING_HPP
 
 #include "particle_force_generator.hpp"
+#include "../time.hpp"
 
 class ParticleAnchoredSpring : ParticleForceGenerator {
     private:
@@ -17,7 +18,7 @@ class ParticleAnchoredSpring : ParticleForceGenerator {
         );
         ~ParticleAnchoredSpring();
 
-        void update_force(Particle* particle, float duration);
+        void update_force(Particle* particle);
 };
 
 #endif

@@ -22,24 +22,28 @@ Particle::Particle(
 
 Particle::~Particle() {}
 
-void Particle::set_position(math::Vector3D const& position) {
+void Particle::set_position(math::Vector3D const position) {
     this->position = position;
 }
 
-void Particle::set_velocity(math::Vector3D const& velocity) {
+void Particle::set_velocity(math::Vector3D const velocity) {
     this->velocity = velocity;
 }
 
-void Particle::set_acceleration(math::Vector3D const& acceleration) {
+void Particle::set_acceleration(math::Vector3D const acceleration) {
     this->acceleration = acceleration;
 }
 
-void Particle::set_inv_mass(float const& inv_mass) {
+void Particle::set_inv_mass(float const inv_mass) {
     this->inv_mass = inv_mass;
 }
 
-void Particle::set_damping(float const& damping) {
+void Particle::set_damping(float const damping) {
     this->damping = damping;
+}
+
+void Particle::set_forces(math::Vector3D forces) {
+    this->forces = forces;
 }
 
 math::Vector3D Particle::get_position() const {
@@ -62,8 +66,21 @@ float Particle::get_damping() const {
     return this->damping;
 }
 
+math::Vector3D Particle::get_forces() const {
+    return this->forces;
+}
+
+void Particle::add_force(math::Vector3D force) {
+    this->forces += force;
+}
+
 void Particle::integrate(float dt) {
+    this->acceleration = this->forces;
+
     this->position += this->velocity * dt;
     this->velocity += (this->velocity * this->damping - this->velocity) * dt;
     this->velocity += this->acceleration * dt;
+
+    this->forces = math::Vector3D(0.0f, 0.0f, 0.0f);
+    this->acceleration = math::Vector3D(0.0f, 0.0f, 0.0f);
 }

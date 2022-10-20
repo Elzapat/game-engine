@@ -11,15 +11,21 @@ void ParticleForceRegistry::add_entry(Particle* particle, ParticleForceGenerator
     this->registry.push_back(pf_entry);
 }
 
-
-void ParticleForceRegistry::remove_entry(Particle* particle, ParticleForceGenerator* force_generator) {
-    std::remove_if(this->registry.begin(), this->registry.end(), [&](ParticleForceEntry const & registry) {
-        return registry.particle == particle && registry.force_generator == force_generator;
-    });
+void ParticleForceRegistry::remove_entry(
+    Particle* particle,
+    ParticleForceGenerator* force_generator
+) {
+    std::remove_if(
+        this->registry.begin(),
+        this->registry.end(),
+        [&](ParticleForceEntry const& registry) {
+            return registry.particle == particle && registry.force_generator == force_generator;
+        }
+    );
 }
 
-void ParticleForceRegistry::update_force(float duration) {
-    for(auto entry: this->registry) {
-        entry.force_generator->update_force(entry.particle, duration);
+void ParticleForceRegistry::update_force() {
+    for (auto entry : this->registry) {
+        entry.force_generator->update_force(entry.particle, Time::delta_time());
     }
 }
