@@ -26,6 +26,6 @@ void ParticleForceRegistry::remove_entry(
 
 void ParticleForceRegistry::update_force() {
     for (auto entry : this->registry) {
-        entry.force_generator->update_force(entry.particle, Time::delta_time());
+        entry.force_generator->update_force(entry.particle);
     }
 }
