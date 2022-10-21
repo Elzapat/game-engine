@@ -7,12 +7,13 @@
 
 #include <vector>
 #include <algorithm>
+#include <memory>
 
 class ParticleForceRegistry {
     private: 
         struct ParticleForceEntry {
-            Particle* particle;
-            ParticleForceGenerator* force_generator;
+            std::shared_ptr<Particle> particle;
+            std::shared_ptr<ParticleForceGenerator> force_generator;
         };
     
         using Registry = std::vector<ParticleForceEntry>;
@@ -22,10 +23,10 @@ class ParticleForceRegistry {
         ParticleForceRegistry();
         ~ParticleForceRegistry();
 
-        void add_entry(Particle* particle, ParticleForceGenerator* force_generator);
-        void remove_entry(Particle* particle, ParticleForceGenerator* force_generator);
+        void add_entry(std::shared_ptr<Particle> particle, std::shared_ptr<ParticleForceGenerator> force_generator);
+        void remove_entry(std::shared_ptr<Particle> particle, std::shared_ptr<ParticleForceGenerator> force_generator);
 
-        void update_force();
+        void update();
 };
 
 #endif

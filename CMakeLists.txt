@@ -48,6 +48,18 @@ add_executable(physics-engine
     src/physics_engine/particle_drag.cpp
     include/physics_engine/particle_drag.hpp
 
+    src/physics_engine/particle_spring.cpp
+    include/physics_engine/particle_spring.hpp
+
+    src/physics_engine/particle_anchored_spring.cpp
+    include/physics_engine/particle_anchored_spring.hpp
+
+    src/physics_engine/particle_buoyancy.cpp
+    include/physics_engine/particle_buoyancy.hpp
+
+    src/physics_engine/particle_gravity.cpp
+    include/physics_engine/particle_gravity.hpp
+
     src/vulkan_renderer/vulkan_renderer_init.cpp
     src/vulkan_renderer/vulkan_renderer_cleanup.cpp
     src/vulkan_renderer/vulkan_renderer_update.cpp

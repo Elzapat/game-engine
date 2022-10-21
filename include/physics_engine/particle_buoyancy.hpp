@@ -2,8 +2,9 @@
 #define PARTICLE_BUOYANCY_HPP
 
 #include "particle_force_generator.hpp"
+#include "../time.hpp"
 
-class ParticleBuoyancy : ParticleForceGenerator {
+class ParticleBuoyancy : public ParticleForceGenerator {
     private:
     float max_depth;
     float volume;

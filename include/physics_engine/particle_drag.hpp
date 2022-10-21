@@ -4,7 +4,9 @@
 #include "particle_force_generator.hpp"
 #include "../time.hpp"
 
-class ParticleDrag : ParticleForceGenerator {
+#include <memory>
+
+class ParticleDrag : public ParticleForceGenerator {
     private:
         float k1;
         float k2;
@@ -12,7 +14,7 @@ class ParticleDrag : ParticleForceGenerator {
     public:
         ParticleDrag(float _k1 = 1, float _k2 = 1);
         ~ParticleDrag();
-        void update_force(Particle* particle);
+        void update_force(std::shared_ptr<Particle> particle);
 };
 
 #endif

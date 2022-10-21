@@ -38,6 +38,10 @@ float Vector3D::norm() const {
 Vector3D Vector3D::normalize() const {
     float norm = this->norm();
 
+    if (norm == 0.0f) {
+        return Vector3D();
+    }
+
     return Vector3D(this->get_x() / norm, this->get_y() / norm, this->get_z() / norm);
 }
 

@@ -4,7 +4,7 @@
 #include "particle_force_generator.hpp"
 #include "../time.hpp"
 
-class ParticleAnchoredSpring : ParticleForceGenerator {
+class ParticleAnchoredSpring : public ParticleForceGenerator {
     private:
         math::Vector3D anchor;
         float k;

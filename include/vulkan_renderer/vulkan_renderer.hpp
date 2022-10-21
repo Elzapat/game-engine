@@ -18,6 +18,7 @@
 #include <fstream>
 #include <chrono>
 #include <cstdlib>
+#include <memory>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -76,7 +77,7 @@ class VulkanRenderer {
     public:
         ~VulkanRenderer();
         GLFWwindow* init();
-        void draw();
+        void draw(std::vector<std::shared_ptr<Particle>>& particles);
         void update_camera();
 
     private:
@@ -168,9 +169,9 @@ class VulkanRenderer {
 
         // --- Update renderer
         void main_loop();
-        void record_command_buffer(VkCommandBuffer command_buffer, uint32_t image_index);
-        void draw_frame();
-        void update_uniform_buffer(uint32_t current_image);
+        void record_command_buffer(VkCommandBuffer command_buffer, uint32_t image_index, std::vector<std::shared_ptr<Particle>>& particles);
+        void draw_frame(std::vector<std::shared_ptr<Particle>>& particles);
+        void update_uniform_buffer(uint32_t current_image, std::vector<std::shared_ptr<Particle>>& particles);
         static void framebuffer_resize_callback(GLFWwindow* window, int width, int height);
         static void mouse_callback(GLFWwindow* window, double x_pos, double z_pos);
         static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);

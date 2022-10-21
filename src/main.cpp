@@ -3,6 +3,9 @@
 #include <iostream>
 
 #include "../include/math/vector3D.hpp"
+#include "../include/physics_engine/particle.hpp"
+#include "../include/physics_engine/particle_force_registry.hpp"
+#include "../include/physics_engine/particle_spring.hpp"
 #include "../include/time.hpp"
 #include "../include/vulkan_renderer/vulkan_renderer.hpp"
 #include "GLFW/glfw3.h"
@@ -19,13 +22,11 @@ int main() {
 
         while (!glfwWindowShouldClose(window)) {
             Time::update();
-            float dt = Time::delta_time();
-
             glfwPollEvents();
 
-            physic_world.update(dt);
+            physic_world.update();
             vulkan_renderer.update_camera();
-            vulkan_renderer.draw();
+            vulkan_renderer.draw(physic_world.get_particles_ref());
         }
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;

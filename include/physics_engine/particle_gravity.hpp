@@ -4,7 +4,7 @@
 #include "particle_force_generator.hpp"
 #include "../time.hpp"
 
-class ParticleGravity : ParticleForceGenerator {
+class ParticleGravity : public ParticleForceGenerator {
     private:
         math::Vector3D gravity;
 
@@ -12,7 +12,7 @@ class ParticleGravity : ParticleForceGenerator {
         ParticleGravity(math::Vector3D _gravity);
         ~ParticleGravity();
 
-        void update_force(Particle* particle, float duration);
+        void update_force(Particle* particle);
 };
 
 #endif

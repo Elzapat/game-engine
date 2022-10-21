@@ -3,9 +3,11 @@
 
 #include "particle.hpp"
 
+#include <memory>
+
 class ParticleForceGenerator {
     public:
-        virtual void update_force(Particle* particule) = 0;
+        virtual void update_force(std::shared_ptr<Particle> particule) = 0;
 };
 
 #endif

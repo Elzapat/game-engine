@@ -16,7 +16,7 @@ class Camera {
         bool mouse_disabled = false;
 
         float speed = 3.0f;
-        float sensitivity = 35.0f;
+        float sensitivity = 0.04f;
 
         struct {
             bool left = false;

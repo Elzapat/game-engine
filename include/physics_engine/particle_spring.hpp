@@ -4,21 +4,23 @@
 #include "particle_force_generator.hpp"
 #include "../time.hpp"
 
-class ParticleSpring : ParticleForceGenerator {
+#include <memory>
+
+class ParticleSpring : public ParticleForceGenerator {
     private:
-        Particle* other;
+        std::shared_ptr<Particle> other;
         float k;
         float rest_length;
 
     public:
         ParticleSpring(
-            Particle* _other,
+            std::shared_ptr<Particle> _other,
             float _k,
             float _rest_length
         );
         ~ParticleSpring();
 
-        void update_force(Particle* particle);
+        void update_force(std::shared_ptr<Particle> particle);
 };
 
 #endif

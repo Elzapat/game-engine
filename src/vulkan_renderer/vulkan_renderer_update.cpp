@@ -1,10 +1,10 @@
 #include "../../include/vulkan_renderer/vulkan_renderer.hpp"
 
-void VulkanRenderer::draw() {
-    this->draw_frame();
+void VulkanRenderer::draw(std::vector<std::shared_ptr<Particle>>& particles) {
+    this->draw_frame(particles);
 }
 
-void VulkanRenderer::draw_frame() {
+void VulkanRenderer::draw_frame(std::vector<std::shared_ptr<Particle>>& particles) {
     uint32_t image_index;
     VkResult result = vkAcquireNextImageKHR(
         this->device,
@@ -25,8 +25,8 @@ void VulkanRenderer::draw_frame() {
     vkResetFences(this->device, 1, &this->in_flight_fences[this->current_frame]);
 
     vkResetCommandBuffer(this->command_buffers[this->current_frame], 0);
-    this->record_command_buffer(this->command_buffers[this->current_frame], image_index);
-    this->update_uniform_buffer(this->current_frame);
+    this->record_command_buffer(this->command_buffers[this->current_frame], image_index, particles);
+    this->update_uniform_buffer(this->current_frame, particles);
 
     VkSubmitInfo submit_info {};
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -84,7 +84,11 @@ void VulkanRenderer::draw_frame() {
     this->current_frame = (this->current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
-void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint32_t image_index) {
+void VulkanRenderer::record_command_buffer(
+    VkCommandBuffer command_buffer,
+    uint32_t image_index,
+    std::vector<std::shared_ptr<Particle>>& particles
+) {
     VkCommandBufferBeginInfo begin_info {};
     begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     begin_info.flags = 0;
@@ -131,8 +135,12 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
 
     vkCmdBindIndexBuffer(command_buffer, this->index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
-    for (uint32_t j = 0; j < MAX_OBJECT_INSTANCES; j++) {
-        uint32_t dynamic_offset = j * static_cast<uint32_t>(this->dynamic_alignment);
+    for (uint32_t i = 0; i < MAX_OBJECT_INSTANCES; i++) {
+        if (i >= particles.size()) {
+            break;
+        }
+
+        uint32_t dynamic_offset = i * static_cast<uint32_t>(this->dynamic_alignment);
 
         vkCmdBindDescriptorSets(
             command_buffer,
@@ -145,10 +153,12 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
             &dynamic_offset
         );
 
-        vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+        for (uint32_t j = 0; j < static_cast<uint32_t>(indices.size()); j++) {
+            vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, j * 5, 0);
+        }
+        /* vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0); */
     }
 
-    Particle temp = Particle();
     ui.draw(this->camera);
     ui.render(command_buffer);
 
@@ -158,27 +168,41 @@ void VulkanRenderer::record_command_buffer(VkCommandBuffer command_buffer, uint3
     check_vk_result(result, "Failed to record command buffer");
 }
 
-void VulkanRenderer::update_uniform_buffer(uint32_t current_image) {
-    float x_i = 0.0f, y_i = 0.0f, z_i = 0.0f;
+void VulkanRenderer::update_uniform_buffer(
+    uint32_t current_image,
+    std::vector<std::shared_ptr<Particle>>& particles
+) {
+    /* float x_i = 0.0f, y_i = 0.0f, z_i = 0.0f; */
 
     for (int i = 0; i < MAX_OBJECT_INSTANCES; i++) {
+        if (i >= particles.size()) {
+            break;
+        }
+
         uint32_t index = i * this->dynamic_alignment;
         UboData* ubo_data = (UboData*)((uint64_t)this->ubo_data_dynamic + index);
 
-        const float offset = 2.0f;
+        ubo_data->model =
+            glm::translate(glm::mat4(1.0f), particles[i]->get_position().to_glm_vec3());
+        std::cout << particles[i]->get_position() << std::endl;
 
+        /*
+        const float offset = 2.0f;
         if (i % 4) {
             ubo_data->color = glm::vec3(1.0f, 0.0f, 0.0f);
-            ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(x_i++ * offset, 0.0f, 0.0f));
-        } else if (i % 3) {
+        ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(x_i++ * offset, 0.0f, 0.0f));
+        }
+        else if (i % 3) {
             ubo_data->color = glm::vec3(0.0f, 1.0f, 0.0f);
             ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, y_i++ * offset, 0.0f));
-        } else {
+        }
+        else {
             ubo_data->color = glm::vec3(0.0f, 0.0f, 1.0f);
             ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, z_i++ * offset));
         }
+        */
 
-        // ubo_data->color = this->cubes_colors[i];
+        ubo_data->color = this->cubes_colors[i];
         // ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(i * offset, 0.0f, 0.0f));
     }
 
@@ -268,10 +292,8 @@ void VulkanRenderer::mouse_callback(GLFWwindow* window, double x_pos, double z_p
         renderer->camera.first_mouse = false;
     }
 
-    float dt = Time::delta_time();
-
-    float x_offset = (x_pos - last_x) * renderer->camera.sensitivity * dt;
-    float z_offset = (z_pos - last_z) * renderer->camera.sensitivity * dt;
+    float x_offset = (x_pos - last_x) * renderer->camera.sensitivity;
+    float z_offset = (z_pos - last_z) * renderer->camera.sensitivity;
 
     last_x = x_pos;
     last_z = z_pos;

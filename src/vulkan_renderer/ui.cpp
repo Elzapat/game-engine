@@ -15,6 +15,27 @@ void Ui::draw(Camera& camera) {
     static bool window_opened = true;
     ImGui::Begin("Inspector", &window_opened, ImGuiWindowFlags_NoMove);
 
+    // Average frame tima and fps over one second
+    {
+        static float average_counter = 0.0f;
+        static float average_frame_time = 0.0f;
+        static int average_fps = 0.0f;
+        static int frames_count = 0;
+
+        frames_count++;
+        average_counter += Time::delta_time();
+
+        if (average_counter >= 1.0f) {
+            average_frame_time = average_counter / frames_count;
+            average_fps = frames_count;
+
+            average_counter = 0.0f;
+            frames_count = 0;
+        }
+
+        ImGui::Text("Frame time: %f, FPS: %d", average_frame_time, average_fps);
+    }
+
     ImGui::Text(
         "Press Y to enable or disable the mouse\nMouse enabled = %s",
         camera.mouse_disabled ? "true" : "false"
@@ -22,7 +43,7 @@ void Ui::draw(Camera& camera) {
 
     if (ImGui::CollapsingHeader("Camera")) {
         ImGui::SliderFloat("Movement speed", &camera.speed, 0.0f, 10.0f);
-        ImGui::SliderFloat("Mouse sensitivity", &camera.sensitivity, 0.0f, 70.0f);
+        ImGui::SliderFloat("Mouse sensitivity", &camera.sensitivity, 0.01f, 0.2f);
     }
 
     /* ImGui::Text("%d particules", n_particules); */
