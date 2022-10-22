@@ -10,13 +10,13 @@ class ParticleContact {
         float penetration;
         math::Vector3D contact_normal;
 
-        void resolveVelocity();
-        void calculateSeparatingVelocity();
+        void resolveVelocity(float duration);
+        void resolveInterpenetration(float duration);
 
     public:
         ParticleContact(
             Particle* _particle,
-            float _other_particle,
+            Particle* _other_particle,
             float _restitution,
             float _penetration);
         ~ParticleContact();

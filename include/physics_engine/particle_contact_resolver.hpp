@@ -11,7 +11,7 @@ class ParticleContactResolver {
         ParticleContactResolver(unsigned int _iteration);
         ~ParticleContactResolver();
         
-        void resolve_contact(ParticleContact* contactArray, unsigned int numContact, float duration);
+        void resolve_contact(ParticleContact* contact_array, unsigned int num_contact, float duration);
         
 };
 
