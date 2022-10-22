@@ -184,7 +184,6 @@ void VulkanRenderer::update_uniform_buffer(
 
         ubo_data->model =
             glm::translate(glm::mat4(1.0f), particles[i]->get_position().to_glm_vec3());
-        std::cout << particles[i]->get_position() << std::endl;
 
         /*
         const float offset = 2.0f;

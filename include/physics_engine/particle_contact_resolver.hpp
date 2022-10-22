@@ -3,15 +3,19 @@
 
 #include "particle_contact.hpp"
 
+#include <vector>
+#include <limits>
+#include <algorithm>
+
 class ParticleContactResolver {
     private:
-        unsigned int iteration;
+        unsigned int max_iterations;
 
     public:
-        ParticleContactResolver(unsigned int _iteration);
+        ParticleContactResolver(unsigned int _max_iterations);
         ~ParticleContactResolver();
         
-        void resolve_contact(ParticleContact* contact_array, unsigned int num_contact, float duration);
+        void resolve_contacts(std::vector<ParticleContact> contacts);
         
 };
 

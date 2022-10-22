@@ -2,7 +2,7 @@
 * Création de tout les fichiers nécessaires (compilation, arborescence, répo git) (12 septembre)
 
 # Première phase
-* Création des diagrames UML pour les classes `Vector3D` et `Particule` (12 septembre)
+* Création des diagrammes UML pour les classes `Vector3D` et `Particule` (12 septembre)
 * Implémentation de la classe `Vector3D` (12 septembre)
   * https://en.wikipedia.org/wiki/Cross_product
   * https://en.wikipedia.org/wiki/Dot_product
@@ -16,3 +16,13 @@
     * https://github.com/felipunky/DigitalSignature/blob/master/DigitalSignature/main.cpp
 * Implémentation de `PhysicWorld`
 * Controle des attributs d'une `Particule` avec des sliders
+
+# Deuxième phase
+* Création des diagrammes UML pour toutes les classes des forces et contacts
+* Multiplication des meshes affichés à l'écran
+    * https://gitlab.steamos.cloud/jupiter/vulkan-examples/-/tree/master/examples/dynamicuniformbuffer
+* Affichage d'une sphère
+    * http://www.songho.ca/opengl/gl_sphere.html
+* Implémentation des générateurs de forces
+* Implémentation des générateurs de contacts
+* Implémentation des resolveurs de contacts

@@ -3,6 +3,9 @@
 
 #include "particle_contact.hpp"
 
+#include <vector>
+#include <memory>
+
 class ParticleContactGenerator {
     private:
 
@@ -10,8 +13,7 @@ class ParticleContactGenerator {
         ParticleContactGenerator();
         ~ParticleContactGenerator();
 
-        virtual void add_contact(ParticleContact* contact, unsigned int limit);
-        
+        virtual unsigned int add_contact(std::shared_ptr<ParticleContact> contact, unsigned int limit) const = 0;
 };
 
 #endif

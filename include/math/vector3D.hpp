@@ -44,12 +44,15 @@ namespace math {
             Vector3D& operator-=(const Vector3D& rhs);
             Vector3D operator*(const float& rhs) const;
             Vector3D& operator*=(const float& rhs);
+            Vector3D operator/(const float& rhs) const;
+            Vector3D& operator/=(const float& rhs);
             Vector3D operator-();
 
             float dot(const Vector3D& rhs) const;
             Vector3D cross(const Vector3D& rhs) const;
 
             friend std::ostream& operator<<(std::ostream& os, const Vector3D& rhs);
+            friend Vector3D operator*(float lhs, const math::Vector3D& rhs);
     };
 }
 

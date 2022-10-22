@@ -108,6 +108,24 @@ Vector3D& Vector3D::operator*=(const float& rhs) {
     return *this;
 }
 
+Vector3D Vector3D::operator/(const float& rhs) const {
+    Vector3D res = Vector3D(*this);
+
+    res.coords[0] /= rhs;
+    res.coords[1] /= rhs;
+    res.coords[2] /= rhs;
+
+    return res;
+}
+
+Vector3D& Vector3D::operator/=(const float& rhs) {
+    this->coords[0] /= rhs;
+    this->coords[1] /= rhs;
+    this->coords[2] /= rhs;
+
+    return *this;
+}
+
 Vector3D Vector3D::operator-() {
     return this->invert();
 }
@@ -131,5 +149,9 @@ namespace math {
             << ", y = " << vec.get_z() << " }";
 
         return os;
+    }
+
+    Vector3D operator*(float lhs, const math::Vector3D& rhs) {
+        return rhs * lhs;
     }
 }

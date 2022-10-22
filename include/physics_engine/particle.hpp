@@ -24,16 +24,19 @@ class Particle {
         );
         ~Particle();
 
-        void set_position(math::Vector3D const position);
-        void set_velocity(math::Vector3D const velocity);
-        void set_acceleration(math::Vector3D const acceleration);
-        void set_inv_mass(float const inv_mass);
+        void set_position(const math::Vector3D position);
+        void set_velocity(const math::Vector3D velocity);
+        void add_velocity(math::Vector3D delta_vel);
+        void set_acceleration(const math::Vector3D acceleration);
+        void set_inv_mass(const float inv_mass);
+        void set_mass(const float mass);
         void set_forces(math::Vector3D forces);
 
         math::Vector3D get_position() const;
         math::Vector3D get_velocity() const;
         math::Vector3D get_acceleration() const;
         float get_inv_mass() const;
+        float get_mass() const;
         math::Vector3D get_forces() const;
 
         void add_force(math::Vector3D force);

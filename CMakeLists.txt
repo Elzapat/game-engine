@@ -60,6 +60,17 @@ add_executable(physics-engine
     src/physics_engine/particle_gravity.cpp
     include/physics_engine/particle_gravity.hpp
 
+    src/physics_engine/particle_contact.cpp
+    include/physics_engine/particle_contact.hpp
+
+    include/physics_engine/particle_contact_generator.hpp
+
+    src/physics_engine/naive_particle_contact_generator.cpp
+    include/physics_engine/naive_particle_contact_generator.hpp
+
+    src/physics_engine/particle_contact_resolver.cpp
+    include/physics_engine/particle_contact_resolver.hpp
+
     src/vulkan_renderer/vulkan_renderer_init.cpp
     src/vulkan_renderer/vulkan_renderer_cleanup.cpp
     src/vulkan_renderer/vulkan_renderer_update.cpp

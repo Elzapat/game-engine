@@ -16,20 +16,28 @@ Particle::Particle(math::Vector3D pos, math::Vector3D vel, math::Vector3D accel,
 
 Particle::~Particle() {}
 
-void Particle::set_position(math::Vector3D const position) {
+void Particle::set_position(const math::Vector3D position) {
     this->position = position;
 }
 
-void Particle::set_velocity(math::Vector3D const velocity) {
+void Particle::set_velocity(const math::Vector3D velocity) {
     this->velocity = velocity;
 }
 
-void Particle::set_acceleration(math::Vector3D const acceleration) {
+void Particle::add_velocity(math::Vector3D delta_vel) {
+    this->velocity += delta_vel;
+}
+
+void Particle::set_acceleration(const math::Vector3D acceleration) {
     this->acceleration = acceleration;
 }
 
-void Particle::set_inv_mass(float const inv_mass) {
+void Particle::set_inv_mass(const float inv_mass) {
     this->inv_mass = inv_mass;
+}
+
+void Particle::set_mass(const float mass) {
+    this->inv_mass = 1.0f / mass;
 }
 
 void Particle::set_forces(math::Vector3D forces) {
@@ -50,6 +58,10 @@ math::Vector3D Particle::get_acceleration() const {
 
 float Particle::get_inv_mass() const {
     return this->inv_mass;
+}
+
+float Particle::get_mass() const {
+    return 1.0f / this->inv_mass;
 }
 
 math::Vector3D Particle::get_forces() const {

@@ -2,28 +2,32 @@
 #define PARTICLE_CONTACT_HPP
 
 #include "particle.hpp"
+#include "../math/vector3D.hpp"
+
+#include <memory>
 
 class ParticleContact {
-    private:
-        Particle* particles[2];
+    public:
+        std::shared_ptr<Particle> particle1;
+        std::shared_ptr<Particle> particle2;
         float restitution;
         float penetration;
-        math::Vector3D contact_normal;
+        math::Vector3D normal;
 
-        void resolveVelocity(float duration);
-        void resolveInterpenetration(float duration);
-
-    public:
         ParticleContact(
-            Particle* _particle,
-            Particle* _other_particle,
+            std::shared_ptr<Particle> p1,
+            std::shared_ptr<Particle> p2,
             float _restitution,
             float _penetration);
         ~ParticleContact();
         
-        void resolve(float duration);
-        float calculateSeparatingVelocity();
-        
+        void resolve();
+        float relative_velocity();
+
+    private:
+        void resolve_velocity();
+        void resolve_interpenetration();
+
 };
 
 #endif
