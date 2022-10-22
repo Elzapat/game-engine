@@ -11,7 +11,9 @@ class NaiveParticleContactGenerator : public ParticleContactGenerator {
         float radius;
         std::vector<std::shared_ptr<Particle>> particles;
 
-        unsigned int add_contact(std::shared_ptr<ParticleContact>, unsigned int limit) const;
+        NaiveParticleContactGenerator(std::vector<std::shared_ptr<Particle>> _particles, float _radius);
+
+        void add_contact(std::vector<ParticleContact>& contacts) const;
 };
 
 #endif // NAIVE_PARTICLE_CONTACT_GENERATOR_HPP

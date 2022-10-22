@@ -6,6 +6,10 @@ ParticleContactResolver::ParticleContactResolver(unsigned int _max_iterations) :
 ParticleContactResolver::~ParticleContactResolver() {}
 
 void ParticleContactResolver::resolve_contacts(std::vector<ParticleContact> contacts) {
+    if (contacts.empty()) {
+        return;
+    }
+
     float smallest_rel_vel = std::numeric_limits<float>::max();
 
     // Loop until max iterations is reached or the smallest relative velocityis

@@ -9,7 +9,8 @@ ParticleContact::ParticleContact(
     particle1(p1),
     particle2(p2),
     restitution(_restitution),
-    penetration(_penetration) {}
+    penetration(_penetration),
+    normal((p1->get_position() - p2->get_position()).normalize()) {}
 
 ParticleContact ::~ParticleContact() {}
 
@@ -20,6 +21,8 @@ void ParticleContact::resolve_velocity() {
     // Apply impulsion : k = ((e + 1)v_rel * n) / ((1 / m_1 + 1 / m_2)n * n)
     math::Vector3D k = (this->restitution + 1) * this->relative_velocity() * this->normal;
     k /= (p1->get_inv_mass() + p2->get_inv_mass());
+    std::cout << this->relative_velocity() << std::endl;
+    std::cout << k << std::endl;
 
     // v' = v ± k / m
     p1->set_velocity(p1->get_velocity() - k * p1->get_inv_mass());

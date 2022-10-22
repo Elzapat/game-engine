@@ -30,12 +30,12 @@ void VulkanRenderer::init_vulkan() {
     Sphere sphere;
     vertices = sphere.get_vertices();
     indices = sphere.get_indices();
-    std::cout << vertices.size() << " " << indices.size() << std::endl;
-    for (int i = 0; i < indices.size(); i++) {
-        std::cout << indices[i] << " ";
-    }
-
-    std::cout << std::endl;
+    /* std::cout << vertices.size() << " " << indices.size() << std::endl; */
+    /* for (int i = 0; i < indices.size(); i++) { */
+    /*     std::cout << indices[i] << " "; */
+    /* } */
+    /*  */
+    /* std::cout << std::endl; */
     this->create_instance();
     this->setup_debug_messenger();
     this->create_surface();

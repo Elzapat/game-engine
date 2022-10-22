@@ -18,7 +18,8 @@ class ParticleContact {
             std::shared_ptr<Particle> p1,
             std::shared_ptr<Particle> p2,
             float _restitution,
-            float _penetration);
+            float _penetration
+        );
         ~ParticleContact();
         
         void resolve();
