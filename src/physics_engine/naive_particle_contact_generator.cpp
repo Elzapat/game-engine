@@ -20,7 +20,7 @@ void NaiveParticleContactGenerator::add_contact(std::vector<ParticleContact>& co
             float penetration = (p1->get_position() - p2->get_position()).norm();
 
             if (penetration < 2.0f * this->radius) {
-                contacts.push_back(ParticleContact(p1, p2, 0.5f, 2.0 * this->radius - penetration));
+                contacts.push_back(ParticleContact(p1, p2, 0.3f, 2.0 * this->radius - penetration));
             }
         }
     }

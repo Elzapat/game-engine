@@ -4,6 +4,8 @@
 #include "particle_force_generator.hpp"
 #include "../time.hpp"
 
+#include <memory>
+
 class ParticleAnchoredSpring : public ParticleForceGenerator {
     private:
         math::Vector3D anchor;
@@ -18,7 +20,7 @@ class ParticleAnchoredSpring : public ParticleForceGenerator {
         );
         ~ParticleAnchoredSpring();
 
-        void update_force(Particle* particle);
+        void update_force(std::shared_ptr<Particle>);
 };
 
 #endif

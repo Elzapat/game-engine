@@ -7,6 +7,7 @@
 #include "particle.hpp"
 #include "particle_force_registry.hpp"
 #include "particle_spring.hpp"
+#include "particle_anchored_spring.hpp"
 #include "particle_drag.hpp"
 #include "particle_contact_generator.hpp"
 #include "particle_contact_resolver.hpp"

@@ -1,7 +1,7 @@
 #include "../../include/vulkan_renderer/camera.hpp"
 
 Camera::Camera() {
-    this->position = math::Vector3D(5.0f, 5.0f, 0.0f);
+    this->position = math::Vector3D(-50.0f, 0.0f, 0.0f);
     this->front = math::Vector3D(0.0f, 1.0f, 0.0f);
 
     this->direction = (this->position - this->target).normalize();

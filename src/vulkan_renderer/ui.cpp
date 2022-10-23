@@ -42,7 +42,7 @@ void Ui::draw(Camera& camera, std::vector<std::shared_ptr<Particle>>& particles)
     );
 
     if (ImGui::CollapsingHeader("Camera")) {
-        ImGui::SliderFloat("Movement speed", &camera.speed, 0.0f, 10.0f);
+        ImGui::SliderFloat("Movement speed", &camera.speed, 0.0f, 30.0f);
         ImGui::SliderFloat("Mouse sensitivity", &camera.sensitivity, 0.01f, 0.2f);
     }
 

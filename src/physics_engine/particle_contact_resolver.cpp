@@ -10,7 +10,7 @@ void ParticleContactResolver::resolve_contacts(std::vector<ParticleContact> cont
         return;
     }
 
-    float smallest_sep_vel = std::numeric_limits<float>::max();
+    this->max_iterations = contacts.size() * 2;
 
     // Loop until max iterations is reached or the smallest relative velocityis
     // is higher than 0, meaning all contacts have been resolved
@@ -19,6 +19,7 @@ void ParticleContactResolver::resolve_contacts(std::vector<ParticleContact> cont
         /*     return c1.separating_velocity() < c2.separating_velocity(); */
         /* }); */
         /* smallest_rel_vel = contacts.back().separating_velocity(); */
+        float smallest_sep_vel = std::numeric_limits<float>::max();
         int contact_to_resolve_idx = contacts.size();
 
         for (int i = 0; i < contacts.size(); i++) {

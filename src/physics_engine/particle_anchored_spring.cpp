@@ -11,7 +11,7 @@ ParticleAnchoredSpring::ParticleAnchoredSpring(
 
 ParticleAnchoredSpring::~ParticleAnchoredSpring() {}
 
-void ParticleAnchoredSpring::update_force(Particle* particle) {
+void ParticleAnchoredSpring::update_force(std::shared_ptr<Particle> particle) {
     math::Vector3D vector_between = particle->get_position() - this->anchor;
     float force_to_add = k * (this->rest_length - vector_between.norm());
 

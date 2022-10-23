@@ -1,28 +1,53 @@
 #include "../../include/physics_engine/physic_world.hpp"
 
-PhysicWorld::PhysicWorld() : contact_resolver(20) {
-    std::shared_ptr<Particle> p1 = std::make_shared<Particle>();
-    std::shared_ptr<Particle> p2 = std::make_shared<Particle>();
-    p1->set_mass(50.0f);
-    p2->set_mass(50.0f);
-
-    std::shared_ptr<ParticleSpring> spring = std::make_shared<ParticleSpring>(p2, 40.0f, 3.5f);
-    std::shared_ptr<ParticleSpring> spring2 = std::make_shared<ParticleSpring>(p1, 40.0f, 3.5f);
+PhysicWorld::PhysicWorld() : contact_resolver() {
+    // Forces
     std::shared_ptr<ParticleDrag> drag = std::make_shared<ParticleDrag>(0.47f, 0.0f);
 
-    p1->set_position(math::Vector3D(5.0f, 0.0f, 0.0f));
+    // Generate all particles
+    /* const int SLICES = 11; */
+    /* const int STACKS = 10; */
+    const int SLICES = 3;
+    const int STACKS = 3;
 
-    this->force_registry.add_entry(p1, spring);
-    this->force_registry.add_entry(p2, spring2);
-    this->force_registry.add_entry(p1, drag);
-    this->force_registry.add_entry(p2, drag);
+    const int RADIUS = 15;
 
-    this->particles.push_back(p1);
-    this->particles.push_back(p2);
+    float sector_step = 2.0f * M_PI / static_cast<float>(SLICES);
+    float stack_step = M_PI / static_cast<float>(STACKS);
 
-    const float RADIUS = 1.0f;
-    auto contact = std::make_unique<NaiveParticleContactGenerator>(this->particles, RADIUS);
+    for (int i = 0; i <= SLICES; i++) {
+        float stack_angle = M_PI / 2.0f - static_cast<float>(i) * stack_step;
+        float xy = static_cast<float>(RADIUS) * std::cos(stack_angle);
+        float z = static_cast<float>(RADIUS) * std::sin(stack_angle);
 
+        for (int j = 0; j <= STACKS; j++) {
+            float sector_angle = static_cast<float>(j) * sector_step;
+
+            float x = xy * std::cos(sector_angle);
+            float y = xy * std::sin(sector_angle);
+
+            std::shared_ptr<Particle> particle = std::make_shared<Particle>();
+            particle->set_position(math::Vector3D(x, y, z));
+
+            this->force_registry.add_entry(particle, drag);
+
+            if (this->particles.size() >= 1) {
+                int random_idx = rand() % particles.size();
+                std::shared_ptr<ParticleSpring> spring =
+                    std::make_shared<ParticleSpring>(this->particles[random_idx], 5.0f, 10.0f);
+                std::shared_ptr<ParticleAnchoredSpring> anchored_spring =
+                    std::make_shared<ParticleAnchoredSpring>(math::Vector3D(), 50.0f, 1.0f);
+
+                /* this->force_registry.add_entry(particle, spring); */
+                this->force_registry.add_entry(particle, anchored_spring);
+            }
+
+            this->particles.push_back(particle);
+            particle->set_mass(50.0f);
+        }
+    }
+
+    auto contact = std::make_unique<NaiveParticleContactGenerator>(this->particles, 1.0f);
     this->contact_generators.push_back(std::move(contact));
 }
 

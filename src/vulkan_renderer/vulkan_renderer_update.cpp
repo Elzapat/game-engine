@@ -230,7 +230,7 @@ void VulkanRenderer::update_uniform_buffer(
         glm::radians(45.0f),
         this->swapchain_extent.width / (float)this->swapchain_extent.height,
         0.1f,
-        100.0f
+        300.0f
     );
     ubo_vs.projection[1][1] *= -1.0f;
     ubo_vs.view = camera.view;

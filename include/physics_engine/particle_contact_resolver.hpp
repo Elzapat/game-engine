@@ -12,7 +12,7 @@ class ParticleContactResolver {
         unsigned int max_iterations;
 
     public:
-        ParticleContactResolver(unsigned int _max_iterations);
+        ParticleContactResolver(unsigned int _max_iterations = 50);
         ~ParticleContactResolver();
         
         void resolve_contacts(std::vector<ParticleContact> contacts);

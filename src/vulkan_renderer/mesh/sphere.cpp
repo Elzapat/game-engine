@@ -4,15 +4,13 @@ std::vector<Vertex> Sphere::get_vertices() {
     std::vector<Vertex> vertices;
 
     float x, y, z, xy;  // vertex position
-    float nx, ny, nz, length_inv = 1.0f / SPHERE_RADIUS;  // vertex normal
-    float s, t;  // vertex texCoord
 
     float sector_step = 2.0f * M_PI / static_cast<float>(SLICES);
     float stack_step = M_PI / static_cast<float>(STACKS);
     float sector_angle, stack_angle;
 
     for (int i = 0; i <= SLICES; i++) {
-        stack_angle = M_PI / 2.0F - static_cast<float>(i) * stack_step;
+        stack_angle = M_PI / 2.0f - static_cast<float>(i) * stack_step;
         xy = SPHERE_RADIUS * std::cos(stack_angle);
         z = SPHERE_RADIUS * std::sin(stack_angle);
 
