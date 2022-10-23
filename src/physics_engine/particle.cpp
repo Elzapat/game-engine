@@ -24,10 +24,6 @@ void Particle::set_velocity(const math::Vector3D velocity) {
     this->velocity = velocity;
 }
 
-void Particle::add_velocity(math::Vector3D delta_vel) {
-    this->velocity += delta_vel;
-}
-
 void Particle::set_acceleration(const math::Vector3D acceleration) {
     this->acceleration = acceleration;
 }
@@ -70,6 +66,10 @@ math::Vector3D Particle::get_forces() const {
 
 void Particle::add_force(math::Vector3D force) {
     this->forces += force;
+}
+
+void Particle::apply_impulse(math::Vector3D impulse) {
+    this->velocity += this->inv_mass * impulse;
 }
 
 void Particle::integrate() {

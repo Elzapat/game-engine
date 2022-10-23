@@ -15,32 +15,44 @@ ParticleContact::ParticleContact(
 ParticleContact ::~ParticleContact() {}
 
 void ParticleContact::resolve_velocity() {
-    std::shared_ptr<Particle> p1 = this->particle1;
-    std::shared_ptr<Particle> p2 = this->particle2;
+    float separating_velocity = this->separating_velocity();
 
-    // Apply impulsion : k = ((e + 1)v_rel * n) / ((1 / m_1 + 1 / m_2)n * n)
-    math::Vector3D k = (this->restitution + 1) * this->relative_velocity() * this->normal;
-    k /= (p1->get_inv_mass() + p2->get_inv_mass());
-    std::cout << this->relative_velocity() << std::endl;
-    std::cout << k << std::endl;
+    if (separating_velocity > 0.0f) {
+        return;
+    }
 
-    // v' = v ± k / m
-    p1->set_velocity(p1->get_velocity() - k * p1->get_inv_mass());
-    p2->set_velocity(p2->get_velocity() + k * p2->get_inv_mass());
+    float new_separating_velocity = -separating_velocity * this->restitution;
+    float total_inv_mass = this->particle1->get_inv_mass() + this->particle2->get_inv_mass();
+    float delta_velocity = new_separating_velocity - separating_velocity;
+
+    if (total_inv_mass <= 0.0f) {
+        return;
+    }
+
+    float impulse = delta_velocity / total_inv_mass;
+
+    this->particle1->apply_impulse(impulse * this->normal);
+    this->particle2->apply_impulse(-impulse * this->normal);
 }
 
 void ParticleContact::resolve_interpenetration() {
-    float p1_mass = this->particle1->get_mass();
-    float p2_mass = this->particle2->get_mass();
+    if (penetration <= 0.0f) {
+        return;
+    }
 
-    // Apply a delta to the position of the particles, factoring in their mass
-    // Δp_a =  (m_b / (m_a + m_b))dn
-    // Δp_b = -(m_a / (m_a + m_b))dn
-    math::Vector3D delta_p1 = (p2_mass / (p1_mass + p2_mass)) * this->penetration * this->normal;
-    math::Vector3D delta_p2 = -(p1_mass / (p1_mass + p2_mass)) * this->penetration * this->normal;
+    float total_inv_mass = this->particle1->get_inv_mass() + this->particle2->get_inv_mass();
 
-    this->particle1->add_velocity(delta_p1);
-    this->particle2->add_velocity(delta_p2);
+    if (total_inv_mass <= 0) {
+        return;
+    }
+
+    math::Vector3D delta_position = this->normal * (this->penetration / total_inv_mass);
+
+    math::Vector3D delta_p1 = delta_position * this->particle1->get_inv_mass();
+    math::Vector3D delta_p2 = delta_position * -this->particle2->get_inv_mass();
+
+    this->particle1->set_position(this->particle1->get_position() + delta_p1);
+    this->particle2->set_position(this->particle2->get_position() + delta_p2);
 }
 
 void ParticleContact::resolve() {
@@ -48,6 +60,10 @@ void ParticleContact::resolve() {
     this->resolve_velocity();
 }
 
-float ParticleContact::relative_velocity() {
-    return (this->particle1->get_velocity() - this->particle2->get_velocity()).norm();
+math::Vector3D ParticleContact::relative_velocity() {
+    return this->particle1->get_velocity() - this->particle2->get_velocity();
+}
+
+float ParticleContact::separating_velocity() {
+    return this->relative_velocity().dot(this->normal);
 }

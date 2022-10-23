@@ -11,11 +11,12 @@
 #include "camera.hpp"
 
 #include <vulkan/vulkan.h>
+#include <vector>
 #include <memory>
 
 class Ui {
     public:
-        void draw(Camera& camera);
+        void draw(Camera& camera, std::vector<std::shared_ptr<Particle>>& particles);
         void render(VkCommandBuffer& command_buffer);
         ImGui_ImplVulkanH_Window* get_window_data();
 

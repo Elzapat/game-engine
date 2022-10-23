@@ -6,12 +6,14 @@ PhysicWorld::PhysicWorld() : contact_resolver(20) {
     p1->set_mass(50.0f);
     p2->set_mass(50.0f);
 
-    std::shared_ptr<ParticleSpring> spring = std::make_shared<ParticleSpring>(p2, 40.0f, 2.0f);
+    std::shared_ptr<ParticleSpring> spring = std::make_shared<ParticleSpring>(p2, 40.0f, 3.5f);
+    std::shared_ptr<ParticleSpring> spring2 = std::make_shared<ParticleSpring>(p1, 40.0f, 3.5f);
     std::shared_ptr<ParticleDrag> drag = std::make_shared<ParticleDrag>(0.47f, 0.0f);
 
-    p1->set_position(math::Vector3D(5.0f, 5.0f, 0.0f));
+    p1->set_position(math::Vector3D(5.0f, 0.0f, 0.0f));
 
     this->force_registry.add_entry(p1, spring);
+    this->force_registry.add_entry(p2, spring2);
     this->force_registry.add_entry(p1, drag);
     this->force_registry.add_entry(p2, drag);
 

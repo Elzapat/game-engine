@@ -23,12 +23,12 @@ class ParticleContact {
         ~ParticleContact();
         
         void resolve();
-        float relative_velocity();
+        math::Vector3D relative_velocity();
+        float separating_velocity();
 
     private:
         void resolve_velocity();
         void resolve_interpenetration();
-
 };
 
 #endif

@@ -26,7 +26,6 @@ class Particle {
 
         void set_position(const math::Vector3D position);
         void set_velocity(const math::Vector3D velocity);
-        void add_velocity(math::Vector3D delta_vel);
         void set_acceleration(const math::Vector3D acceleration);
         void set_inv_mass(const float inv_mass);
         void set_mass(const float mass);
@@ -40,6 +39,7 @@ class Particle {
         math::Vector3D get_forces() const;
 
         void add_force(math::Vector3D force);
+        void apply_impulse(math::Vector3D impulse);
 
         void integrate();
 };

@@ -4,7 +4,7 @@ ImGui_ImplVulkanH_Window* Ui::get_window_data() {
     return &this->main_window_data;
 }
 
-void Ui::draw(Camera& camera) {
+void Ui::draw(Camera& camera, std::vector<std::shared_ptr<Particle>>& particles) {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -46,12 +46,17 @@ void Ui::draw(Camera& camera) {
         ImGui::SliderFloat("Mouse sensitivity", &camera.sensitivity, 0.01f, 0.2f);
     }
 
-    /* ImGui::Text("%d particules", n_particules); */
-    /*  */
-    /* if (ImGui::Button("Spawn new particule")) {} */
+    ImGui::Text("%lu particles", particles.size());
+
+    static float impulse = 0.0f;
+    ImGui::SliderFloat("Impulse", &impulse, 0.0f, 500.0f);
+
+    if (ImGui::Button("Apply impulse to all particles")) {
+        particles[0]->apply_impulse(math::Vector3D(-impulse, 0.0f, 0.0f));
+        particles[1]->apply_impulse(math::Vector3D(impulse, 0.0f, impulse));
+    }
 
     ImGui::End();
-
     ImGui::EndFrame();
 }
 

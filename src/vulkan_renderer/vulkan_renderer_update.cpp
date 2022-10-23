@@ -159,7 +159,7 @@ void VulkanRenderer::record_command_buffer(
         /* vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0); */
     }
 
-    ui.draw(this->camera);
+    ui.draw(this->camera, particles);
     ui.render(command_buffer);
 
     vkCmdEndRenderPass(command_buffer);
