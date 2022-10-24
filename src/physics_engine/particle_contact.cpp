@@ -36,7 +36,7 @@ void ParticleContact::resolve_velocity() {
 }
 
 void ParticleContact::resolve_interpenetration() {
-    if (penetration <= 0.01f) {
+    if (penetration <= 0.00f) {
         return;
     }
 

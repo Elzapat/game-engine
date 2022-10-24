@@ -1,21 +1,18 @@
 #include "../../include/physics_engine/particle_rod.hpp"
 
 ParticleRod::ParticleRod(
-    Particle* particle_1,
-    Particle* particle_2,
-    float _lenght
+    std::shared_ptr<Particle> p1,
+    std::shared_ptr<Particle> p2,
+    float _length
 ) :
-    max_lenght(_max_lenght),
-    restitution(_restitution) {
-        particles[0] = particle_1;
-        particles[1] = particle_2;
-    }
+    ParticleLink(p1, p2),
+    length(_length) {}
 
-ParticleCable::~ParticleCable() {}
+ParticleRod::~ParticleRod() {}
 
-void ParticleContact::add_contact(std::vector<ParticleContact>& contacts) {
-    float difference = this->currentLenght() - this->lenght;
-    if(difference != 0) {
-        contacts.push_back(ParticleContact(p1, p2, 0, difference));
+void ParticleRod::add_contact(std::vector<ParticleContact>& contacts) {
+    float difference = this->current_length() - this->length;
+    if (difference != 0) {
+        contacts.push_back(ParticleContact(this->particle1, this->particle2, 0, difference));
     }
 }

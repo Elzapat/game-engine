@@ -63,6 +63,15 @@ add_executable(physics-engine
     src/physics_engine/particle_contact.cpp
     include/physics_engine/particle_contact.hpp
 
+    src/physics_engine/particle_rod.cpp
+    include/physics_engine/particle_rod.hpp
+
+    src/physics_engine/particle_link.cpp
+    include/physics_engine/particle_link.hpp
+
+    src/physics_engine/particle_cable.cpp
+    include/physics_engine/particle_cable.hpp
+
     include/physics_engine/particle_contact_generator.hpp
 
     src/physics_engine/naive_particle_contact_generator.cpp

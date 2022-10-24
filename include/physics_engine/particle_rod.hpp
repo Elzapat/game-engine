@@ -3,15 +3,19 @@
 
 #include "particle_link.hpp"
 
-class ParticleRod : ParticleLink {
+#include <vector>
+#include <memory>
+
+class ParticleRod : public ParticleLink {
     private:
-        float lenght;
+        float length;
 
     public:
         ParticleRod(
-            Particle* particle_1,
-            Particle* particle_2,
-            float lenght);
+            std::shared_ptr<Particle> p1,
+            std::shared_ptr<Particle> p2,
+            float length
+        );
         ~ParticleRod();
         
         void add_contact(std::vector<ParticleContact>& contacts);

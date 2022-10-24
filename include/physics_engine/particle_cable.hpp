@@ -3,17 +3,21 @@
 
 #include "particle_link.hpp"
 
-class ParticleCable : ParticleLink {
+#include <vector>
+#include <memory>
+
+class ParticleCable : public ParticleLink {
     private:
-        float max_lenght;
+        float max_length;
         float restitution;
         
     public:
         ParticleCable(
-            Particle* particle_1,
-            Particle* particle_2,
-            float max_lenght
-            float restitution);
+            std::shared_ptr<Particle> p1,
+            std::shared_ptr<Particle> p2,
+            float _max_length,
+            float _restitution
+        );
         ~ParticleCable();
         
         void add_contact(std::vector<ParticleContact>& contacts);
