@@ -7,12 +7,11 @@
 #include <memory>
 
 class ParticleAnchoredSpring : public ParticleForceGenerator {
-    private:
+    public:
         math::Vector3D anchor;
         float k;
         float rest_length;
 
-    public:
         ParticleAnchoredSpring(
             math::Vector3D _anchor,
             float _k,

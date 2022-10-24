@@ -26,3 +26,5 @@
 * Implémentation des générateurs de forces
 * Implémentation des générateurs de contacts
 * Implémentation des resolveurs de contacts
+* Création d'une démo graphique qui montre un amas de particule 
+    * Problème de téléportations des particules bloqués au milieu de beaucoup d'autres, on ne sait pas encore comment fix

@@ -19,6 +19,8 @@ class Ui {
         void draw(Camera& camera, std::vector<std::shared_ptr<Particle>>& particles);
         void render(VkCommandBuffer& command_buffer);
         ImGui_ImplVulkanH_Window* get_window_data();
+        static math::Vector3D spring_anchor;
+        static float anchored_spring_rest_length;
 
     private:
         ImGui_ImplVulkanH_Window main_window_data;

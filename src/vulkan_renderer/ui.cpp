@@ -1,5 +1,8 @@
 #include "../../include/vulkan_renderer/ui.hpp"
 
+math::Vector3D Ui::spring_anchor = math::Vector3D();
+float Ui::anchored_spring_rest_length = 1.0f;
+
 ImGui_ImplVulkanH_Window* Ui::get_window_data() {
     return &this->main_window_data;
 }
@@ -36,6 +39,7 @@ void Ui::draw(Camera& camera, std::vector<std::shared_ptr<Particle>>& particles)
         ImGui::Text("Frame time: %f, FPS: %d", average_frame_time, average_fps);
     }
 
+    ImGui::Text("Use WASD, A, E and the mouse to control the camera");
     ImGui::Text(
         "Press Y to enable or disable the mouse\nMouse enabled = %s",
         camera.mouse_disabled ? "true" : "false"
@@ -48,12 +52,19 @@ void Ui::draw(Camera& camera, std::vector<std::shared_ptr<Particle>>& particles)
 
     ImGui::Text("%lu particles", particles.size());
 
-    static float impulse = 0.0f;
-    ImGui::SliderFloat("Impulse", &impulse, 0.0f, 500.0f);
+    ImGui::Text(
+        "All particles have the same anchored spring that\n is anchored on (0,0,0) by default"
+    );
+    if (ImGui::CollapsingHeader("Spring anchor")) {
+        float x = Ui::spring_anchor.get_x(), y = Ui::spring_anchor.get_y(),
+              z = Ui::spring_anchor.get_z();
+        ImGui::SliderFloat("x", &x, -100.0f, 100.0f);
+        ImGui::SliderFloat("y", &y, -100.0f, 100.0f);
+        ImGui::SliderFloat("z", &z, -100.0f, 100.0f);
 
-    if (ImGui::Button("Apply impulse to all particles")) {
-        particles[0]->apply_impulse(math::Vector3D(-impulse, 0.0f, 0.0f));
-        particles[1]->apply_impulse(math::Vector3D(impulse, 0.0f, impulse));
+        ImGui::SliderFloat("rest_length", &Ui::anchored_spring_rest_length, 0.0f, 50.0f);
+
+        Ui::spring_anchor = math::Vector3D(x, y, z);
     }
 
     ImGui::End();

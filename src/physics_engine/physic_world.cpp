@@ -2,13 +2,14 @@
 
 PhysicWorld::PhysicWorld() : contact_resolver() {
     // Forces
-    std::shared_ptr<ParticleDrag> drag = std::make_shared<ParticleDrag>(0.47f, 0.0f);
+    auto drag = std::make_shared<ParticleDrag>(0.47f, 0.0f);
+    this->anchored_spring = std::make_shared<ParticleAnchoredSpring>(math::Vector3D(), 50.0f, 1.0f);
 
     // Generate all particles
-    /* const int SLICES = 11; */
-    /* const int STACKS = 10; */
-    const int SLICES = 3;
-    const int STACKS = 3;
+    const int SLICES = 11;
+    const int STACKS = 10;
+    /* const int SLICES = 3; */
+    /* const int STACKS = 3; */
 
     const int RADIUS = 15;
 
@@ -30,16 +31,14 @@ PhysicWorld::PhysicWorld() : contact_resolver() {
             particle->set_position(math::Vector3D(x, y, z));
 
             this->force_registry.add_entry(particle, drag);
+            this->force_registry.add_entry(particle, anchored_spring);
 
             if (this->particles.size() >= 1) {
                 int random_idx = rand() % particles.size();
                 std::shared_ptr<ParticleSpring> spring =
                     std::make_shared<ParticleSpring>(this->particles[random_idx], 5.0f, 10.0f);
-                std::shared_ptr<ParticleAnchoredSpring> anchored_spring =
-                    std::make_shared<ParticleAnchoredSpring>(math::Vector3D(), 50.0f, 1.0f);
 
                 /* this->force_registry.add_entry(particle, spring); */
-                this->force_registry.add_entry(particle, anchored_spring);
             }
 
             this->particles.push_back(particle);
@@ -52,6 +51,8 @@ PhysicWorld::PhysicWorld() : contact_resolver() {
 }
 
 void PhysicWorld::update() {
+    this->anchored_spring->anchor = Ui::spring_anchor;
+    this->anchored_spring->rest_length = Ui::anchored_spring_rest_length;
     std::vector<ParticleContact> contacts;
 
     this->force_registry.update();

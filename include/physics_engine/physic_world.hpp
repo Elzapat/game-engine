@@ -12,6 +12,7 @@
 #include "particle_contact_generator.hpp"
 #include "particle_contact_resolver.hpp"
 #include "naive_particle_contact_generator.hpp"
+#include "../vulkan_renderer/ui.hpp"
 
 class PhysicWorld {
     public:
@@ -28,6 +29,8 @@ class PhysicWorld {
     private:
         std::vector<std::shared_ptr<Particle>> particles;
         std::vector<std::unique_ptr<ParticleContactGenerator>> contact_generators;
+
+        std::shared_ptr<ParticleAnchoredSpring> anchored_spring;
 
         ParticleForceRegistry force_registry;
         ParticleContactResolver contact_resolver;
