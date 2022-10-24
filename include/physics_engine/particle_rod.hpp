@@ -8,10 +8,13 @@ class ParticleRod : ParticleLink {
         float lenght;
 
     public:
-        ParticleRod();
+        ParticleRod(
+            Particle* particle_1,
+            Particle* particle_2,
+            float lenght);
         ~ParticleRod();
         
-        void add_contact(ParticleContact* contact, unsigned int limit);
+        void add_contact(std::vector<ParticleContact>& contacts);
 };
 
 #endif

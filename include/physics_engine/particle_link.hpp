@@ -4,14 +4,14 @@
 #include "particle_contact_generator.hpp"
 
 class ParticleLink : ParticleContactGenerator {
-    private:
+    protected:
         Particle* particles[2]
 
     public:
         ParticleLink();
         ~ParticleLink();
         
-        void add_contact(ParticleContact* contact, unsigned int limit);
+        virtual void add_contact(std::vector<ParticleContact>& contacts);
         float currentLenght();
 };
 

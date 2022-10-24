@@ -9,10 +9,14 @@ class ParticleCable : ParticleLink {
         float restitution;
         
     public:
-        ParticleCable();
+        ParticleCable(
+            Particle* particle_1,
+            Particle* particle_2,
+            float max_lenght
+            float restitution);
         ~ParticleCable();
         
-        void add_contact(ParticleContact* contact, unsigned int limit);
+        void add_contact(std::vector<ParticleContact>& contacts);
 };
 
 #endif
