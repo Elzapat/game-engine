@@ -19,17 +19,20 @@ namespace math {
             Matrix33(
                 float x1 = 0.0, float y1 = 0.0, float z1 =0.0,
                 float x2 = 0.0, float y2 = 0.0, float z2 =0.0,
-                float x3 = 0.0, float y3 = 0.0, float z3 =0.0,
+                float x3 = 0.0, float y3 = 0.0, float z3 =0.0
             );
             ~Matrix33();
 
             std::array<float, 9> get_values();
-            std::array<float, 3> get_line(int line);
-            std::array<float, 3> get_column(int column);
+            Vector3D get_line(int line);
+            Vector3D get_column(int column);
             float get_value(int line, int column);
 
-            void setValue(int line, int column, float value);
-            void setValues(std::array<float, 9> values);
+            void set_value(int line, int column, float value);
+            void set_values(std::array<float, 9> values);
+
+            void set_line(int line, Vector3D vect_line);
+            void set_column(int column, Vector3D vect_column);
 
             Matrix33 operator*(const Matrix33& other) const;
             Vector3D operator*(const Vector3D& other) const;
