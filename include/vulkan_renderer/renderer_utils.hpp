@@ -66,7 +66,7 @@ struct UboVS {
     glm::mat4 projection;
 };
 
-struct UboData {
+struct alignas(128) UboData {
     glm::mat4 model;
     glm::vec3 color;
 };
