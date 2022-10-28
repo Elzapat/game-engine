@@ -37,10 +37,11 @@ namespace math {
             Matrix33 operator*(const Matrix33& other) const;
             Vector3D operator*(const Vector3D& other) const;
 
+            float get_det();
             Matrix33 inverse();
             Matrix33 transpose();
 
-            void setOrientation(const Quaternion& q);
+            void set_orientation(const Quaternion& q);
 
     };
 }

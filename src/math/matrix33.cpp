@@ -77,3 +77,73 @@ Vector3D Matrix33::operator*(const Vector3D& other) const {
     Vector3D new_vector(other.dot(get_line(0)), other.dot(get_line(1)), other.dot(get_line(2)))
     return new_vector;
 }
+
+
+float Matrix33::get_det() {
+    float a = this->get_value(0,0);
+    float b = this->get_value(0,1);
+    float c = this->get_value(0,2);
+    float d = this->get_value(1,0);
+    float e = this->get_value(1,1);
+    float f = this->get_value(1,2);
+    float g = this->get_value(2,0);
+    float h = this->get_value(2,1);
+    float i = this->get_value(2,2);
+
+    return a*e*i + d*h*c + g*b*f - a*h*f - g*e*c - d*b*i;
+}
+
+Matrix33 Matrix33::inverse() {
+
+    float det = this->get_det();
+
+    Matrix33 new_matrix33;
+
+    if(det != 0) {
+        for(int line = 0; line < 3; line++) {
+            for(int column = 0; column < 3; column++) {
+
+               new_matrix33.set_value(column, line,
+                    ( this->get_value((line + 1) % 3,(column + 1) % 3)
+                    * this->get_value((line + 2) % 3,(column + 2) % 3)
+                    - this->get_value((line + 1) % 3,(column + 2) % 3)
+                    * this->get_value((line + 2) % 3,(column + 1) % 3) )
+                    / det
+                );
+            }
+        }
+    }
+    //else ???
+
+    return new_matrix33;
+}
+
+Matrix33 Matrix33::transpose() {
+    Matrix33 new_matrix33;
+
+    for(int line = 0; line < 3; line++) {
+        for(int column = 0; column < 3; column++) {
+            new_matrix33.set_value(line, column, this->get_value(column,line));
+        }
+    }
+
+    return new_matrix33;
+}
+
+void Matrix33::set_orientation(const Quaternion& q) {
+    float w = q.get_value(0);
+    float x = q.get_value(1);
+    float y = q.get_value(2);
+    float z = q.get_value(3);
+
+    this->set_value(0, 0, 1 - 2 * (y ^ 2) - 2 * (z ^ 2));
+    this->set_value(1, 1, 1 - 2 * (x ^ 2) - 2 * (z ^ 2));
+    this->set_value(2, 2, 1 - 2 * (y ^ 2) - 2 * (x ^ 2));
+
+    this->set_value(0, 1, 2*x*y + 2*z*w);
+    this->set_value(0, 2, 2*x*z - 2*y*w);
+    this->set_value(1, 0, 2*x*y - 2*z*w);
+    this->set_value(1, 2, 2*z*y + 2*x*w);
+    this->set_value(2, 0, 2*x*z + 2*y*w);
+    this->set_value(2, 1, 2*z*y - 2*x*w);
+}
