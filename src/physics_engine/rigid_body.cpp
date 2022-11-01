@@ -79,9 +79,18 @@ float RigidBody::get_linear_damping() {
 }
 
 void RigidBody::compute_derived_data() {
-    
+    this->orientation.normalized();
+    this->transform.transform_position(this->velocity);
+    this->transform.transform_direction(this->rotation);
 }
 
 void RigidBody::integrate() {
+    float dt = Time::delta_time();
 
+    this->orientation.update_by_angular_velocity(this->rotation);
+
+    this->compute_derived_data();
+
+    this->position += this->position * dt;
+    this->velocity *= this->linear_damping / dt;
 }
