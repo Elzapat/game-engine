@@ -38,7 +38,7 @@ PhysicWorld::PhysicWorld() : contact_resolver() {
                 std::shared_ptr<ParticleSpring> spring =
                     std::make_shared<ParticleSpring>(this->particles[random_idx], 5.0f, 10.0f);
 
-                this->force_registry.add_entry(particle, spring);
+                /* this->force_registry.add_entry(particle, spring); */
             }
 
             this->particles.push_back(particle);

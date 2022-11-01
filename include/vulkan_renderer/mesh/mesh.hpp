@@ -7,8 +7,8 @@
 
 class Mesh {
     public:
-        virtual std::vector<Vertex> get_vertices() = 0;
-        virtual std::vector<uint32_t> get_indices() = 0;
+        std::vector<Vertex> vertices;
+        std::vector<uint32_t> indices;
 };
 
 #endif // MESH_HPP

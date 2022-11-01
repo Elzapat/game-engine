@@ -1,5 +1,83 @@
 #include "../../../include/vulkan_renderer/mesh/sphere.hpp"
 
+Sphere::Sphere(float _radius, int _sectors, int _stacks) :
+    radius(_radius),
+    sectors(_sectors),
+    stacks(_stacks)  //
+{
+    float x, y, z, xy;  // vertex position
+
+    float sector_step = 2.0f * M_PI / static_cast<float>(this->sectors);
+    float stack_step = M_PI / static_cast<float>(this->stacks);
+    float sector_angle, stack_angle;
+
+    for (int i = 0; i <= this->stacks; i++) {
+        stack_angle = M_PI / 2.0f - static_cast<float>(i) * stack_step;
+        xy = radius * std::cos(stack_angle);
+        z = radius * std::sin(stack_angle);
+
+        for (int j = 0; j <= this->sectors; j++) {
+            sector_angle = static_cast<float>(j) * sector_step;
+
+            x = xy * std::cos(sector_angle);
+            y = xy * std::sin(sector_angle);
+
+            Vertex vertex = {{x, y, z}, {1.0f, 1.0f, 0.0f}};
+            this->vertices.push_back(vertex);
+        }
+    }
+
+    /*
+    for (uint32_t i = 0; i < this->stacks; i++) {
+        uint32_t k1 = i * (static_cast<uint32_t>(this->sectors) + 1);
+        uint32_t k2 = k1 + static_cast<uint32_t>(this->sectors) + 1;
+
+        for (uint32_t j = 0; j < this->sectors; j++, k1++, k2++) {
+            if (i != 0) {
+                this->indices.push_back(k1 + 1);
+                this->indices.push_back(k2);
+                this->indices.push_back(k1);
+            }
+
+            if (i != this->stacks - 1) {
+                this->indices.push_back(k2 + 1);
+                this->indices.push_back(k2);
+                this->indices.push_back(k1 + 1);
+            }
+        }
+    }
+    */
+    int k1, k2;
+
+    for (int i = 0; i < this->stacks; i++) {
+        k1 = i * (this->sectors + 1);
+        k2 = k1 + this->sectors + 1;
+
+        for (int j = 0; j < this->sectors; j++, k1++, k2++) {
+            indices.push_back(k1 + 1);
+            indices.push_back(k2);
+            indices.push_back(k1);
+
+            indices.push_back(k2 + 1);
+            indices.push_back(k2);
+            indices.push_back(k1 + 1);
+        }
+    }
+
+    /*
+    for (int i = 0; i < sectors * stacks + sectors; i++) {
+        indices.push_back(static_cast<uint32_t>(i));
+        indices.push_back(static_cast<uint32_t>(i + sectors + 1));
+        indices.push_back(static_cast<uint32_t>(i + sectors));
+
+        indices.push_back(static_cast<uint32_t>(i + sectors + 1));
+        indices.push_back(static_cast<uint32_t>(i));
+        indices.push_back(static_cast<uint32_t>(i + 1));
+    }
+    */
+}
+
+/*
 std::vector<Vertex> Sphere::get_vertices() {
     std::vector<Vertex> vertices;
 
@@ -25,7 +103,6 @@ std::vector<Vertex> Sphere::get_vertices() {
         }
     }
 
-    /*
     for (int i = 0; i <= STACKS; i++) {
         float v = static_cast<float>(i) / static_cast<float>(STACKS);
         float phi = v * M_PI;
@@ -46,7 +123,7 @@ std::vector<Vertex> Sphere::get_vertices() {
     std::cout << vertices.size() << std::endl;
     */
 
-    /*
+/*
     const int RESOLUTION = 8;
 
     for (int u = 0; u < RESOLUTION; u++) {
@@ -57,7 +134,6 @@ std::vector<Vertex> Sphere::get_vertices() {
         Vertex vertex = {{x, y, z}, {1.0f, 1.0f, 0.0f}};
         vertices.push_back(vertex);
     }
-    */
 
     return vertices;
 }
@@ -65,7 +141,6 @@ std::vector<Vertex> Sphere::get_vertices() {
 std::vector<uint32_t> Sphere::get_indices() {
     std::vector<uint32_t> indices;
 
-    /*
     uint32_t k1, k2;
 
     for (uint32_t i = 0; i < STACKS; i++) {
@@ -86,7 +161,6 @@ std::vector<uint32_t> Sphere::get_indices() {
             }
         }
     }
-    */
 
     for (int i = 0; i < SLICES * STACKS + SLICES; i++) {
         indices.push_back(static_cast<uint32_t>(i));
@@ -98,11 +172,10 @@ std::vector<uint32_t> Sphere::get_indices() {
         indices.push_back(static_cast<uint32_t>(i + 1));
     }
 
-    /*
     for (int i = 0; i < 8; i++) {
         indices.push_back(i);
     }
-         */
 
     return indices;
 }
+*/

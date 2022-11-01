@@ -30,12 +30,12 @@
 #include "renderer_utils.hpp"
 #include "camera.hpp"
 #include "../time.hpp"
-#include "mesh/sphere.hpp"
+#include "mesh.hpp"
 
 static const int WIDTH = 800;
 static const int HEIGHT = 600;
 static const int MAX_FRAMES_IN_FLIGHT = 2;
-static const int MAX_OBJECT_INSTANCES = 125;
+static const int MAX_OBJECT_INSTANCES = 50;
 
 static const std::vector<const char*> validation_layers = {"VK_LAYER_KHRONOS_validation"};
 static const std::vector<const char*> device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
@@ -45,21 +45,6 @@ static const bool enable_validation_layers = false;
 #else
 static const bool enable_validation_layers = true;
 #endif
-
-static std::vector<Vertex> vertices = {
-    {{-1.0f, -1.0f,  1.0f}, {1.0f, 0.0f, 0.0f}},
-    {{ 1.0f, -1.0f,  1.0f}, {0.0f, 1.0f, 0.0f}},
-    {{ 1.0f,  1.0f,  1.0f}, {0.0f, 0.0f, 1.0f}},
-    {{-1.0f,  1.0f,  1.0f}, {0.0f, 0.0f, 0.0f}},
-    {{-1.0f, -1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}},
-    {{ 1.0f, -1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
-    {{ 1.0f,  1.0f, -1.0f}, {0.0f, 0.0f, 1.0f}},
-    {{-1.0f,  1.0f, -1.0f}, {0.0f, 0.0f, 0.0f}},
-};
-
-static std::vector<uint32_t> indices = {
-    0,1,2, 2,3,0, 1,5,6, 6,2,1, 7,6,5, 5,4,7, 4,0,3, 3,7,4, 4,5,1, 1,0,4, 3,2,6, 6,7,3
-};
 
 void check_vk_result(VkResult result, std::string message);
 VkResult create_debug_utils_messenger_EXT(
@@ -118,9 +103,11 @@ class VulkanRenderer {
         bool framebuffer_resized = false;
         uint32_t current_frame = 0;
 
+        std::vector<Vertex> vertices;
         VkBuffer vertex_buffer;
         VkDeviceMemory vertex_buffer_memory;
 
+        std::vector<uint32_t> indices;
         VkBuffer index_buffer;
         VkDeviceMemory index_buffer_memory;
 
@@ -136,6 +123,7 @@ class VulkanRenderer {
         VkImageView depth_image_view;
 
         std::vector<glm::vec3> cubes_colors = std::vector<glm::vec3>(MAX_OBJECT_INSTANCES);
+        std::vector<Mesh> meshes;
 
         Camera camera;
 
