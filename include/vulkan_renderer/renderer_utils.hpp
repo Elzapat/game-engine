@@ -39,9 +39,10 @@ struct Vertex {
     /* math::Vector3D color; */
     math::Vector3D pos;
     math::Vector3D color;
+    math::Vector3D normal;
 
     static VkVertexInputBindingDescription get_binding_description();
-    static std::array<VkVertexInputAttributeDescription, 2> get_attribute_description();
+    static std::array<VkVertexInputAttributeDescription, 3> get_attribute_description();
 };
 
 #include <glm/glm.hpp>

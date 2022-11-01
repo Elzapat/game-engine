@@ -95,17 +95,11 @@ add_executable(physics-engine
     src/vulkan_renderer/camera.cpp
     include/vulkan_renderer/camera.hpp
 
+    src/vulkan_renderer/mesh.cpp
+    include/vulkan_renderer/mesh.hpp
+
     src/time.cpp
     include/time.hpp
-
-    src/vulkan_renderer/mesh/mesh.cpp
-    include/vulkan_renderer/mesh/mesh.hpp
-
-    src/vulkan_renderer/mesh/cube.cpp
-    include/vulkan_renderer/mesh/cube.hpp
-
-    src/vulkan_renderer/mesh/sphere.cpp
-    include/vulkan_renderer/mesh/sphere.hpp
 )
 
 # GLSL Shader compilation to Vulkan compatabile SPV fromat

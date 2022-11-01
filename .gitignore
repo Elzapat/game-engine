@@ -9,3 +9,4 @@ bin
 imgui.ini
 build
 .vscode
+.cache

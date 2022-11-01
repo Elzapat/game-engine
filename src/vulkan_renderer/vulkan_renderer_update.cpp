@@ -129,16 +129,23 @@ void VulkanRenderer::record_command_buffer(
     scissor.extent = this->swapchain_extent;
     vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
+    /*
     VkBuffer vertex_buffers[] = {this->vertex_buffer};
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
+    */
 
-    vkCmdBindIndexBuffer(command_buffer, this->index_buffer, 0, VK_INDEX_TYPE_UINT32);
+    /* vkCmdBindIndexBuffer(command_buffer, this->index_buffer, 0, VK_INDEX_TYPE_UINT32); */
 
     for (uint32_t i = 0; i < MAX_OBJECT_INSTANCES; i++) {
-        if (i >= particles.size()) {
+        if (i >= particles.size() || i >= this->meshes.size()) {
             break;
         }
+
+        VkBuffer vertex_buffers[] = {this->vertex_buffer};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
+        vkCmdBindIndexBuffer(command_buffer, this->index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
         uint32_t dynamic_offset = i * static_cast<uint32_t>(this->dynamic_alignment);
 
@@ -153,10 +160,10 @@ void VulkanRenderer::record_command_buffer(
             &dynamic_offset
         );
 
-        for (uint32_t j = 0; j < static_cast<uint32_t>(indices.size()); j++) {
-            vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, j * 5, 0);
-        }
-        /* vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0); */
+        /* for (uint32_t j = 0; j < static_cast<uint32_t>(indices.size()); j++) { */
+        /*     vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, j * 2, 0); */
+        /* } */
+        vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(this->indices.size()), 1, 0, 0, 0);
     }
 
     ui.draw(this->camera, particles);
@@ -175,7 +182,7 @@ void VulkanRenderer::update_uniform_buffer(
     /* float x_i = 0.0f, y_i = 0.0f, z_i = 0.0f; */
 
     for (int i = 0; i < MAX_OBJECT_INSTANCES; i++) {
-        if (i >= particles.size()) {
+        if (i >= particles.size() || i >= this->meshes.size()) {
             break;
         }
 

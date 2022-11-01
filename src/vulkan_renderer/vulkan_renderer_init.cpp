@@ -27,15 +27,13 @@ GLFWwindow* VulkanRenderer::init_window() {
 
 // Initialiazes all the needed Vulkan objets
 void VulkanRenderer::init_vulkan() {
-    Sphere sphere;
-    vertices = sphere.get_vertices();
-    indices = sphere.get_indices();
-    /* std::cout << vertices.size() << " " << indices.size() << std::endl; */
-    /* for (int i = 0; i < indices.size(); i++) { */
-    /*     std::cout << indices[i] << " "; */
-    /* } */
-    /*  */
-    /* std::cout << std::endl; */
+    for (int i = 0; i < MAX_OBJECT_INSTANCES; i++) {
+        this->meshes.push_back(Mesh::sphere(1.0f, 15, 15));
+    }
+
+    vertices = this->meshes[0].vertices;
+    indices = this->meshes[0].indices;
+
     this->create_instance();
     this->setup_debug_messenger();
     this->create_surface();
@@ -450,7 +448,7 @@ void VulkanRenderer::create_graphics_pipeline() {
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     multisampling.sampleShadingEnable = VK_FALSE;
     multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-    /* multisampling.minSampleShading = 1.0f; */
+    multisampling.minSampleShading = 1.0f;
     /* multisampling.pSampleMask = nullptr; */
     /* multisampling.alphaToCoverageEnable = VK_FALSE; */
     /* multisampling.alphaToOneEnable = VK_FALSE; */
@@ -616,7 +614,7 @@ void VulkanRenderer::create_command_pool() {
 }
 
 void VulkanRenderer::create_vertex_buffer() {
-    VkDeviceSize buffer_size = sizeof(vertices[0]) * vertices.size();
+    VkDeviceSize buffer_size = sizeof(this->vertices[0]) * this->vertices.size();
 
     VkBuffer staging_buffer;
     VkDeviceMemory staging_buffer_memory;
@@ -630,7 +628,7 @@ void VulkanRenderer::create_vertex_buffer() {
 
     void* data;
     vkMapMemory(this->device, staging_buffer_memory, 0, buffer_size, 0, &data);
-    memcpy(data, vertices.data(), (size_t)buffer_size);
+    memcpy(data, this->vertices.data(), (size_t)buffer_size);
     vkUnmapMemory(this->device, staging_buffer_memory);
 
     this->create_buffer(
@@ -648,7 +646,7 @@ void VulkanRenderer::create_vertex_buffer() {
 }
 
 void VulkanRenderer::create_index_buffer() {
-    VkDeviceSize buffer_size = sizeof(indices[0]) * indices.size();
+    VkDeviceSize buffer_size = sizeof(this->indices[0]) * this->indices.size();
 
     VkBuffer staging_buffer;
     VkDeviceMemory staging_buffer_memory;
@@ -662,7 +660,7 @@ void VulkanRenderer::create_index_buffer() {
 
     void* data;
     vkMapMemory(this->device, staging_buffer_memory, 0, buffer_size, 0, &data);
-    memcpy(data, indices.data(), (size_t)buffer_size);
+    memcpy(data, this->indices.data(), (size_t)buffer_size);
     vkUnmapMemory(this->device, staging_buffer_memory);
 
     create_buffer(

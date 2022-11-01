@@ -8,8 +8,7 @@
 
 class Cube : public Mesh {
     public:
-        std::vector<Vertex> get_vertices() override;
-        std::vector<uint32_t> get_indices() override;
+        Cube();
 };
 
 #endif // CUBE_HPP
