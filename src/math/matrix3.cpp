@@ -26,7 +26,7 @@ std::array<float, 9> Matrix3::get_values() {
 Vector3 Matrix3::get_line(int line) const {
     std::clamp(line, 0, 2);
 
-    Vector3 new_vector(this->values[line], this->values[line + 1], this->values[line + 2]);
+    Vector3 new_vector(this->values[line * 3], this->values[line * 3 + 1], this->values[line * 3 + 2]);
     return new_vector;
 }
 
