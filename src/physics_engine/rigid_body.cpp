@@ -1,36 +1,28 @@
-#include "../../include/physics_engine/rigid_body.hpp"
+iinclude "../../include/physics_engine/rigid_body.hpp"
 
-RigidBody::RigidBody() {}
+    RigidBody::RigidBody() {}
 
-RigidBody::RigidBody(
-    math::Vector3D pos,
-    math::Vector3D vel,
-    math::Vector3D rot,
-    math::Quaternion orientation;
-    math::Matrix43 transform
-    float inv_mass
-    float linear_damping,
-) :
+RigidBody::RigidBody(math::Vector3 pos,
+                     math::Vector3 vel,
+                     math::Vector3 rot,
+                     math::Quaternion orientation;
+                     math::Matrix43 transform float inv_mass float linear_damping, ) :
 
-this->positon(pos),
-this->velocity(vel),
-this->rotation(rot),
-this->orientation(orientation),
-this->transform(transform),
-this->inv_mass(inv_mass),
-this->linear_damping(linear_damping) {}
+    this->positon(pos),
+this->velocity(vel), this->rotation(rot), this->orientation(orientation),
+this->transform(transform), this->inv_mass(inv_mass), this->linear_damping(linear_damping) {}
 
-RigidBody::~RigidBody(){}
+RigidBody::~RigidBody() {}
 
-void RigidBody::set_posisition(math::Vector3D pos) {
+void RigidBody::set_posisition(math::Vector3 pos) {
     this->position = pos;
 }
 
-void RigidBody::set_velocity(math::Vector3D vel) {
+void RigidBody::set_velocity(math::Vector3 vel) {
     this->velocity = vel;
 }
 
-void RigidBody::set_rotation(math::Vector3D rot) {
+void RigidBody::set_rotation(math::Vector3 rot) {
     this->rotation = rot;
 }
 
@@ -50,15 +42,15 @@ void RigidBody::set_linear_damping(float linear_damping) {
     this->linear_damping = linear_damping;
 }
 
-math::Vector3D RigidBody::get_position() {
+math::Vector3 RigidBody::get_position() {
     return this->position;
-} 
+}
 
-math::Vector3D RigidBody::get_velocity() {
+math::Vector3 RigidBody::get_velocity() {
     return this->velocity;
 }
 
-math::Vector3D RigidBody::get_rotation() {
+math::Vector3 RigidBody::get_rotation() {
     return this->rotation;
 }
 
