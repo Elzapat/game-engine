@@ -1,4 +1,5 @@
 #include "../../include/physics_engine/physic_world.hpp"
+#include <corecrt_math_defines.h>
 
 PhysicWorld::PhysicWorld() : contact_resolver() {
     // Forces

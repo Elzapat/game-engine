@@ -142,7 +142,7 @@ target_link_libraries(physics-engine
 )
 
 if(MSVC)
-    target_compile_options(physics-engine PRIVATE /W4 /WX)
+    target_compile_options(physics-engine PRIVATE /W4)
 else()
     target_compile_options(physics-engine PRIVATE -Wall -Wextra -Wpedantic)
 endif()

@@ -1,4 +1,5 @@
 #include "../../include/vulkan_renderer/mesh.hpp"
+#include <corecrt_math_defines.h>
 
 Mesh::Mesh(MeshType _type, std::vector<Vertex> _vertices, std::vector<uint32_t> _indices) :
     vertices(_vertices),
