@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "../math/vector3D.hpp"
+#include "../math/vector3.hpp"
 #include "../time.hpp"
 
 class Camera {
@@ -27,13 +27,13 @@ class Camera {
             bool down = false;
         } keys;
 
-        math::Vector3D rotation;
-        math::Vector3D position;
-        math::Vector3D front;
-        math::Vector3D target;
-        math::Vector3D direction;
-        math::Vector3D up;
-        math::Vector3D right;
+        math::Vector3 rotation;
+        math::Vector3 position;
+        math::Vector3 front;
+        math::Vector3 target;
+        math::Vector3 direction;
+        math::Vector3 up;
+        math::Vector3 right;
 
         glm::mat4 view;
 };

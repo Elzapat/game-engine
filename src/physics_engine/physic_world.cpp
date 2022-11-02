@@ -3,7 +3,7 @@
 PhysicWorld::PhysicWorld() : contact_resolver() {
     // Forces
     auto drag = std::make_shared<ParticleDrag>(0.47f, 0.0f);
-    this->anchored_spring = std::make_shared<ParticleAnchoredSpring>(math::Vector3D(), 50.0f, 1.0f);
+    this->anchored_spring = std::make_shared<ParticleAnchoredSpring>(math::Vector3(), 50.0f, 1.0f);
 
     // Generate all particles
     const int SLICES = 11;
@@ -28,7 +28,7 @@ PhysicWorld::PhysicWorld() : contact_resolver() {
             float y = xy * std::sin(sector_angle);
 
             std::shared_ptr<Particle> particle = std::make_shared<Particle>();
-            particle->set_position(math::Vector3D(x, y, z));
+            particle->set_position(math::Vector3(x, y, z));
 
             this->force_registry.add_entry(particle, drag);
             this->force_registry.add_entry(particle, anchored_spring);

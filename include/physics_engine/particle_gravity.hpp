@@ -6,10 +6,10 @@
 
 class ParticleGravity : public ParticleForceGenerator {
     private:
-        math::Vector3D gravity;
+        math::Vector3 gravity;
 
     public:
-        ParticleGravity(math::Vector3D _gravity);
+        ParticleGravity(math::Vector3 _gravity);
         ~ParticleGravity();
 
         void update_force(Particle* particle);

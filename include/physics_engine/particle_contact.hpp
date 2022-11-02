@@ -2,7 +2,7 @@
 #define PARTICLE_CONTACT_HPP
 
 #include "particle.hpp"
-#include "../math/vector3D.hpp"
+#include "../math/vector3.hpp"
 
 #include <memory>
 
@@ -12,7 +12,7 @@ class ParticleContact {
         std::shared_ptr<Particle> particle2;
         float restitution;
         float penetration;
-        math::Vector3D normal;
+        math::Vector3 normal;
 
         ParticleContact(
             std::shared_ptr<Particle> p1,
@@ -23,7 +23,7 @@ class ParticleContact {
         ~ParticleContact();
         
         void resolve();
-        math::Vector3D relative_velocity();
+        math::Vector3 relative_velocity();
         float separating_velocity();
 
     private:

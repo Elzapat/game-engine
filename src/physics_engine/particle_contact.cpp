@@ -23,7 +23,7 @@ void ParticleContact::resolve_velocity() {
 
     float new_separating_velocity = -separating_velocity * this->restitution;
 
-    math::Vector3D accel_caused_vel =
+    math::Vector3 accel_caused_vel =
         this->particle1->get_acceleration() - this->particle2->get_acceleration();
     float accel_caused_sep_vel = accel_caused_vel.dot(this->normal) * Time::delta_time();
 
@@ -59,10 +59,10 @@ void ParticleContact::resolve_interpenetration() {
         return;
     }
 
-    math::Vector3D delta_position = this->normal * (this->penetration / total_inv_mass);
+    math::Vector3 delta_position = this->normal * (this->penetration / total_inv_mass);
 
-    math::Vector3D delta_p1 = delta_position * this->particle1->get_inv_mass();
-    math::Vector3D delta_p2 = delta_position * -this->particle2->get_inv_mass();
+    math::Vector3 delta_p1 = delta_position * this->particle1->get_inv_mass();
+    math::Vector3 delta_p2 = delta_position * -this->particle2->get_inv_mass();
 
     this->particle1->set_position(this->particle1->get_position() + delta_p1);
     this->particle2->set_position(this->particle2->get_position() + delta_p2);
@@ -75,7 +75,7 @@ void ParticleContact::resolve() {
     this->resolve_velocity();
 }
 
-math::Vector3D ParticleContact::relative_velocity() {
+math::Vector3 ParticleContact::relative_velocity() {
     return this->particle1->get_velocity() - this->particle2->get_velocity();
 }
 

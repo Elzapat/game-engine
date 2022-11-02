@@ -1,6 +1,6 @@
 #include "../../include/vulkan_renderer/ui.hpp"
 
-math::Vector3D Ui::spring_anchor = math::Vector3D();
+math::Vector3 Ui::spring_anchor = math::Vector3();
 float Ui::anchored_spring_rest_length = 1.0f;
 
 ImGui_ImplVulkanH_Window* Ui::get_window_data() {
@@ -64,7 +64,7 @@ void Ui::draw(Camera& camera, std::vector<std::shared_ptr<Particle>>& particles)
 
         ImGui::SliderFloat("rest_length", &Ui::anchored_spring_rest_length, 0.0f, 50.0f);
 
-        Ui::spring_anchor = math::Vector3D(x, y, z);
+        Ui::spring_anchor = math::Vector3(x, y, z);
     }
 
     ImGui::End();

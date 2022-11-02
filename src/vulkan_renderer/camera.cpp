@@ -1,12 +1,12 @@
 #include "../../include/vulkan_renderer/camera.hpp"
 
 Camera::Camera() {
-    this->position = math::Vector3D(-50.0f, 0.0f, 0.0f);
-    this->front = math::Vector3D(0.0f, 1.0f, 0.0f);
+    this->position = math::Vector3(-50.0f, 0.0f, 0.0f);
+    this->front = math::Vector3(0.0f, 1.0f, 0.0f);
 
     this->direction = (this->position - this->target).normalize();
 
-    this->right = math::Vector3D(0.0f, 0.0f, 1.0f).cross(this->direction).normalize();
+    this->right = math::Vector3(0.0f, 0.0f, 1.0f).cross(this->direction).normalize();
     this->up = this->direction.cross(this->right);
 
     this->update();
@@ -16,7 +16,7 @@ void Camera::update() {
     this->right = this->front.cross(this->up).normalize();
 
     // Update looking direction
-    math::Vector3D direction(
+    math::Vector3 direction(
         std::cos(glm::radians(this->rotation.get_x()))
             * std::cos(glm::radians(this->rotation.get_z())),
         -std::sin(glm::radians(this->rotation.get_x()))

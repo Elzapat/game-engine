@@ -5,7 +5,7 @@
 #include <iostream>
 #include <array>
 #include <glm/glm.hpp>
-#include "vector3D.hpp"
+#include "vector3.hpp"
 
 namespace math {
     /* 
@@ -24,18 +24,18 @@ namespace math {
             ~Matrix33();
 
             std::array<float, 9> get_values();
-            Vector3D get_line(int line);
-            Vector3D get_column(int column);
+            Vector3 get_line(int line);
+            Vector3 get_column(int column);
             float get_value(int line, int column);
 
             void set_value(int line, int column, float value);
             void set_values(std::array<float, 9> values);
 
-            void set_line(int line, Vector3D vect_line);
-            void set_column(int column, Vector3D vect_column);
+            void set_line(int line, Vector3 vect_line);
+            void set_column(int column, Vector3 vect_column);
 
             Matrix33 operator*(const Matrix33& other) const;
-            Vector3D operator*(const Vector3D& other) const;
+            Vector3 operator*(const Vector3& other) const;
 
             float get_det();
             Matrix33 inverse();

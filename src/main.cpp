@@ -2,7 +2,7 @@
 #include <ctime>
 #include <iostream>
 
-#include "../include/math/vector3D.hpp"
+#include "../include/math/vector3.hpp"
 #include "../include/physics_engine/particle.hpp"
 #include "../include/physics_engine/particle_force_registry.hpp"
 #include "../include/physics_engine/particle_spring.hpp"

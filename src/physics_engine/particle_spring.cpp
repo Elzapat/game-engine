@@ -8,7 +8,7 @@ ParticleSpring::ParticleSpring(std::shared_ptr<Particle> _other, float _k, float
 ParticleSpring::~ParticleSpring() {}
 
 void ParticleSpring::update_force(std::shared_ptr<Particle> particle) {
-    math::Vector3D vector_between = particle->get_position() - other->get_position();
+    math::Vector3 vector_between = particle->get_position() - other->get_position();
     float force_to_add = k * (rest_length - vector_between.norm());
 
     particle->add_force(vector_between.normalize() * force_to_add);

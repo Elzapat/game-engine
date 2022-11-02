@@ -3,7 +3,7 @@
 
 // clang-format off
 
-#include "../../include/math/vector3D.hpp"
+#include "../../include/math/vector3.hpp"
 
 #include <vector>
 #include <string>
@@ -35,11 +35,11 @@ struct SwapchainSupportDetails {
 };
 
 struct Vertex {
-    /* math::Vector3D pos; */
-    /* math::Vector3D color; */
-    math::Vector3D pos;
-    math::Vector3D color;
-    math::Vector3D normal;
+    /* math::Vector3 pos; */
+    /* math::Vector3 color; */
+    math::Vector3 pos;
+    math::Vector3 color;
+    math::Vector3 normal;
 
     static VkVertexInputBindingDescription get_binding_description();
     static std::array<VkVertexInputAttributeDescription, 3> get_attribute_description();
@@ -77,7 +77,7 @@ struct UboDataDynamic {
 };
 
 struct InstanceData {
-    math::Vector3D position;
+    math::Vector3 position;
 };
 
 #endif // RENDERER_UTILS_HPP

@@ -30,8 +30,11 @@ endif()
 add_executable(physics-engine
     src/main.cpp
 
-    src/math/vector3D.cpp
-    include/math/vector3D.hpp
+    src/math/vector3.cpp
+    include/math/vector3.hpp
+
+    src/math/quaternion.cpp
+    include/math/quaternion.hpp
 
     src/physics_engine/particle.cpp
     include/physics_engine/particle.hpp

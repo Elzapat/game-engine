@@ -17,7 +17,7 @@ void ParticleBuoyancy::update_force(Particle* particle) {
     float y = particle->get_position().get_y();
 
     float d = (y - this->water_height - this->max_depth) / (2 * this->max_depth);
-    math::Vector3D buoyancy(0, d * this->liquid_density, 0);
+    math::Vector3 buoyancy(0, d * this->liquid_density, 0);
 
     particle->add_force(buoyancy * Time::delta_time());
 }
