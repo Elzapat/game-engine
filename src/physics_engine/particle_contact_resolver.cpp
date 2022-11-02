@@ -1,6 +1,6 @@
 #include "../../include/physics_engine/particle_contact_resolver.hpp"
 
-ParticleContactResolver::ParticleContactResolver(unsigned int _max_iterations) :
+ParticleContactResolver::ParticleContactResolver(uint32_t _max_iterations) :
     max_iterations(_max_iterations) {}
 
 ParticleContactResolver::~ParticleContactResolver() {}
@@ -14,11 +14,11 @@ void ParticleContactResolver::resolve_contacts(std::vector<ParticleContact> cont
 
     // Loop until max iterations is reached or the smallest relative velocityis
     // is higher than 0, meaning all contacts have been resolved
-    for (int iterations = 0; iterations < max_iterations; iterations++) {
+    for (uint32_t iterations = 0; iterations < max_iterations; iterations++) {
         float smallest_sep_vel = std::numeric_limits<float>::max();
-        int contact_to_resolve_idx = contacts.size();
+        size_t contact_to_resolve_idx = contacts.size();
 
-        for (int i = 0; i < contacts.size(); i++) {
+        for (size_t i = 0; i < contacts.size(); i++) {
             float sep_vel = contacts[i].separating_velocity();
             if (sep_vel < smallest_sep_vel && (sep_vel < 0.0f || contacts[i].penetration > 0.0f)) {
                 smallest_sep_vel = contacts[i].separating_velocity();

@@ -1229,10 +1229,8 @@ void VulkanRenderer::create_image(
     VkMemoryAllocateInfo alloc_info {};
     alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     alloc_info.allocationSize = mem_requirements.size;
-    alloc_info.memoryTypeIndex = this->find_memory_type(
-        mem_requirements.memoryTypeBits,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-    );
+    alloc_info.memoryTypeIndex =
+        this->find_memory_type(mem_requirements.memoryTypeBits, properties);
 
     if (vkAllocateMemory(this->device, &alloc_info, nullptr, &image_memory) != VK_SUCCESS) {
         throw std::runtime_error("Failed to allocate image memory");

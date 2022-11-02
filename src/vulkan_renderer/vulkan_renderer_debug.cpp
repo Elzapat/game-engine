@@ -57,10 +57,10 @@ void destroy_debug_utils_messenger_EXT(
 }
 
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanRenderer::debug_callback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
-    VkDebugUtilsMessageTypeFlagsEXT message_type,
+    [[maybe_unused]] VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+    [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT message_type,
     const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data,
-    void* p_user_data
+    [[maybe_unused]] void* p_user_data
 ) {
     std::cerr << "validation layer: " << p_callback_data->pMessage << std::endl;
 

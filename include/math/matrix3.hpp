@@ -1,32 +1,34 @@
-#ifndef Matrix33_HPP
-#define Matrix33_HPP
+#ifndef Matrix3_HPP
+#define Matrix3_HPP
 
 #include <cmath>
 #include <iostream>
 #include <array>
 #include <glm/glm.hpp>
+#include <algorithm>
 #include "vector3.hpp"
+#include "quaternion.hpp"
 
 namespace math {
     /* 
      * Class representing a mathematical matrix 3x3
      */
-    class Matrix33 {
+    class Matrix3 {
         private:
             std::array<float, 9> values;
 
         public:
-            Matrix33(
+            Matrix3(
                 float x1 = 0.0, float y1 = 0.0, float z1 =0.0,
                 float x2 = 0.0, float y2 = 0.0, float z2 =0.0,
                 float x3 = 0.0, float y3 = 0.0, float z3 =0.0
             );
-            ~Matrix33();
+            ~Matrix3();
 
             std::array<float, 9> get_values();
-            Vector3 get_line(int line);
-            Vector3 get_column(int column);
-            float get_value(int line, int column);
+            Vector3 get_line(int line) const;
+            Vector3 get_column(int column) const;
+            float get_value(const int line, const int column) const;
 
             void set_value(int line, int column, float value);
             void set_values(std::array<float, 9> values);
@@ -34,12 +36,12 @@ namespace math {
             void set_line(int line, Vector3 vect_line);
             void set_column(int column, Vector3 vect_column);
 
-            Matrix33 operator*(const Matrix33& other) const;
+            Matrix3 operator*(const Matrix3& other) const;
             Vector3 operator*(const Vector3& other) const;
 
             float get_det();
-            Matrix33 inverse();
-            Matrix33 transpose();
+            Matrix3 inverse();
+            Matrix3 transpose();
 
             void set_orientation(const Quaternion& q);
 

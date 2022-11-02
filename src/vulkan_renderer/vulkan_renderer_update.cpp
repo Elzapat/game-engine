@@ -176,12 +176,12 @@ void VulkanRenderer::record_command_buffer(
 }
 
 void VulkanRenderer::update_uniform_buffer(
-    uint32_t current_image,
+    [[maybe_unused]] uint32_t current_image,
     std::vector<std::shared_ptr<Particle>>& particles
 ) {
     /* float x_i = 0.0f, y_i = 0.0f, z_i = 0.0f; */
 
-    for (int i = 0; i < MAX_OBJECT_INSTANCES; i++) {
+    for (uint32_t i = 0; i < MAX_OBJECT_INSTANCES; i++) {
         if (i >= particles.size() || i >= this->meshes.size()) {
             break;
         }
@@ -272,7 +272,11 @@ void VulkanRenderer::update_camera() {
     camera.update();
 }
 
-void VulkanRenderer::framebuffer_resize_callback(GLFWwindow* window, int width, int height) {
+void VulkanRenderer::framebuffer_resize_callback(
+    GLFWwindow* window,
+    [[maybe_unused]] int width,
+    [[maybe_unused]] int height
+) {
     auto renderer = reinterpret_cast<VulkanRenderer*>(glfwGetWindowUserPointer(window));
     renderer->framebuffer_resized = true;
 }
@@ -310,7 +314,13 @@ void VulkanRenderer::mouse_callback(GLFWwindow* window, double x_pos, double z_p
     );
 }
 
-void VulkanRenderer::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void VulkanRenderer::key_callback(
+    GLFWwindow* window,
+    int key,
+    [[maybe_unused]] int scancode,
+    [[maybe_unused]] int action,
+    [[maybe_unused]] int mods
+) {
     auto renderer = reinterpret_cast<VulkanRenderer*>(glfwGetWindowUserPointer(window));
 
     if (key == GLFW_KEY_Y && action == GLFW_PRESS) {

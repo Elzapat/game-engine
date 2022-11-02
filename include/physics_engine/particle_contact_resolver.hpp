@@ -9,7 +9,7 @@
 
 class ParticleContactResolver {
     private:
-        unsigned int max_iterations;
+        uint32_t max_iterations;
 
     public:
         ParticleContactResolver(unsigned int _max_iterations = 50);

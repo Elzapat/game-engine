@@ -75,7 +75,7 @@ void Particle::apply_impulse(math::Vector3 impulse) {
 void Particle::integrate() {
     float dt = Time::delta_time();
 
-    this->acceleration = this->forces;
+    this->acceleration = this->inv_mass * this->forces;
     this->velocity += this->acceleration * dt;
     this->position += this->velocity * dt;
 

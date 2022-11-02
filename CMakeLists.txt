@@ -36,6 +36,9 @@ add_executable(physics-engine
     src/math/quaternion.cpp
     include/math/quaternion.hpp
 
+    src/math/matrix3.cpp
+    include/math/matrix3.hpp
+
     src/physics_engine/particle.cpp
     include/physics_engine/particle.hpp
 
@@ -137,6 +140,12 @@ target_link_libraries(physics-engine
     glfw
     imgui
 )
+
+if(MSVC)
+    target_compile_options(physics-engine PRIVATE /W4 /WX)
+else()
+    target_compile_options(physics-engine PRIVATE -Wall -Wextra -Wpedantic)
+endif()
 
 if(WIN32)
     target_link_libraries(physics-engine Vulkan::Vulkan)
