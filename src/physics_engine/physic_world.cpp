@@ -1,9 +1,5 @@
 #include "physics_engine/physic_world.hpp"
 
-#ifdef _WIN32
-    #include <corecrt_math_defines.h>
-#endif
-
 PhysicWorld::PhysicWorld() : contact_resolver() {
     // Forces
     auto drag = std::make_shared<ParticleDrag>(0.47f, 0.0f);

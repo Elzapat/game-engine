@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <memory>
+#if defined(_MSC_VER)
+    #include <corecrt_math_defines.h>
+#endif
 
 #include "vulkan_renderer/ui.hpp"
 

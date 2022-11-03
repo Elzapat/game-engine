@@ -14,6 +14,7 @@ namespace math {
             Vector3 operator*(const Vector3& rhs) const;
             Matrix4 operator*(const Matrix4& rhs) const;
 
+            Vector3 transform(const Vector3 &vector) const;
             Matrix4 translate(const Vector3& translation) const;
             Matrix4 rotate(const Vector3& rotation) const;
     };

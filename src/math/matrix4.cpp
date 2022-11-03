@@ -49,6 +49,12 @@ Matrix4 Matrix4::operator*(const Matrix4& rhs) const {
     return res;
 }
 
-Matrix4 Matrix4::translate(const Vector3& translation) const {}
+Vector3 Matrix4::transform(const Vector3& vector) const {
+    return (*this) * vector;
+}
+
+Matrix4 Matrix4::translate(const Vector3& translation) const  {
+    
+}
 
 Matrix4 Matrix4::rotate(const Vector3& rotation) const {}

@@ -1,6 +1,6 @@
 #include "vulkan_renderer/mesh.hpp"
 
-#ifdef _WIN32
+#if defined(_MSC_VER)
     #include <corecrt_math_defines.h>
 #endif
 
