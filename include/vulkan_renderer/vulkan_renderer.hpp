@@ -68,7 +68,6 @@ class VulkanRenderer {
 
     private:
         Ui ui;
-        PhysicWorld physic_world;
 
         GLFWwindow* window;
         VkInstance instance;

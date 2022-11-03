@@ -1,5 +1,5 @@
-#ifndef Matrix3_HPP
-#define Matrix3_HPP
+#ifndef MATRIX3_HPP
+#define MATRIX3_HPP
 
 #include <cmath>
 #include <iostream>
@@ -48,4 +48,4 @@ namespace math {
     };
 }
 
-#endif //MATRIX33_HPP
+#endif // MATRIX3_HPP

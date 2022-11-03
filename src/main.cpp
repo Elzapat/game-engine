@@ -5,6 +5,7 @@
 #include "GLFW/glfw3.h"
 #include "math/vector3.hpp"
 #include "physics_engine/particle.hpp"
+#include "physics_engine/physic_world.hpp"
 #include "time.hpp"
 #include "vulkan_renderer/vulkan_renderer.hpp"
 

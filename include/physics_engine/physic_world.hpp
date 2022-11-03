@@ -4,7 +4,10 @@
 #include <vector>
 #include <memory>
 
+#include "vulkan_renderer/ui.hpp"
+
 #include "particle.hpp"
+#include "rigid_body.hpp"
 #include "forces/particles/particle_force_registry.hpp"
 #include "forces/particles/particle_spring.hpp"
 #include "forces/particles/particle_anchored_spring.hpp"
@@ -12,7 +15,6 @@
 #include "contacts/particles/particle_contact_generator.hpp"
 #include "contacts/particles/particle_contact_resolver.hpp"
 #include "contacts/particles/naive_particle_contact_generator.hpp"
-#include "../vulkan_renderer/ui.hpp"
 
 class PhysicWorld {
     public:

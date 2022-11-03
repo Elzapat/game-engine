@@ -1,16 +1,23 @@
-iinclude "physics_engine/rigid_body.hpp"
+#include "physics_engine/rigid_body.hpp"
 
-    RigidBody::RigidBody() {}
+RigidBody::RigidBody() {}
 
-RigidBody::RigidBody(math::Vector3 pos,
-                     math::Vector3 vel,
-                     math::Vector3 rot,
-                     math::Quaternion orientation;
-                     math::Matrix43 transform float inv_mass float linear_damping, ) :
-
-    this->positon(pos),
-this->velocity(vel), this->rotation(rot), this->orientation(orientation),
-this->transform(transform), this->inv_mass(inv_mass), this->linear_damping(linear_damping) {}
+RigidBody::RigidBody(
+    math::Vector3 pos,
+    math::Vector3 vel,
+    math::Vector3 rot,
+    math::Quaternion orientation,
+    math::Matrix4 transform,
+    float inv_mass,
+    float linear_damping
+) :
+    inv_mass(inv_mass),
+    linear_damping(linear_damping),
+    position(pos),
+    velocity(vel),
+    orientation(orientation),
+    rotation(rot),
+    transform(transform) {}
 
 RigidBody::~RigidBody() {}
 
@@ -30,7 +37,7 @@ void RigidBody::set_orientation(math::Quaternion orientation) {
     this->orientation = orientation;
 }
 
-void RigidBody::set_transform(math::Matrix43 transform) {
+void RigidBody::set_transform(math::Matrix4 transform) {
     this->transform = transform;
 }
 
@@ -58,7 +65,7 @@ math::Quaternion RigidBody::get_orientation() {
     return this->orientation;
 }
 
-math::Matrix43 RigidBody::get_transform() {
+math::Matrix4 RigidBody::get_transform() {
     return this->transform;
 }
 
@@ -71,9 +78,9 @@ float RigidBody::get_linear_damping() {
 }
 
 void RigidBody::compute_derived_data() {
-    this->orientation.normalized();
-    this->transform.transform_position(this->velocity);
-    this->transform.transform_direction(this->rotation);
+    this->orientation = this->orientation.normalize();
+    this->transform = this->transform.translate(this->velocity);
+    this->transform = this->transform.rotate(this->rotation);
 }
 
 void RigidBody::integrate() {

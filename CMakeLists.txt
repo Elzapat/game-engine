@@ -35,9 +35,11 @@ add_executable(physics-engine
     src/math/vector3.cpp
     src/math/quaternion.cpp
     src/math/matrix3.cpp
+    src/math/matrix4.cpp
 
     src/physics_engine/physic_world.cpp
     src/physics_engine/particle.cpp
+    src/physics_engine/rigid_body.cpp
 
     src/physics_engine/forces/particles/particle_force_registry.cpp
     src/physics_engine/forces/particles/particle_force_generator.cpp
