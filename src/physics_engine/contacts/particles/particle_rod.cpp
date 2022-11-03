@@ -1,4 +1,4 @@
-#include "../../include/physics_engine/particle_rod.hpp"
+#include "physics_engine/contacts/particles/particle_rod.hpp"
 
 ParticleRod::ParticleRod(
     std::shared_ptr<Particle> p1,

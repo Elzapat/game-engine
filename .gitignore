@@ -10,3 +10,4 @@ imgui.ini
 build
 .vscode
 .cache
+compile_commands.json

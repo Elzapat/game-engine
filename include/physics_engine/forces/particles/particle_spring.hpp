@@ -2,7 +2,7 @@
 #define PARTICLE_SPRING_HPP
 
 #include "particle_force_generator.hpp"
-#include "../time.hpp"
+#include "../../../time.hpp"
 
 #include <memory>
 

@@ -1,4 +1,4 @@
-#include "../../include/vulkan_renderer/vulkan_renderer.hpp"
+#include "vulkan_renderer/vulkan_renderer.hpp"
 
 void VulkanRenderer::setup_debug_messenger() {
     if (!enable_validation_layers) {

@@ -2,13 +2,11 @@
 #include <ctime>
 #include <iostream>
 
-#include "../include/math/vector3.hpp"
-#include "../include/physics_engine/particle.hpp"
-#include "../include/physics_engine/particle_force_registry.hpp"
-#include "../include/physics_engine/particle_spring.hpp"
-#include "../include/time.hpp"
-#include "../include/vulkan_renderer/vulkan_renderer.hpp"
 #include "GLFW/glfw3.h"
+#include "math/vector3.hpp"
+#include "physics_engine/particle.hpp"
+#include "time.hpp"
+#include "vulkan_renderer/vulkan_renderer.hpp"
 
 int main() {
     srand(time(nullptr));

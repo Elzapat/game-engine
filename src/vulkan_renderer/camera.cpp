@@ -1,4 +1,4 @@
-#include "../../include/vulkan_renderer/camera.hpp"
+#include "vulkan_renderer/camera.hpp"
 
 Camera::Camera() {
     this->position = math::Vector3(-50.0f, 0.0f, 0.0f);

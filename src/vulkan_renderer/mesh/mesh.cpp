@@ -1,1 +1,1 @@
-#include "../../../include/vulkan_renderer/mesh/mesh.hpp"
+#include "vulkan_renderer/mesh/mesh.hpp"

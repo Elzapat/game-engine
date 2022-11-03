@@ -1,4 +1,4 @@
-#include "../../include/physics_engine/particle_spring.hpp"
+#include "physics_engine/forces/particles/particle_spring.hpp"
 
 ParticleSpring::ParticleSpring(std::shared_ptr<Particle> _other, float _k, float _rest_length) :
     other(_other),

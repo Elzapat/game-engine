@@ -1,4 +1,4 @@
-#include "../../include/vulkan_renderer/renderer_utils.hpp"
+#include "vulkan_renderer/renderer_utils.hpp"
 
 bool QueueFamilyIndices::is_complete() {
     return this->graphics_family.has_value() && this->present_family.has_value();

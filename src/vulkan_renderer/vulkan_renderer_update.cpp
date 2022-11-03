@@ -1,4 +1,4 @@
-#include "../../include/vulkan_renderer/vulkan_renderer.hpp"
+#include "vulkan_renderer/vulkan_renderer.hpp"
 
 void VulkanRenderer::draw(std::vector<std::shared_ptr<Particle>>& particles) {
     this->draw_frame(particles);

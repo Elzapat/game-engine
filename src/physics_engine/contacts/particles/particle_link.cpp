@@ -1,4 +1,4 @@
-#include "../../include/physics_engine/particle_link.hpp"
+#include "physics_engine/contacts/particles/particle_link.hpp"
 
 ParticleLink::ParticleLink(std::shared_ptr<Particle> p1, std::shared_ptr<Particle> p2) :
     particle1(p1),

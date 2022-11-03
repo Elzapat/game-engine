@@ -1,4 +1,4 @@
-#include "../../../include/vulkan_renderer/mesh/sphere.hpp"
+#include "vulkan_renderer/mesh/sphere.hpp"
 
 Sphere::Sphere(float _radius, int _sectors, int _stacks) :
     radius(_radius),

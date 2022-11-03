@@ -1,4 +1,4 @@
-#include "../../include/math/vector3.hpp"
+#include "math/vector3.hpp"
 
 using namespace math;
 

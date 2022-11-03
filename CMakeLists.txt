@@ -30,83 +30,41 @@ endif()
 add_executable(physics-engine
     src/main.cpp
 
+    src/time.cpp
+
     src/math/vector3.cpp
-    include/math/vector3.hpp
-
     src/math/quaternion.cpp
-    include/math/quaternion.hpp
-
     src/math/matrix3.cpp
-    include/math/matrix3.hpp
-
-    src/physics_engine/particle.cpp
-    include/physics_engine/particle.hpp
 
     src/physics_engine/physic_world.cpp
-    include/physics_engine/physic_world.hpp
+    src/physics_engine/particle.cpp
 
-    src/physics_engine/particle_force_registry.cpp
-    include/physics_engine/particle_force_registry.hpp
+    src/physics_engine/forces/particles/particle_force_registry.cpp
+    src/physics_engine/forces/particles/particle_force_generator.cpp
+    src/physics_engine/forces/particles/particle_drag.cpp
+    src/physics_engine/forces/particles/particle_spring.cpp
+    src/physics_engine/forces/particles/particle_anchored_spring.cpp
+    src/physics_engine/forces/particles/particle_buoyancy.cpp
+    src/physics_engine/forces/particles/particle_gravity.cpp
 
-    src/physics_engine/particle_force_generator.cpp
-    include/physics_engine/particle_force_generator.hpp
-
-    src/physics_engine/particle_drag.cpp
-    include/physics_engine/particle_drag.hpp
-
-    src/physics_engine/particle_spring.cpp
-    include/physics_engine/particle_spring.hpp
-
-    src/physics_engine/particle_anchored_spring.cpp
-    include/physics_engine/particle_anchored_spring.hpp
-
-    src/physics_engine/particle_buoyancy.cpp
-    include/physics_engine/particle_buoyancy.hpp
-
-    src/physics_engine/particle_gravity.cpp
-    include/physics_engine/particle_gravity.hpp
-
-    src/physics_engine/particle_contact.cpp
-    include/physics_engine/particle_contact.hpp
-
-    src/physics_engine/particle_rod.cpp
-    include/physics_engine/particle_rod.hpp
-
-    src/physics_engine/particle_link.cpp
-    include/physics_engine/particle_link.hpp
-
-    src/physics_engine/particle_cable.cpp
-    include/physics_engine/particle_cable.hpp
-
-    include/physics_engine/particle_contact_generator.hpp
-
-    src/physics_engine/naive_particle_contact_generator.cpp
-    include/physics_engine/naive_particle_contact_generator.hpp
-
-    src/physics_engine/particle_contact_resolver.cpp
-    include/physics_engine/particle_contact_resolver.hpp
+    src/physics_engine/contacts/particles/particle_contact.cpp
+    src/physics_engine/contacts/particles/particle_rod.cpp
+    src/physics_engine/contacts/particles/particle_link.cpp
+    src/physics_engine/contacts/particles/particle_cable.cpp
+    src/physics_engine/contacts/particles/naive_particle_contact_generator.cpp
+    src/physics_engine/contacts/particles/particle_contact_resolver.cpp
 
     src/vulkan_renderer/vulkan_renderer_init.cpp
     src/vulkan_renderer/vulkan_renderer_cleanup.cpp
     src/vulkan_renderer/vulkan_renderer_update.cpp
     src/vulkan_renderer/vulkan_renderer_debug.cpp
-    include/vulkan_renderer/vulkan_renderer.hpp
-    
     src/vulkan_renderer/ui.cpp
-    include/vulkan_renderer/ui.hpp
-
     src/vulkan_renderer/renderer_utils.cpp
-    include/vulkan_renderer/renderer_utils.hpp
-
     src/vulkan_renderer/camera.cpp
-    include/vulkan_renderer/camera.hpp
-
     src/vulkan_renderer/mesh.cpp
-    include/vulkan_renderer/mesh.hpp
-
-    src/time.cpp
-    include/time.hpp
 )
+
+target_include_directories(physics-engine PRIVATE include)
 
 # GLSL Shader compilation to Vulkan compatabile SPV fromat
 find_program(glslc_exe NAMES glslc HINTS Vulkan::glslc)

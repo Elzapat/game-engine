@@ -1,8 +1,8 @@
 #ifndef PARTICLE_CONTACT_HPP
 #define PARTICLE_CONTACT_HPP
 
-#include "particle.hpp"
-#include "../math/vector3.hpp"
+#include "physics_engine/particle.hpp"
+#include "math/vector3.hpp"
 
 #include <memory>
 

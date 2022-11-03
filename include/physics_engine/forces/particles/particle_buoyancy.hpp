@@ -2,7 +2,7 @@
 #define PARTICLE_BUOYANCY_HPP
 
 #include "particle_force_generator.hpp"
-#include "../time.hpp"
+#include "time.hpp"
 
 class ParticleBuoyancy : public ParticleForceGenerator {
     private:

@@ -1,4 +1,4 @@
-#include "../../include/vulkan_renderer/ui.hpp"
+#include "vulkan_renderer/ui.hpp"
 
 math::Vector3 Ui::spring_anchor = math::Vector3();
 float Ui::anchored_spring_rest_length = 1.0f;

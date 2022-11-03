@@ -1,4 +1,4 @@
-#include "../../include/math/matrix3.hpp"
+#include "math/matrix3.hpp"
 
 using namespace math;
 

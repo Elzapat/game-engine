@@ -1,4 +1,4 @@
-#include "../../include/physics_engine/particle_force_registry.hpp"
+#include "physics_engine/forces/particles/particle_force_registry.hpp"
 
 ParticleForceRegistry::ParticleForceRegistry() {};
 ParticleForceRegistry::~ParticleForceRegistry() {};

@@ -1,4 +1,4 @@
-#include "../../../include/vulkan_renderer/mesh/cube.hpp"
+#include "vulkan_renderer/mesh/cube.hpp"
 
 Cube::Cube() {
     this->vertices = {

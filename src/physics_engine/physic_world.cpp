@@ -1,7 +1,7 @@
-#include "../../include/physics_engine/physic_world.hpp"
+#include "physics_engine/physic_world.hpp"
 
 #ifdef _WIN32
-#include <corecrt_math_defines.h>
+    #include <corecrt_math_defines.h>
 #endif
 
 PhysicWorld::PhysicWorld() : contact_resolver() {

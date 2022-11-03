@@ -1,4 +1,4 @@
-#include "../../include/physics_engine/naive_particle_contact_generator.hpp"
+#include "physics_engine/contacts/particles/naive_particle_contact_generator.hpp"
 
 NaiveParticleContactGenerator::NaiveParticleContactGenerator(
     std::vector<std::shared_ptr<Particle>> _particles,

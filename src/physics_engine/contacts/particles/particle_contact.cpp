@@ -1,4 +1,4 @@
-#include "../../include/physics_engine/particle_contact.hpp"
+#include "physics_engine/contacts/particles/particle_contact.hpp"
 
 ParticleContact::ParticleContact(
     std::shared_ptr<Particle> p1,

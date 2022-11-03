@@ -1,4 +1,4 @@
-#include "../../include/physics_engine/particle_anchored_spring.hpp"
+#include "physics_engine/forces/particles/particle_anchored_spring.hpp"
 
 ParticleAnchoredSpring::ParticleAnchoredSpring(
     math::Vector3 _anchor,

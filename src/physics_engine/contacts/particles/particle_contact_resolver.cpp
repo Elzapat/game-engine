@@ -1,4 +1,4 @@
-#include "../../include/physics_engine/particle_contact_resolver.hpp"
+#include "physics_engine/contacts/particles/particle_contact_resolver.hpp"
 
 ParticleContactResolver::ParticleContactResolver(uint32_t _max_iterations) :
     max_iterations(_max_iterations) {}

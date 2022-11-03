@@ -1,4 +1,4 @@
-#include "../../include/physics_engine/particle_buoyancy.hpp"
+#include "physics_engine/forces/particles/particle_buoyancy.hpp"
 
 ParticleBuoyancy ::ParticleBuoyancy(
     float _max_depth,

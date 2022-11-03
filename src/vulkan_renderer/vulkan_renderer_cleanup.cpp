@@ -1,4 +1,4 @@
-#include "../../include/vulkan_renderer/vulkan_renderer.hpp"
+#include "vulkan_renderer/vulkan_renderer.hpp"
 
 VulkanRenderer::~VulkanRenderer() {
     /* this->cleanup(); */

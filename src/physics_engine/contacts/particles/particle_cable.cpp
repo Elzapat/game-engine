@@ -1,4 +1,4 @@
-#include "../../include/physics_engine/particle_cable.hpp"
+#include "physics_engine/contacts/particles/particle_cable.hpp"
 
 ParticleCable::ParticleCable(
     std::shared_ptr<Particle> p1,

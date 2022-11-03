@@ -1,4 +1,4 @@
-#include "../include/time.hpp"
+#include "time.hpp"
 
 using namespace std::chrono;
 

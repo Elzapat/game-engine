@@ -1,9 +1,9 @@
 #ifndef PARTICLE_FORCE_REGISTRY_HPP
 #define PARTICLE_FORCE_REGISTRY_HPP
 
-#include "particle.hpp"
+#include "../../particle.hpp"
 #include "particle_force_generator.hpp"
-#include "../time.hpp"
+#include "../../../time.hpp"
 
 #include <vector>
 #include <algorithm>

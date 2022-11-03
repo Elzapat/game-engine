@@ -1,4 +1,4 @@
-iinclude "../../include/physics_engine/rigid_body.hpp"
+iinclude "physics_engine/rigid_body.hpp"
 
     RigidBody::RigidBody() {}
 

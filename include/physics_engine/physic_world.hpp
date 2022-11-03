@@ -5,13 +5,13 @@
 #include <memory>
 
 #include "particle.hpp"
-#include "particle_force_registry.hpp"
-#include "particle_spring.hpp"
-#include "particle_anchored_spring.hpp"
-#include "particle_drag.hpp"
-#include "particle_contact_generator.hpp"
-#include "particle_contact_resolver.hpp"
-#include "naive_particle_contact_generator.hpp"
+#include "forces/particles/particle_force_registry.hpp"
+#include "forces/particles/particle_spring.hpp"
+#include "forces/particles/particle_anchored_spring.hpp"
+#include "forces/particles/particle_drag.hpp"
+#include "contacts/particles/particle_contact_generator.hpp"
+#include "contacts/particles/particle_contact_resolver.hpp"
+#include "contacts/particles/naive_particle_contact_generator.hpp"
 #include "../vulkan_renderer/ui.hpp"
 
 class PhysicWorld {

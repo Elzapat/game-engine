@@ -1,4 +1,4 @@
-#include "../../include/physics_engine/particle.hpp"
+#include "physics_engine/particle.hpp"
 
 Particle::Particle() :
     position(math::Vector3()),
