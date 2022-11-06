@@ -28,3 +28,6 @@
 * Implémentation des resolveurs de contacts
 * Création d'une démo graphique qui montre un amas de particule 
     * Problème de téléportations des particules bloqués au milieu de beaucoup d'autres, on ne sait pas encore comment fix
+
+# Troisième phase
+* Implémentation de `Matrix4`, `Quaternion`, `ForceGenerator` avec l'aide du chapitre 9 du livre de Millington

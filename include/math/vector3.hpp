@@ -6,7 +6,11 @@
 #include <array>
 #include <glm/glm.hpp>
 
+
 namespace math {
+    // Forward declaration of Matrix4
+    class Matrix4;
+
     /* 
      * Class representing a mathematical vector in three dimensions
      */
@@ -29,10 +33,8 @@ namespace math {
             float norm() const;
             Vector3 normalize() const;
             Vector3 invert() const;
-            Vector3 translate(Vector3 const& translation);
-            // TODO: when Quaternions are implemented
-            // Vector3 rotate(Quaternion rotation) ;
-            Vector3 scale(const float scale);
+            Vector3 transform(Matrix4 tranform_matrix);
+            
             glm::vec3 to_glm_vec3();
 
             // Returns the vector data as a pointer to float;

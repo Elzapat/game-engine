@@ -1,5 +1,7 @@
 #include "math/vector3.hpp"
 
+#include "math/matrix4.hpp"
+
 using namespace math;
 
 Vector3::Vector3(float x, float y, float z) : coords({x, y, z}) {}
@@ -49,11 +51,9 @@ Vector3 Vector3::invert() const {
     return Vector3(-this->get_x(), -this->get_y(), -this->get_z());
 }
 
-/* void translate(Vector3 const& translation) ; */
-/* // TODO: when Quaternions are implemented */
-/* // void rotate(Quaternion rotation) ; */
-/* void scale(float scale) ; */
-/*  */
+Vector3 Vector3::transform(Matrix4 transform_matrix) {
+    return transform_matrix * *this;
+}
 
 glm::vec3 Vector3::to_glm_vec3() {
     return glm::vec3(this->get_x(), this->get_y(), this->get_z());

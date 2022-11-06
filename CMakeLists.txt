@@ -49,6 +49,8 @@ add_executable(physics-engine
     src/physics_engine/forces/particles/particle_buoyancy.cpp
     src/physics_engine/forces/particles/particle_gravity.cpp
 
+    src/physics_engine/forces/rigid_bodies/force_generator.cpp
+
     src/physics_engine/contacts/particles/particle_contact.cpp
     src/physics_engine/contacts/particles/particle_rod.cpp
     src/physics_engine/contacts/particles/particle_link.cpp
@@ -66,7 +68,7 @@ add_executable(physics-engine
     src/vulkan_renderer/mesh.cpp
 )
 
-target_include_directories(physics-engine PRIVATE include)
+target_include_directories(physics-engine PRIVATE include libs libs/glfw/include)
 
 # GLSL Shader compilation to Vulkan compatabile SPV fromat
 find_program(glslc_exe NAMES glslc HINTS Vulkan::glslc)

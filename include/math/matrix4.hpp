@@ -2,8 +2,11 @@
 #define MATRIX4_HPP
 
 #include <array>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "math/vector3.hpp"
+#include "math/quaternion.hpp"
 
 namespace math {
     class Matrix4 {
@@ -11,12 +14,16 @@ namespace math {
             std::array<float, 12> values;
 
         public:
+            float determinant() const;
+            Matrix4 inverse();
+
+            Matrix4 translate(const Vector3& translation) const;
+            Matrix4 rotate(const Quaternion& rotation) const;
+
             Vector3 operator*(const Vector3& rhs) const;
             Matrix4 operator*(const Matrix4& rhs) const;
 
-            Vector3 transform(const Vector3 &vector) const;
-            Matrix4 translate(const Vector3& translation) const;
-            Matrix4 rotate(const Vector3& rotation) const;
+            glm::mat4 to_glm_mat4() const;
     };
 }
 

@@ -25,7 +25,10 @@ int main() {
 
             physic_world.update();
             vulkan_renderer.update_camera();
-            vulkan_renderer.draw(physic_world.get_particles_ref());
+            vulkan_renderer.draw(
+                physic_world.get_particles_ref(),
+                physic_world.get_rigid_bodies_ref()
+            );
         }
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;

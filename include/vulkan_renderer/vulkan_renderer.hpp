@@ -4,9 +4,9 @@
 // clang-format off
 
 #include <vulkan/vulkan.h>
-#include "../../libs/glfw/include/GLFW/glfw3.h"
-#include "../../libs/imgui/backends/imgui_impl_vulkan.h"
-#include "../../libs/imgui/backends/imgui_impl_glfw.h"
+#include "GLFW/glfw3.h"
+#include "imgui/backends/imgui_impl_vulkan.h"
+#include "imgui/backends/imgui_impl_glfw.h"
 
 #include <limits>
 #include <algorithm>
@@ -29,8 +29,9 @@
 #include "ui.hpp"
 #include "renderer_utils.hpp"
 #include "camera.hpp"
-#include "../time.hpp"
+#include "time.hpp"
 #include "mesh.hpp"
+#include "physics_engine/rigid_body.hpp"
 
 static const int WIDTH = 800;
 static const int HEIGHT = 600;
@@ -63,7 +64,7 @@ class VulkanRenderer {
     public:
         ~VulkanRenderer();
         GLFWwindow* init();
-        void draw(std::vector<std::shared_ptr<Particle>>& particles);
+        void draw(std::vector<std::shared_ptr<Particle>>& particles, std::vector<std::shared_ptr<RigidBody>>& rigid_bodies);
         void update_camera();
 
     private:
@@ -157,9 +158,9 @@ class VulkanRenderer {
 
         // --- Update renderer
         void main_loop();
-        void record_command_buffer(VkCommandBuffer command_buffer, uint32_t image_index, std::vector<std::shared_ptr<Particle>>& particles);
-        void draw_frame(std::vector<std::shared_ptr<Particle>>& particles);
-        void update_uniform_buffer(uint32_t current_image, std::vector<std::shared_ptr<Particle>>& particles);
+        void record_command_buffer(VkCommandBuffer command_buffer, uint32_t image_index, std::vector<std::shared_ptr<Particle>>& particles, std::vector<std::shared_ptr<RigidBody>>& RigidBodies);
+        void draw_frame(std::vector<std::shared_ptr<Particle>>& particles, std::vector<std::shared_ptr<RigidBody>>& rigid_bodies);
+        void update_uniform_buffer(uint32_t current_image, std::vector<std::shared_ptr<Particle>>& particles, std::vector<std::shared_ptr<RigidBody>>& rigid_bodies);
         static void framebuffer_resize_callback(GLFWwindow* window, int width, int height);
         static void mouse_callback(GLFWwindow* window, double x_pos, double z_pos);
         static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);

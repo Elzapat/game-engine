@@ -1,10 +1,16 @@
 #include "vulkan_renderer/vulkan_renderer.hpp"
 
-void VulkanRenderer::draw(std::vector<std::shared_ptr<Particle>>& particles) {
-    this->draw_frame(particles);
+void VulkanRenderer::draw(
+    std::vector<std::shared_ptr<Particle>>& particles,
+    std::vector<std::shared_ptr<RigidBody>>& rigid_bodies
+) {
+    this->draw_frame(particles, rigid_bodies);
 }
 
-void VulkanRenderer::draw_frame(std::vector<std::shared_ptr<Particle>>& particles) {
+void VulkanRenderer::draw_frame(
+    std::vector<std::shared_ptr<Particle>>& particles,
+    std::vector<std::shared_ptr<RigidBody>>& rigid_bodies
+) {
     uint32_t image_index;
     VkResult result = vkAcquireNextImageKHR(
         this->device,
@@ -25,8 +31,13 @@ void VulkanRenderer::draw_frame(std::vector<std::shared_ptr<Particle>>& particle
     vkResetFences(this->device, 1, &this->in_flight_fences[this->current_frame]);
 
     vkResetCommandBuffer(this->command_buffers[this->current_frame], 0);
-    this->record_command_buffer(this->command_buffers[this->current_frame], image_index, particles);
-    this->update_uniform_buffer(this->current_frame, particles);
+    this->record_command_buffer(
+        this->command_buffers[this->current_frame],
+        image_index,
+        particles,
+        rigid_bodies
+    );
+    this->update_uniform_buffer(this->current_frame, particles, rigid_bodies);
 
     VkSubmitInfo submit_info {};
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -87,7 +98,8 @@ void VulkanRenderer::draw_frame(std::vector<std::shared_ptr<Particle>>& particle
 void VulkanRenderer::record_command_buffer(
     VkCommandBuffer command_buffer,
     uint32_t image_index,
-    std::vector<std::shared_ptr<Particle>>& particles
+    std::vector<std::shared_ptr<Particle>>& particles,
+    std::vector<std::shared_ptr<RigidBody>>& rigid_bodies
 ) {
     VkCommandBufferBeginInfo begin_info {};
     begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -138,7 +150,7 @@ void VulkanRenderer::record_command_buffer(
     /* vkCmdBindIndexBuffer(command_buffer, this->index_buffer, 0, VK_INDEX_TYPE_UINT32); */
 
     for (uint32_t i = 0; i < MAX_OBJECT_INSTANCES; i++) {
-        if (i >= particles.size() || i >= this->meshes.size()) {
+        if (i >= rigid_bodies.size() || i >= this->meshes.size()) {
             break;
         }
 
@@ -177,20 +189,20 @@ void VulkanRenderer::record_command_buffer(
 
 void VulkanRenderer::update_uniform_buffer(
     [[maybe_unused]] uint32_t current_image,
-    std::vector<std::shared_ptr<Particle>>& particles
+    std::vector<std::shared_ptr<Particle>>& particles,
+    std::vector<std::shared_ptr<RigidBody>>& rigid_bodies
 ) {
     /* float x_i = 0.0f, y_i = 0.0f, z_i = 0.0f; */
 
     for (uint32_t i = 0; i < MAX_OBJECT_INSTANCES; i++) {
-        if (i >= particles.size() || i >= this->meshes.size()) {
+        if (i >= rigid_bodies.size() || i >= this->meshes.size()) {
             break;
         }
 
         uint32_t index = i * this->dynamic_alignment;
         UboData* ubo_data = (UboData*)((uint64_t)this->ubo_data_dynamic + index);
 
-        ubo_data->model =
-            glm::translate(glm::mat4(1.0f), particles[i]->get_position().to_glm_vec3());
+        ubo_data->model = rigid_bodies[i]->get_transform().to_glm_mat4();
 
         /*
         const float offset = 2.0f;

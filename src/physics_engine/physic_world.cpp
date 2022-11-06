@@ -1,58 +1,15 @@
 #include "physics_engine/physic_world.hpp"
 
 PhysicWorld::PhysicWorld() : contact_resolver() {
-    // Forces
-    auto drag = std::make_shared<ParticleDrag>(0.47f, 0.0f);
-    this->anchored_spring = std::make_shared<ParticleAnchoredSpring>(math::Vector3(), 100.0f, 1.0f);
+    std::shared_ptr<RigidBody> rb = std::make_shared<RigidBody>();
+    rb->set_orientation(math::Quaternion(1.0f, 0.5f, 1.0f, 2.0f));
+    rb->set_angular_velocity(math::Vector3(20.1f, 20.1f, 20.1f));
+    // rb->set_linear_velocity(math::Vector3(0.5f, 1.0f, 2.0f));
 
-    // Generate all particles
-    const int SLICES = 11;
-    const int STACKS = 10;
-    /* const int SLICES = 3; */
-    /* const int STACKS = 3; */
-
-    const int RADIUS = 15;
-
-    float sector_step = 2.0f * M_PI / static_cast<float>(SLICES);
-    float stack_step = M_PI / static_cast<float>(STACKS);
-
-    for (int i = 0; i <= SLICES; i++) {
-        float stack_angle = M_PI / 2.0f - static_cast<float>(i) * stack_step;
-        float xy = static_cast<float>(RADIUS) * std::cos(stack_angle);
-        float z = static_cast<float>(RADIUS) * std::sin(stack_angle);
-
-        for (int j = 0; j <= STACKS; j++) {
-            float sector_angle = static_cast<float>(j) * sector_step;
-
-            float x = xy * std::cos(sector_angle);
-            float y = xy * std::sin(sector_angle);
-
-            std::shared_ptr<Particle> particle = std::make_shared<Particle>();
-            particle->set_position(math::Vector3(x, y, z));
-
-            this->force_registry.add_entry(particle, drag);
-            this->force_registry.add_entry(particle, anchored_spring);
-
-            if (this->particles.size() >= 1) {
-                int random_idx = rand() % particles.size();
-                std::shared_ptr<ParticleSpring> spring =
-                    std::make_shared<ParticleSpring>(this->particles[random_idx], 5.0f, 10.0f);
-
-                /* this->force_registry.add_entry(particle, spring); */
-            }
-
-            this->particles.push_back(particle);
-            particle->set_mass(50.0f);
-        }
-    }
-
-    auto contact = std::make_unique<NaiveParticleContactGenerator>(this->particles, 1.0f);
-    this->contact_generators.push_back(std::move(contact));
+    this->add_rigid_body(rb);
 }
 
 void PhysicWorld::update() {
-    this->anchored_spring->anchor = Ui::spring_anchor;
-    this->anchored_spring->rest_length = Ui::anchored_spring_rest_length;
     std::vector<ParticleContact> contacts;
 
     this->force_registry.update();
@@ -66,6 +23,10 @@ void PhysicWorld::update() {
     for (auto& particle : this->particles) {
         particle->integrate();
     }
+
+    for (auto& rigid_body : this->rigid_bodies) {
+        rigid_body->integrate();
+    }
 }
 
 void PhysicWorld::add_particle(const Particle particle) {
@@ -76,10 +37,26 @@ void PhysicWorld::add_particle(std::shared_ptr<Particle> particle) {
     this->particles.push_back(particle);
 }
 
+void PhysicWorld::add_rigid_body(const RigidBody rb) {
+    this->rigid_bodies.push_back(std::make_shared<RigidBody>(rb));
+}
+
+void PhysicWorld::add_rigid_body(std::shared_ptr<RigidBody> rb) {
+    this->rigid_bodies.push_back(rb);
+}
+
 std::vector<std::shared_ptr<Particle>> PhysicWorld::get_particles() const {
     return this->particles;
 }
 
 std::vector<std::shared_ptr<Particle>>& PhysicWorld::get_particles_ref() {
     return this->particles;
+}
+
+std::vector<std::shared_ptr<RigidBody>> PhysicWorld::get_rigid_bodies() const {
+    return this->rigid_bodies;
+}
+
+std::vector<std::shared_ptr<RigidBody>>& PhysicWorld::get_rigid_bodies_ref() {
+    return this->rigid_bodies;
 }

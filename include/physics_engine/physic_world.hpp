@@ -28,14 +28,19 @@ class PhysicWorld {
         void add_particle(const Particle particle);
         void add_particle(std::shared_ptr<Particle> particle);
 
+        void add_rigid_body(const RigidBody rb);
+        void add_rigid_body(std::shared_ptr<RigidBody> rb);
+
         std::vector<std::shared_ptr<Particle>> get_particles() const;
         std::vector<std::shared_ptr<Particle>>& get_particles_ref();
 
+        std::vector<std::shared_ptr<RigidBody>> get_rigid_bodies() const;
+        std::vector<std::shared_ptr<RigidBody>>& get_rigid_bodies_ref();
+
     private:
         std::vector<std::shared_ptr<Particle>> particles;
+        std::vector<std::shared_ptr<RigidBody>> rigid_bodies;
         std::vector<std::unique_ptr<ParticleContactGenerator>> contact_generators;
-
-        std::shared_ptr<ParticleAnchoredSpring> anchored_spring;
 
         ParticleForceRegistry force_registry;
         ParticleContactResolver contact_resolver;

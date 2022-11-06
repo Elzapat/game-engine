@@ -28,7 +28,8 @@ GLFWwindow* VulkanRenderer::init_window() {
 // Initialiazes all the needed Vulkan objets
 void VulkanRenderer::init_vulkan() {
     for (int i = 0; i < MAX_OBJECT_INSTANCES; i++) {
-        this->meshes.push_back(Mesh::sphere(1.0f, 15, 15));
+        /* this->meshes.push_back(Mesh::sphere(1.0f, 15, 15)); */
+        this->meshes.push_back(Mesh::cube());
     }
 
     vertices = this->meshes[0].vertices;
