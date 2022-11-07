@@ -26,10 +26,11 @@ namespace math {
 
             Quaternion normalize();
             Quaternion rotate(const Vector3& rotation);
-            void update();
 
             Quaternion operator*(const Quaternion& rhs) const;
             Quaternion& operator*=(const Quaternion& rhs);
+            Quaternion operator+(const Vector3& rhs) const;
+            Quaternion& operator+=(const Vector3& rhs);
     };
 };  // namespace math
 

@@ -2,8 +2,8 @@
 
 PhysicWorld::PhysicWorld() : particle_contact_resolver() {
     std::shared_ptr<RigidBody> rb = std::make_shared<RigidBody>();
-    rb->set_orientation(math::Quaternion(1.0f, 0.5f, 1.0f, 2.0f));
-    rb->set_angular_velocity(math::Vector3(20.1f, 20.1f, 20.1f));
+    /* rb->set_orientation(math::Quaternion(1.0f, 0.5f, 1.0f, 2.0f)); */
+    /* rb->set_angular_velocity(math::Vector3(20.1f, 20.1f, 20.1f)); */
     rb->set_mass(50.0f);
     // rb->set_linear_velocity(math::Vector3(0.5f, 1.0f, 2.0f));
 
@@ -12,9 +12,9 @@ PhysicWorld::PhysicWorld() : particle_contact_resolver() {
     rb2->set_mass(50.0f);
 
     std::unique_ptr<Spring> spring = std::make_unique<Spring>(
-        math::Vector3(1.0f, 1.0f, 1.0f),
+        math::Vector3(0.0f, 0.0f, 0.0f),
         rb2,
-        math::Vector3(-1.0f, -1.0f, -1.0f),
+        math::Vector3(-0.0f, -0.0f, -0.0f),
         50.0f,
         3.0f
     );

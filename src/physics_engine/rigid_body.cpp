@@ -1,6 +1,20 @@
 #include "physics_engine/rigid_body.hpp"
 
-RigidBody::RigidBody() {}
+RigidBody::RigidBody() {
+    math::Matrix3 inertia_tensor(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+    /* math::Matrix3 inertia_tensor( */
+    /*     2.f / 3.f, */
+    /*     -1.0f / 4.0f, */
+    /*     -1.0f / 4.0f, */
+    /*     -1.0f / 4.0f, */
+    /*     2.f / 3.f, */
+    /*     -1.0f / 4.0f, */
+    /*     -1.0f / 4.0f, */
+    /*     -1.0f / 4.0f, */
+    /*     2.f / 3.f */
+    /* ); */
+    this->set_inertia_tensor(inertia_tensor);
+}
 
 RigidBody::~RigidBody() {}
 
@@ -16,7 +30,7 @@ void RigidBody::add_force_at_world_point(const math::Vector3& force, math::Vecto
 }
 
 void RigidBody::add_force_at_local_point(const math::Vector3& force, math::Vector3 point) {
-    this->add_force_at_world_point(force, this->transform * point);
+    this->add_force_at_world_point(force, point.transform(this->transform));
 }
 
 void RigidBody::apply_impulse(const math::Vector3& impulse) {
@@ -167,8 +181,6 @@ bool RigidBody::has_infinite_mass() const {
 }
 
 void RigidBody::compute_derived_data() {
-    this->orientation = this->orientation.rotate(this->rotation).normalize();
-
     this->transform = this->transform.translate(this->position).rotate(this->orientation);
 
     this->inv_inertia_tensor_world = this->transform_inertia_tensor(
@@ -181,20 +193,20 @@ void RigidBody::compute_derived_data() {
 void RigidBody::integrate() {
     float dt = Time::delta_time();
 
-    // this->orientation.update_by_angular_velocity(this->rotation);
-
     this->compute_derived_data();
 
     this->linear_acceleration = this->inv_mass * this->forces;
-    this->angular_acceleration = this->torques;
+    this->angular_acceleration = this->torques.transform(this->inv_inertia_tensor_world);
 
     this->linear_velocity += this->linear_acceleration * dt;
     this->rotation += this->angular_acceleration * dt;
-    std::cout << this->rotation << std::endl;
 
     this->linear_velocity *= std::pow(this->linear_damping, dt);
     this->rotation *= std::pow(this->angular_damping, dt);
+
     this->position += this->linear_velocity * dt;
+    this->orientation += rotation * dt;
+    /* this->orientation += math::Vector3(0.001f, 0.001f, 0.002f); */
 
     this->forces = math::Vector3();
     this->torques = math::Vector3();

@@ -83,3 +83,23 @@ Quaternion& Quaternion::operator*=(const Quaternion& rhs) {
 
     return *this;
 }
+
+Quaternion Quaternion::operator+(const Vector3& rhs) const {
+    Quaternion res(*this);
+
+    Quaternion q(0.0f, rhs);
+    q *= *this;
+
+    res.w += q.w * 0.5f;
+    res.x += q.x * 0.5f;
+    res.y += q.y * 0.5f;
+    res.z += q.z * 0.5f;
+
+    return res;
+}
+
+Quaternion& Quaternion::operator+=(const Vector3& rhs) {
+    *this = *this + rhs;
+
+    return *this;
+}
