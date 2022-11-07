@@ -50,6 +50,7 @@ add_executable(physics-engine
     src/physics_engine/forces/particles/particle_gravity.cpp
 
     src/physics_engine/forces/rigid_bodies/force_generator.cpp
+    src/physics_engine/forces/rigid_bodies/force_registry.cpp
 
     src/physics_engine/contacts/particles/particle_contact.cpp
     src/physics_engine/contacts/particles/particle_rod.cpp

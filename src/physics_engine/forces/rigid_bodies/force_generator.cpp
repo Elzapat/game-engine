@@ -1,6 +1,6 @@
 #include "physics_engine/forces/rigid_bodies/force_generator.hpp"
 
-Gravity::Gravity(float _gravity) : gravity(_gravity) {}
+Gravity::Gravity(math::Vector3 _gravity) : gravity(_gravity) {}
 
 void Gravity::update_force(std::shared_ptr<RigidBody> rb) {
     if (rb->has_infinite_mass()) {
@@ -12,11 +12,13 @@ void Gravity::update_force(std::shared_ptr<RigidBody> rb) {
 
 Spring::Spring(
     math::Vector3 conn_point,
+    std::shared_ptr<RigidBody> _other,
     math::Vector3 other_conn_point,
     float k,
     float _rest_length
 ) :
     connection_point_local(conn_point),
+    other(_other),
     other_connection_point_local(other_conn_point),
     spring_constant(k),
     rest_length(_rest_length) {}

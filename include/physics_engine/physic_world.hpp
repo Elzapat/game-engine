@@ -18,6 +18,8 @@
 #include "contacts/particles/particle_contact_generator.hpp"
 #include "contacts/particles/particle_contact_resolver.hpp"
 #include "contacts/particles/naive_particle_contact_generator.hpp"
+#include "forces/rigid_bodies/force_generator.hpp"
+#include "forces/rigid_bodies/force_registry.hpp"
 
 class PhysicWorld {
     public:
@@ -40,10 +42,13 @@ class PhysicWorld {
     private:
         std::vector<std::shared_ptr<Particle>> particles;
         std::vector<std::shared_ptr<RigidBody>> rigid_bodies;
-        std::vector<std::unique_ptr<ParticleContactGenerator>> contact_generators;
 
-        ParticleForceRegistry force_registry;
-        ParticleContactResolver contact_resolver;
+        std::vector<std::unique_ptr<ParticleContactGenerator>> particle_contact_generators;
+
+        ParticleForceRegistry particle_force_registry;
+        ParticleContactResolver particle_contact_resolver;
+
+        ForceRegistry force_registry;
 };
 
 #endif // PHYSIC_WORLD_HPP

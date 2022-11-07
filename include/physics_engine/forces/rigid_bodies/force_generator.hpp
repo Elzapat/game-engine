@@ -17,15 +17,16 @@ class Gravity: public ForceGenerator {
         math::Vector3 gravity;
 
     public:
-        Gravity(float gravity);
+        Gravity(math::Vector3 gravity);
         virtual void update_force(std::shared_ptr<RigidBody> rb);
 };
 
 class Spring: public ForceGenerator {
     private:
         math::Vector3 connection_point_local;
-        math::Vector3 other_connection_point_local;
+
         std::shared_ptr<RigidBody> other;
+        math::Vector3 other_connection_point_local;
 
         float spring_constant;
         float rest_length;
@@ -33,6 +34,7 @@ class Spring: public ForceGenerator {
     public:
         Spring(
             math::Vector3 conn_point,
+            std::shared_ptr<RigidBody> other,
             math::Vector3 other_conn_point,
             float k,
             float rest_length

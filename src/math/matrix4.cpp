@@ -75,8 +75,6 @@ Matrix4 Matrix4::rotate(const Quaternion& rot) const {
     res.values[9] = 2 * y * z - 2 * x * w;
     res.values[10] = 1 - (2 * x * x + 2 * y * y);
 
-    std::cout << z << std::endl;
-
     return res;
 }
 
@@ -135,4 +133,12 @@ glm::mat4 Matrix4::to_glm_mat4() const {
     matrix[15] = 1.0f;
 
     return glm::transpose(glm::make_mat4(matrix));
+}
+
+std::array<float, 12> Matrix4::get_values() const {
+    return this->values;
+}
+
+std::array<float, 12>& Matrix4::get_values_ref() {
+    return this->values;
 }

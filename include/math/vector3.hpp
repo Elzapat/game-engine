@@ -6,10 +6,10 @@
 #include <array>
 #include <glm/glm.hpp>
 
-
 namespace math {
-    // Forward declaration of Matrix4
+    // Forward declaration of Matrix4 and Matrix3
     class Matrix4;
+    class Matrix3;
 
     /* 
      * Class representing a mathematical vector in three dimensions
@@ -33,6 +33,7 @@ namespace math {
             float norm() const;
             Vector3 normalize() const;
             Vector3 invert() const;
+            Vector3 transform(Matrix3 tranform_matrix);
             Vector3 transform(Matrix4 tranform_matrix);
             
             glm::vec3 to_glm_vec3();

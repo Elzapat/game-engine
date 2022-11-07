@@ -1,5 +1,6 @@
 #include "math/vector3.hpp"
 
+#include "math/matrix3.hpp"
 #include "math/matrix4.hpp"
 
 using namespace math;
@@ -52,6 +53,10 @@ Vector3 Vector3::invert() const {
 }
 
 Vector3 Vector3::transform(Matrix4 transform_matrix) {
+    return transform_matrix * *this;
+}
+
+Vector3 Vector3::transform(Matrix3 transform_matrix) {
     return transform_matrix * *this;
 }
 

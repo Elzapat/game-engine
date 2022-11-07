@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "math/matrix4.hpp"
+#include "math/matrix3.hpp"
 #include "math/quaternion.hpp"
 #include "math/vector3.hpp"
 
@@ -32,6 +33,9 @@ class RigidBody {
         math::Quaternion orientation;
         math::Vector3 rotation;
         math::Matrix4 transform;
+
+        math::Matrix3 inv_inertia_tensor;
+        math::Matrix3 inv_inertia_tensor_world;
         
         math::Vector3 forces;
         math::Vector3 torques;
@@ -49,6 +53,11 @@ class RigidBody {
         void apply_impulse(const math::Vector3& impulse);
 
         math::Vector3 get_point_in_world_space(const math::Vector3& point);
+        math::Matrix3 transform_inertia_tensor(
+            const math::Quaternion& orientation,
+            const math::Matrix3& inv_inertia_tensor,
+            const math::Matrix4& transform
+        );
 
         void set_posisition(const math::Vector3 pos);
         void set_linear_velocity(const math::Vector3 vel);
@@ -60,6 +69,7 @@ class RigidBody {
         void set_transform(const math::Matrix4 transform);
         void set_inv_mass(const float inv_mass);
         void set_mass(const float mass);
+        void set_inertia_tensor(const math::Matrix3& inertia_tensor);
 
         math::Vector3 get_position() const;
         math::Vector3 get_linear_velocity() const;
@@ -72,6 +82,7 @@ class RigidBody {
         float get_inv_mass() const;
         float get_mass() const;
         bool has_infinite_mass() const;
+        math::Matrix3 get_inertia_tensor() const;
 
         void integrate();
 };

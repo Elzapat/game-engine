@@ -25,7 +25,8 @@ namespace math {
             );
             ~Matrix3();
 
-            std::array<float, 9> get_values();
+            std::array<float, 9> get_values() const;
+            std::array<float, 9>& get_values_ref();
             Vector3 get_line(int line) const;
             Vector3 get_column(int column) const;
             float get_value(const int line, const int column) const;
@@ -39,9 +40,9 @@ namespace math {
             Matrix3 operator*(const Matrix3& other) const;
             Vector3 operator*(const Vector3& other) const;
 
-            float get_det();
-            Matrix3 inverse();
-            Matrix3 transpose();
+            float get_det() const;
+            Matrix3 inverse() const;
+            Matrix3 transpose() const;
 
             void set_orientation(const Quaternion& q);
 

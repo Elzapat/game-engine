@@ -19,14 +19,22 @@ Matrix3::Matrix3(
 Matrix3::~Matrix3() {}
 
 //getters
-std::array<float, 9> Matrix3::get_values() {
+std::array<float, 9> Matrix3::get_values() const {
+    return this->values;
+}
+
+std::array<float, 9>& Matrix3::get_values_ref() {
     return this->values;
 }
 
 Vector3 Matrix3::get_line(int line) const {
     std::clamp(line, 0, 2);
 
-    Vector3 new_vector(this->values[line * 3], this->values[line * 3 + 1], this->values[line * 3 + 2]);
+    Vector3 new_vector(
+        this->values[line * 3],
+        this->values[line * 3 + 1],
+        this->values[line * 3 + 2]
+    );
     return new_vector;
 }
 
@@ -82,7 +90,7 @@ Vector3 Matrix3::operator*(const Vector3& other) const {
     return new_vector;
 }
 
-float Matrix3::get_det() {
+float Matrix3::get_det() const {
     float a = this->get_value(0, 0);
     float b = this->get_value(0, 1);
     float c = this->get_value(0, 2);
@@ -96,10 +104,10 @@ float Matrix3::get_det() {
     return a * e * i + d * h * c + g * b * f - a * h * f - g * e * c - d * b * i;
 }
 
-Matrix3 Matrix3::inverse() {
+Matrix3 Matrix3::inverse() const {
     float det = this->get_det();
 
-    Matrix3 new_matrix3;
+    Matrix3 new_matrix3(*this);
 
     if (det != 0) {
         for (int line = 0; line < 3; line++) {
@@ -121,7 +129,7 @@ Matrix3 Matrix3::inverse() {
     return new_matrix3;
 }
 
-Matrix3 Matrix3::transpose() {
+Matrix3 Matrix3::transpose() const {
     Matrix3 new_matrix3;
 
     for (int line = 0; line < 3; line++) {
