@@ -30,6 +30,9 @@ endif()
 add_executable(physics-engine
     src/main.cpp
 
+    src/game_engine.cpp
+    src/app.cpp
+
     src/time.cpp
 
     src/math/vector3.cpp

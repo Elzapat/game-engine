@@ -49,33 +49,30 @@ Matrix4 Matrix4::inverse() {
     return res;
 }
 
-Matrix4 Matrix4::translate(const Vector3& translation) const {
-    Matrix4 res(*this);
+Matrix4& Matrix4::set_translation(const Vector3& translation) {
+    this->values[3] = translation.get_x();
+    this->values[7] = translation.get_y();
+    this->values[11] = translation.get_z();
 
-    res.values[3] = translation.get_x();
-    res.values[7] = translation.get_y();
-    res.values[11] = translation.get_z();
-
-    return res;
+    return *this;
 }
 
-Matrix4 Matrix4::rotate(const Quaternion& rot) const {
-    Matrix4 res(*this);
+Matrix4& Matrix4::set_orientation(const Quaternion& rot) {
     float w = rot.get_w(), x = rot.get_x(), y = rot.get_y(), z = rot.get_z();
 
-    res.values[0] = 1 - (2 * y * y + 2 * z * z);
-    res.values[1] = 2 * x * y + 2 * z * w;
-    res.values[2] = 2 * x * z - 2 * y * w;
+    this->values[0] = 1 - (2 * y * y + 2 * z * z);
+    this->values[1] = 2 * x * y + 2 * z * w;
+    this->values[2] = 2 * x * z - 2 * y * w;
 
-    res.values[4] = 2 * x * y - 2 * z * w;
-    res.values[5] = 1 - (2 * x * x + 2 * z * z);
-    res.values[6] = 2 * y * z + 2 * x * w;
+    this->values[4] = 2 * x * y - 2 * z * w;
+    this->values[5] = 1 - (2 * x * x + 2 * z * z);
+    this->values[6] = 2 * y * z + 2 * x * w;
 
-    res.values[8] = 2 * x * z + 2 * y * w;
-    res.values[9] = 2 * y * z - 2 * x * w;
-    res.values[10] = 1 - (2 * x * x + 2 * y * y);
+    this->values[8] = 2 * x * z + 2 * y * w;
+    this->values[9] = 2 * y * z - 2 * x * w;
+    this->values[10] = 1 - (2 * x * x + 2 * y * y);
 
-    return res;
+    return *this;
 }
 
 Vector3 Matrix4::operator*(const Vector3& rhs) const {

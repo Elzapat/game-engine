@@ -1,3 +1,5 @@
+#include <vulkan/vulkan_core.h>
+
 #include "vulkan_renderer/vulkan_renderer.hpp"
 
 VulkanRenderer::~VulkanRenderer() {
@@ -23,14 +25,16 @@ void VulkanRenderer::cleanup() {
     vkDestroyBuffer(this->device, this->uniform_buffers.dynamic, nullptr);
     vkFreeMemory(this->device, this->uniform_buffers.dynamic_buffer_memory, nullptr);
 
+    for (Mesh& mesh : this->meshes) {
+        vkDestroyBuffer(this->device, mesh.vertex_buffer, nullptr);
+        vkFreeMemory(this->device, mesh.vertex_buffer_memory, nullptr);
+
+        vkDestroyBuffer(this->device, mesh.index_buffer, nullptr);
+        vkFreeMemory(this->device, mesh.index_buffer_memory, nullptr);
+    }
+
     vkDestroyDescriptorPool(this->device, this->descriptor_pool, nullptr);
     vkDestroyDescriptorSetLayout(this->device, this->descriptor_set_layout, nullptr);
-
-    vkDestroyBuffer(this->device, this->index_buffer, nullptr);
-    vkFreeMemory(this->device, this->index_buffer_memory, nullptr);
-
-    vkDestroyBuffer(this->device, this->vertex_buffer, nullptr);
-    vkFreeMemory(this->device, this->vertex_buffer_memory, nullptr);
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(this->device, this->image_available_semaphores[i], nullptr);

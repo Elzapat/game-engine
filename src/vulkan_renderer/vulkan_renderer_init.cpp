@@ -27,14 +27,6 @@ GLFWwindow* VulkanRenderer::init_window() {
 
 // Initialiazes all the needed Vulkan objets
 void VulkanRenderer::init_vulkan() {
-    for (int i = 0; i < MAX_OBJECT_INSTANCES; i++) {
-        /* this->meshes.push_back(Mesh::sphere(1.0f, 15, 15)); */
-        this->meshes.push_back(Mesh::cube());
-    }
-
-    vertices = this->meshes[0].vertices;
-    indices = this->meshes[0].indices;
-
     this->create_instance();
     this->setup_debug_messenger();
     this->create_surface();
@@ -48,8 +40,6 @@ void VulkanRenderer::init_vulkan() {
     this->create_command_pool();
     this->create_depth_resources();
     this->create_framebuffers();
-    this->create_vertex_buffer();
-    this->create_index_buffer();
     this->create_uniform_buffers();
     this->create_descriptor_pool();
     this->create_descriptor_sets();
@@ -614,70 +604,6 @@ void VulkanRenderer::create_command_pool() {
     check_vk_result(result, "Failed to create command pool");
 }
 
-void VulkanRenderer::create_vertex_buffer() {
-    VkDeviceSize buffer_size = sizeof(this->vertices[0]) * this->vertices.size();
-
-    VkBuffer staging_buffer;
-    VkDeviceMemory staging_buffer_memory;
-    this->create_buffer(
-        buffer_size,
-        VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-        staging_buffer,
-        staging_buffer_memory
-    );
-
-    void* data;
-    vkMapMemory(this->device, staging_buffer_memory, 0, buffer_size, 0, &data);
-    memcpy(data, this->vertices.data(), (size_t)buffer_size);
-    vkUnmapMemory(this->device, staging_buffer_memory);
-
-    this->create_buffer(
-        buffer_size,
-        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        this->vertex_buffer,
-        this->vertex_buffer_memory
-    );
-
-    this->copy_buffer(staging_buffer, this->vertex_buffer, buffer_size);
-
-    vkDestroyBuffer(device, staging_buffer, nullptr);
-    vkFreeMemory(this->device, staging_buffer_memory, nullptr);
-}
-
-void VulkanRenderer::create_index_buffer() {
-    VkDeviceSize buffer_size = sizeof(this->indices[0]) * this->indices.size();
-
-    VkBuffer staging_buffer;
-    VkDeviceMemory staging_buffer_memory;
-    this->create_buffer(
-        buffer_size,
-        VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-        staging_buffer,
-        staging_buffer_memory
-    );
-
-    void* data;
-    vkMapMemory(this->device, staging_buffer_memory, 0, buffer_size, 0, &data);
-    memcpy(data, this->indices.data(), (size_t)buffer_size);
-    vkUnmapMemory(this->device, staging_buffer_memory);
-
-    create_buffer(
-        buffer_size,
-        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        this->index_buffer,
-        this->index_buffer_memory
-    );
-
-    copy_buffer(staging_buffer, this->index_buffer, buffer_size);
-
-    vkDestroyBuffer(this->device, staging_buffer, nullptr);
-    vkFreeMemory(this->device, staging_buffer_memory, nullptr);
-}
-
 void VulkanRenderer::create_uniform_buffers() {
     this->create_buffer(
         sizeof(UboVS),
@@ -1117,6 +1043,78 @@ void VulkanRenderer::create_buffer(
     }
 
     vkBindBufferMemory(this->device, buffer, buffer_memory, 0);
+}
+
+void VulkanRenderer::create_vertex_buffer(
+    std::vector<Vertex> vertices,
+    VkBuffer& buffer,
+    VkDeviceMemory& buffer_memory
+) {
+    VkDeviceSize buffer_size = sizeof(Vertex) * vertices.size();
+
+    VkBuffer staging_buffer;
+    VkDeviceMemory staging_buffer_memory;
+    this->create_buffer(
+        buffer_size,
+        VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+        staging_buffer,
+        staging_buffer_memory
+    );
+
+    void* data;
+    vkMapMemory(this->device, staging_buffer_memory, 0, buffer_size, 0, &data);
+    memcpy(data, vertices.data(), (size_t)buffer_size);
+    vkUnmapMemory(this->device, staging_buffer_memory);
+
+    this->create_buffer(
+        buffer_size,
+        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        buffer,
+        buffer_memory
+    );
+
+    this->copy_buffer(staging_buffer, buffer, buffer_size);
+
+    vkDestroyBuffer(device, staging_buffer, nullptr);
+    vkFreeMemory(this->device, staging_buffer_memory, nullptr);
+}
+
+void VulkanRenderer::create_index_buffer(
+    std::vector<uint32_t> indices,
+    VkBuffer& buffer,
+    VkDeviceMemory& buffer_memory
+) {
+    VkDeviceSize buffer_size = sizeof(Vertex) * indices.size();
+
+    VkBuffer staging_buffer;
+    VkDeviceMemory staging_buffer_memory;
+    this->create_buffer(
+        buffer_size,
+        VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+        staging_buffer,
+        staging_buffer_memory
+    );
+
+    void* data;
+    vkMapMemory(this->device, staging_buffer_memory, 0, buffer_size, 0, &data);
+    memcpy(data, indices.data(), (size_t)buffer_size);
+    vkUnmapMemory(this->device, staging_buffer_memory);
+
+    this->create_buffer(
+        buffer_size,
+        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        buffer,
+        buffer_memory
+    );
+
+    this->copy_buffer(staging_buffer, buffer, buffer_size);
+
+    vkDestroyBuffer(device, staging_buffer, nullptr);
+    vkFreeMemory(this->device, staging_buffer_memory, nullptr);
 }
 
 uint32_t VulkanRenderer::find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties) {

@@ -23,6 +23,8 @@
 
 class PhysicWorld {
     public:
+        ParticleForceRegistry particle_force_registry;
+        ForceRegistry force_registry;
         PhysicWorld();
 
         void update();
@@ -44,11 +46,8 @@ class PhysicWorld {
         std::vector<std::shared_ptr<RigidBody>> rigid_bodies;
 
         std::vector<std::unique_ptr<ParticleContactGenerator>> particle_contact_generators;
-
-        ParticleForceRegistry particle_force_registry;
         ParticleContactResolver particle_contact_resolver;
 
-        ForceRegistry force_registry;
 };
 
 #endif // PHYSIC_WORLD_HPP

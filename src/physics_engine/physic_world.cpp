@@ -1,31 +1,6 @@
 #include "physics_engine/physic_world.hpp"
 
-PhysicWorld::PhysicWorld() : particle_contact_resolver() {
-    std::shared_ptr<RigidBody> rb = std::make_shared<RigidBody>();
-    /* rb->set_orientation(math::Quaternion(1.0f, 0.5f, 1.0f, 2.0f)); */
-    /* rb->set_angular_velocity(math::Vector3(20.1f, 20.1f, 20.1f)); */
-    rb->set_mass(50.0f);
-    // rb->set_linear_velocity(math::Vector3(0.5f, 1.0f, 2.0f));
-
-    std::shared_ptr<RigidBody> rb2 = std::make_shared<RigidBody>();
-    rb2->set_posisition(math::Vector3(0.0f, -10.0f, 0.0f));
-    rb2->set_mass(50.0f);
-
-    std::unique_ptr<Spring> spring = std::make_unique<Spring>(
-        math::Vector3(0.0f, 0.0f, 0.0f),
-        rb2,
-        math::Vector3(-0.0f, -0.0f, -0.0f),
-        50.0f,
-        3.0f
-    );
-    std::unique_ptr<Gravity> gravity = std::make_unique<Gravity>(math::Vector3(0.0f, 0.0f, -9.81f));
-
-    this->force_registry.add_entry(rb, std::move(spring));
-    this->force_registry.add_entry(rb, std::move(gravity));
-
-    this->add_rigid_body(rb);
-    this->add_rigid_body(rb2);
-}
+PhysicWorld::PhysicWorld() : particle_contact_resolver() {}
 
 void PhysicWorld::update() {
     std::vector<ParticleContact> contacts;

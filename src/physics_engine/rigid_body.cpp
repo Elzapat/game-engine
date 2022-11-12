@@ -181,7 +181,8 @@ bool RigidBody::has_infinite_mass() const {
 }
 
 void RigidBody::compute_derived_data() {
-    this->transform = this->transform.translate(this->position).rotate(this->orientation);
+    this->orientation = this->orientation.normalize();
+    this->transform.set_translation(this->position).set_orientation(this->orientation);
 
     this->inv_inertia_tensor_world = this->transform_inertia_tensor(
         this->orientation,

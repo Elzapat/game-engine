@@ -10,6 +10,8 @@ Mesh::Mesh(MeshType _type, std::vector<Vertex> _vertices, std::vector<uint32_t> 
     type(_type)  //
 {}
 
+Mesh::~Mesh() {}
+
 Mesh Mesh::sphere(float radius, int sectors, int stacks) {
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;

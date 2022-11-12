@@ -17,8 +17,8 @@ namespace math {
             float determinant() const;
             Matrix4 inverse();
 
-            Matrix4 translate(const Vector3& translation) const;
-            Matrix4 rotate(const Quaternion& rotation) const;
+            Matrix4& set_translation(const Vector3& translation);
+            Matrix4& set_orientation(const Quaternion& rotation);
 
             Vector3 operator*(const Vector3& rhs) const;
             Matrix4 operator*(const Matrix4& rhs) const;

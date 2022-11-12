@@ -66,6 +66,7 @@ class VulkanRenderer {
         GLFWwindow* init();
         void draw(std::vector<std::shared_ptr<Particle>>& particles, std::vector<std::shared_ptr<RigidBody>>& rigid_bodies);
         void update_camera();
+        void add_mesh(Mesh mesh);
 
     private:
         Ui ui;
@@ -103,14 +104,6 @@ class VulkanRenderer {
         bool framebuffer_resized = false;
         uint32_t current_frame = 0;
 
-        std::vector<Vertex> vertices;
-        VkBuffer vertex_buffer;
-        VkDeviceMemory vertex_buffer_memory;
-
-        std::vector<uint32_t> indices;
-        VkBuffer index_buffer;
-        VkDeviceMemory index_buffer_memory;
-
         UniformBuffers uniform_buffers;
         UboData* ubo_data_dynamic;
         size_t dynamic_alignment;
@@ -146,8 +139,6 @@ class VulkanRenderer {
         void create_graphics_pipeline();
         void create_framebuffers();
         void create_command_pool();
-        void create_vertex_buffer();
-        void create_index_buffer();
         void create_uniform_buffers();
         void create_command_buffers();
         void create_sync_objects();
@@ -188,6 +179,8 @@ class VulkanRenderer {
         std::vector<const char*> get_required_extensions();
         void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, VkDeviceSize size);
         void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& buffer_memory);
+        void create_vertex_buffer(std::vector<Vertex> vertices, VkBuffer& buffer, VkDeviceMemory& buffer_memory);
+        void create_index_buffer(std::vector<uint32_t> indices, VkBuffer& buffer, VkDeviceMemory& buffer_memory);
         uint32_t find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties);
         VkCommandBuffer begin_single_time_commands();
         void end_single_time_commands(VkCommandBuffer command_buffer);

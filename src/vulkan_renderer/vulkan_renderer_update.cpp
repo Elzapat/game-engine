@@ -154,10 +154,10 @@ void VulkanRenderer::record_command_buffer(
             break;
         }
 
-        VkBuffer vertex_buffers[] = {this->vertex_buffer};
+        VkBuffer vertex_buffers[] = {this->meshes[i].vertex_buffer};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
-        vkCmdBindIndexBuffer(command_buffer, this->index_buffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(command_buffer, this->meshes[i].index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
         uint32_t dynamic_offset = i * static_cast<uint32_t>(this->dynamic_alignment);
 
@@ -175,7 +175,14 @@ void VulkanRenderer::record_command_buffer(
         /* for (uint32_t j = 0; j < static_cast<uint32_t>(indices.size()); j++) { */
         /*     vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, j * 2, 0); */
         /* } */
-        vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(this->indices.size()), 1, 0, 0, 0);
+        vkCmdDrawIndexed(
+            command_buffer,
+            static_cast<uint32_t>(this->meshes[i].indices.size()),
+            1,
+            0,
+            0,
+            0
+        );
     }
 
     ui.draw(this->camera, particles);
@@ -282,6 +289,13 @@ void VulkanRenderer::update_camera() {
     this->camera.keys.down = glfwGetKey(this->window, GLFW_KEY_Q) == GLFW_PRESS;
 
     camera.update();
+}
+
+void VulkanRenderer::add_mesh(Mesh mesh) {
+    this->create_vertex_buffer(mesh.vertices, mesh.vertex_buffer, mesh.vertex_buffer_memory);
+    this->create_index_buffer(mesh.indices, mesh.index_buffer, mesh.index_buffer_memory);
+
+    this->meshes.push_back(std::move(mesh));
 }
 
 void VulkanRenderer::framebuffer_resize_callback(
