@@ -70,6 +70,8 @@ add_executable(physics-engine
     src/vulkan_renderer/renderer_utils.cpp
     src/vulkan_renderer/camera.cpp
     src/vulkan_renderer/mesh.cpp
+
+    src/test_scenes/test_cable.cpp
 )
 
 target_include_directories(physics-engine PRIVATE include libs libs/glfw/include)
