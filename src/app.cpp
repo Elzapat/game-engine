@@ -5,6 +5,11 @@ void App::init() {
     /* rb->set_orientation(math::Quaternion(1.0f, 0.5f, 1.0f, 2.0f)); */
     /* rb->set_angular_velocity(math::Vector3(20.1f, 20.1f, 20.1f)); */
     rb->set_mass(50.0f);
+    rb->set_inertia_tensor(math::Matrix3(
+        1.0f / 12.0f * 50.0f * (0.6 * 0.6 + 1.0f * 1.0f),
+        1.0f / 12.0f * 50.0f * (2.0f * 2.0f + 1.0f * 1.0f),
+        1.0f / 12.0f * 50.0f * (2.0f * 2.0f + 0.6f * 0.6f)
+    ));
     // rb->set_linear_velocity(math::Vector3(0.5f, 1.0f, 2.0f));
 
     std::shared_ptr<RigidBody> rb2 = std::make_shared<RigidBody>();
@@ -13,12 +18,13 @@ void App::init() {
 
     Mesh rb_mesh = Mesh::cube();
     rb_mesh.scale = math::Vector3(2.0f, 0.6f, 1.0f);
+
     Mesh rb2_mesh = Mesh::sphere(1.0f, 20, 20);
 
     std::unique_ptr<Spring> spring = std::make_unique<Spring>(
-        math::Vector3(0.0f, 0.0f, 0.0f),
+        math::Vector3(0.01f, 0.0f, 0.0f),
         rb2,
-        math::Vector3(-1.0f, -1.0f, -0.0f),
+        math::Vector3(0.0f, 0.0f, 0.0f),
         50.0f,
         3.0f
     );

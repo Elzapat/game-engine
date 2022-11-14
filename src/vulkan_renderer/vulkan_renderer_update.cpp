@@ -210,25 +210,8 @@ void VulkanRenderer::update_uniform_buffer(
         UboData* ubo_data = (UboData*)((uint64_t)this->ubo_data_dynamic + index);
 
         ubo_data->model = rigid_bodies[i]->get_transform().to_glm_mat4();
-
-        /*
-        const float offset = 2.0f;
-        if (i % 4) {
-            ubo_data->color = glm::vec3(1.0f, 0.0f, 0.0f);
-        ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(x_i++ * offset, 0.0f, 0.0f));
-        }
-        else if (i % 3) {
-            ubo_data->color = glm::vec3(0.0f, 1.0f, 0.0f);
-            ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, y_i++ * offset, 0.0f));
-        }
-        else {
-            ubo_data->color = glm::vec3(0.0f, 0.0f, 1.0f);
-            ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, z_i++ * offset));
-        }
-        */
-
-        ubo_data->color = this->cubes_colors[i];
-        // ubo_data->model = glm::translate(glm::mat4(1.0), glm::vec3(i * offset, 0.0f, 0.0f));
+        ubo_data->model = glm::scale(ubo_data->model, meshes[i].scale.to_glm_vec3());
+        ubo_data->color = meshes[i].color.to_glm_vec3();
     }
 
     void* data;
@@ -295,7 +278,7 @@ void VulkanRenderer::add_mesh(Mesh mesh) {
     this->create_vertex_buffer(mesh.vertices, mesh.vertex_buffer, mesh.vertex_buffer_memory);
     this->create_index_buffer(mesh.indices, mesh.index_buffer, mesh.index_buffer_memory);
 
-    this->meshes.push_back(std::move(mesh));
+    this->meshes.push_back(mesh);
 }
 
 void VulkanRenderer::framebuffer_resize_callback(

@@ -1,20 +1,6 @@
 #include "physics_engine/rigid_body.hpp"
 
-RigidBody::RigidBody() {
-    math::Matrix3 inertia_tensor(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-    /* math::Matrix3 inertia_tensor( */
-    /*     2.f / 3.f, */
-    /*     -1.0f / 4.0f, */
-    /*     -1.0f / 4.0f, */
-    /*     -1.0f / 4.0f, */
-    /*     2.f / 3.f, */
-    /*     -1.0f / 4.0f, */
-    /*     -1.0f / 4.0f, */
-    /*     -1.0f / 4.0f, */
-    /*     2.f / 3.f */
-    /* ); */
-    this->set_inertia_tensor(inertia_tensor);
-}
+RigidBody::RigidBody() {}
 
 RigidBody::~RigidBody() {}
 
@@ -34,7 +20,7 @@ void RigidBody::add_force_at_local_point(const math::Vector3& force, math::Vecto
 }
 
 void RigidBody::apply_impulse(const math::Vector3& impulse) {
-    this->linear_velocity += impulse;
+    this->velocity += impulse;
 }
 
 math::Vector3 RigidBody::get_point_in_world_space(const math::Vector3& point) {
@@ -96,16 +82,12 @@ void RigidBody::set_posisition(const math::Vector3 pos) {
     this->position = pos;
 }
 
-void RigidBody::set_linear_velocity(const math::Vector3 vel) {
-    this->linear_velocity = vel;
+void RigidBody::set_velocity(const math::Vector3 vel) {
+    this->velocity = vel;
 }
 
 void RigidBody::set_linear_damping(float linear_damping) {
     this->linear_damping = linear_damping;
-}
-
-void RigidBody::set_angular_velocity(const math::Vector3 vel) {
-    this->angular_velocity = vel;
 }
 
 void RigidBody::set_angular_damping(const float angular_damping) {
@@ -140,16 +122,12 @@ math::Vector3 RigidBody::get_position() const {
     return this->position;
 }
 
-math::Vector3 RigidBody::get_linear_velocity() const {
-    return this->linear_velocity;
+math::Vector3 RigidBody::get_velocity() const {
+    return this->velocity;
 }
 
 float RigidBody::get_linear_damping() const {
     return this->linear_damping;
-}
-
-math::Vector3 RigidBody::get_angular_velocity() const {
-    return this->angular_velocity;
 }
 
 float RigidBody::get_angular_damping() const {
@@ -194,20 +172,19 @@ void RigidBody::compute_derived_data() {
 void RigidBody::integrate() {
     float dt = Time::delta_time();
 
-    this->compute_derived_data();
-
     this->linear_acceleration = this->inv_mass * this->forces;
     this->angular_acceleration = this->torques.transform(this->inv_inertia_tensor_world);
 
-    this->linear_velocity += this->linear_acceleration * dt;
+    this->velocity += this->linear_acceleration * dt;
     this->rotation += this->angular_acceleration * dt;
 
-    this->linear_velocity *= std::pow(this->linear_damping, dt);
+    this->velocity *= std::pow(this->linear_damping, dt);
     this->rotation *= std::pow(this->angular_damping, dt);
 
-    this->position += this->linear_velocity * dt;
-    this->orientation += rotation * dt;
-    /* this->orientation += math::Vector3(0.001f, 0.001f, 0.002f); */
+    this->position += this->velocity * dt;
+    this->orientation += this->rotation * dt;
+
+    this->compute_derived_data();
 
     this->forces = math::Vector3();
     this->torques = math::Vector3();

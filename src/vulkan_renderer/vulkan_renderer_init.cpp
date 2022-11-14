@@ -634,15 +634,6 @@ void VulkanRenderer::create_uniform_buffers() {
         this->uniform_buffers.dynamic,
         this->uniform_buffers.dynamic_buffer_memory
     );
-
-    // Populate the colors of the cubes with random values
-    for (auto& color : this->cubes_colors) {
-        color = glm::vec3(
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX)
-        );
-    }
 }
 
 void VulkanRenderer::create_command_buffers() {
@@ -1086,7 +1077,7 @@ void VulkanRenderer::create_index_buffer(
     VkBuffer& buffer,
     VkDeviceMemory& buffer_memory
 ) {
-    VkDeviceSize buffer_size = sizeof(Vertex) * indices.size();
+    VkDeviceSize buffer_size = sizeof(uint32_t) * indices.size();
 
     VkBuffer staging_buffer;
     VkDeviceMemory staging_buffer_memory;

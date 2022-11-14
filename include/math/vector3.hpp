@@ -19,7 +19,8 @@ namespace math {
             std::array<float, 3> coords;
 
         public:
-            Vector3(float x = 0.0, float y = 0.0, float z = 0.0);
+            Vector3(float x, float y, float z);
+            Vector3();
             ~Vector3();
 
             void set_x(const float x);

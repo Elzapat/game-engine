@@ -115,7 +115,6 @@ class VulkanRenderer {
         VkDeviceMemory depth_image_memory;
         VkImageView depth_image_view;
 
-        std::vector<glm::vec3> cubes_colors = std::vector<glm::vec3>(MAX_OBJECT_INSTANCES);
         std::vector<Mesh> meshes;
 
         Camera camera;

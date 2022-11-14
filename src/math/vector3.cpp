@@ -6,6 +6,7 @@
 using namespace math;
 
 Vector3::Vector3(float x, float y, float z) : coords({x, y, z}) {}
+Vector3::Vector3() : coords({0.0f, 0.0f, 0.0f}) {}
 Vector3::~Vector3() {}
 
 void Vector3::set_x(const float x) {
@@ -33,6 +34,9 @@ float Vector3::get_z() const {
 }
 
 float Vector3::norm() const {
+    (void)this->get_x();
+    (void)this->get_y();
+    (void)this->get_z();
     return std::sqrt(
         std::pow(this->get_x(), 2) + std::pow(this->get_y(), 2) + std::pow(this->get_z(), 2)
     );

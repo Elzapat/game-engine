@@ -20,25 +20,24 @@ class RigidBody {
     private:
         float inv_mass = 0.0f;
 
-        math::Vector3 linear_velocity;
+        math::Vector3 velocity = math::Vector3();
         float linear_damping = 0.99f;
 
-        math::Vector3 angular_velocity;
+        math::Vector3 rotation = math::Vector3();
         float angular_damping = 0.99f;
 
-        math::Vector3 linear_acceleration;
-        math::Vector3 angular_acceleration;
+        math::Vector3 linear_acceleration = math::Vector3();
+        math::Vector3 angular_acceleration = math::Vector3();
 
-        math::Vector3 position;
-        math::Quaternion orientation;
-        math::Vector3 rotation;
-        math::Matrix4 transform;
+        math::Vector3 position = math::Vector3();
+        math::Quaternion orientation = math::Quaternion();
+        math::Matrix4 transform = math::Matrix4();
 
-        math::Matrix3 inv_inertia_tensor;
-        math::Matrix3 inv_inertia_tensor_world;
+        math::Matrix3 inv_inertia_tensor = math::Matrix3();
+        math::Matrix3 inv_inertia_tensor_world = math::Matrix3();
         
-        math::Vector3 forces;
-        math::Vector3 torques;
+        math::Vector3 forces = math::Vector3();
+        math::Vector3 torques = math::Vector3();
 
         void compute_derived_data();
 
@@ -60,9 +59,8 @@ class RigidBody {
         );
 
         void set_posisition(const math::Vector3 pos);
-        void set_linear_velocity(const math::Vector3 vel);
+        void set_velocity(const math::Vector3 vel);
         void set_linear_damping(const float linear_damping);
-        void set_angular_velocity(const math::Vector3 vel);
         void set_angular_damping(const float angular_damping);
         void set_rotation(const math::Vector3 rot);
         void set_orientation(const math::Quaternion orientation);
@@ -72,9 +70,8 @@ class RigidBody {
         void set_inertia_tensor(const math::Matrix3& inertia_tensor);
 
         math::Vector3 get_position() const;
-        math::Vector3 get_linear_velocity() const;
+        math::Vector3 get_velocity() const;
         float get_linear_damping() const;
-        math::Vector3 get_angular_velocity() const;
         float get_angular_damping() const;
         math::Vector3 get_rotation() const;
         math::Quaternion get_orientation() const;

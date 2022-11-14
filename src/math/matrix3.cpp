@@ -12,9 +12,13 @@ Matrix3::Matrix3(
     float x3,
     float y3,
     float z3
-) {
-    this->values = {x1, y1, z1, x2, y2, z2, x3, y3, z3};
-}
+) :
+    values({x1, y1, z1, x2, y2, z2, x3, y3, z3}) {}
+
+Matrix3::Matrix3(float x1, float y2, float z3) :
+    values({x1, 0.0f, 0.0f, 0.0f, y2, 0.0f, 0.0f, 0.0f, z3}) {}
+
+Matrix3::Matrix3() : values({0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}) {}
 
 Matrix3::~Matrix3() {}
 
