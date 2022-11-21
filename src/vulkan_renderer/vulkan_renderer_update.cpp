@@ -281,6 +281,19 @@ void VulkanRenderer::add_mesh(Mesh mesh) {
     this->meshes.push_back(mesh);
 }
 
+void VulkanRenderer::remove_last_mesh() {
+    if (this->meshes.empty()) {
+        return;
+    }
+
+    vkDestroyBuffer(this->device, meshes[this->meshes.size() - 1].vertex_buffer, nullptr);
+    vkFreeMemory(this->device, meshes[this->meshes.size() - 1].vertex_buffer_memory, nullptr);
+    vkDestroyBuffer(this->device, meshes[this->meshes.size() - 1].index_buffer, nullptr);
+    vkFreeMemory(this->device, meshes[this->meshes.size() - 1].index_buffer_memory, nullptr);
+
+    this->meshes.pop_back();
+}
+
 void VulkanRenderer::framebuffer_resize_callback(
     GLFWwindow* window,
     [[maybe_unused]] int width,

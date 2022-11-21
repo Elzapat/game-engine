@@ -19,6 +19,11 @@ Auteurs : Morgan Van Amerongen, Benoit Lorcy, Tom Gibert
 
 `cmake --build .` en étant dans la racine du projet, pour compiler le projet.
 
+## Phase 3
+ 
+* Un corp rigide (pavé qui pend) attaché a une corp rigide "ancre" (sphere), qui subit la gravité et donc pend. Le ressort n'est pas attaché a son centre de gravité mais sur une de ces faces donc on voit le pavé tourner.
+* Un deuxième pavé (sur la gauche au début) est stationnaire pendant deux secondes puis lui est appliqué une force sur une de ses surfaces pendant 0,5 secondes. On peut voir l'effet de la force et du couple car le corps rigide se met a tourner et à se déplacer.
+
 ## Phase 2
 
 ### Utilisation

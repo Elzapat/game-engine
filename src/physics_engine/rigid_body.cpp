@@ -24,7 +24,7 @@ void RigidBody::apply_impulse(const math::Vector3& impulse) {
 }
 
 math::Vector3 RigidBody::get_point_in_world_space(const math::Vector3& point) {
-    return this->transform * point;
+    return point.transform(this->transform);
 }
 
 math::Matrix3 RigidBody::transform_inertia_tensor(
@@ -78,7 +78,7 @@ math::Matrix3 RigidBody::transform_inertia_tensor(
     return inv_inertia_tensor_world;
 }
 
-void RigidBody::set_posisition(const math::Vector3 pos) {
+void RigidBody::set_position(const math::Vector3 pos) {
     this->position = pos;
 }
 

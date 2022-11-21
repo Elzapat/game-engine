@@ -67,6 +67,7 @@ class VulkanRenderer {
         void draw(std::vector<std::shared_ptr<Particle>>& particles, std::vector<std::shared_ptr<RigidBody>>& rigid_bodies);
         void update_camera();
         void add_mesh(Mesh mesh);
+        void remove_last_mesh();
 
     private:
         Ui ui;

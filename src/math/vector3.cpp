@@ -56,11 +56,11 @@ Vector3 Vector3::invert() const {
     return Vector3(-this->get_x(), -this->get_y(), -this->get_z());
 }
 
-Vector3 Vector3::transform(Matrix4 transform_matrix) {
+Vector3 Vector3::transform(const Matrix4& transform_matrix) const {
     return transform_matrix * *this;
 }
 
-Vector3 Vector3::transform(Matrix3 transform_matrix) {
+Vector3 Vector3::transform(const Matrix3& transform_matrix) const {
     return transform_matrix * *this;
 }
 

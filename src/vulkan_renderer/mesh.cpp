@@ -115,8 +115,8 @@ Mesh Mesh::cube() {
         18, 17, 16, 16, 19, 18,
         // Front
         22, 21, 20, 20, 23, 22
-
     };
+    // clang-format on
 
     return Mesh(MeshType::Cube, std::move(vertices), std::move(indices));
 }

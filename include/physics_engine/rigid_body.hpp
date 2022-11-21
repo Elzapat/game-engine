@@ -40,6 +40,11 @@ class RigidBody {
         math::Vector3 torques = math::Vector3();
 
         void compute_derived_data();
+        math::Matrix3 transform_inertia_tensor(
+            const math::Quaternion& orientation,
+            const math::Matrix3& inv_inertia_tensor,
+            const math::Matrix4& transform
+        );
 
     public:
         RigidBody();
@@ -52,13 +57,7 @@ class RigidBody {
         void apply_impulse(const math::Vector3& impulse);
 
         math::Vector3 get_point_in_world_space(const math::Vector3& point);
-        math::Matrix3 transform_inertia_tensor(
-            const math::Quaternion& orientation,
-            const math::Matrix3& inv_inertia_tensor,
-            const math::Matrix4& transform
-        );
-
-        void set_posisition(const math::Vector3 pos);
+        void set_position(const math::Vector3 pos);
         void set_velocity(const math::Vector3 vel);
         void set_linear_damping(const float linear_damping);
         void set_angular_damping(const float angular_damping);

@@ -50,11 +50,6 @@ void Ui::draw(Camera& camera, std::vector<std::shared_ptr<Particle>>& particles)
         ImGui::SliderFloat("Mouse sensitivity", &camera.sensitivity, 0.01f, 0.2f);
     }
 
-    ImGui::Text("%lu particles", particles.size());
-
-    ImGui::Text(
-        "All particles have the same anchored spring that\n is anchored on (0,0,0) by default"
-    );
     if (ImGui::CollapsingHeader("Spring anchor")) {
         float x = Ui::spring_anchor.get_x(), y = Ui::spring_anchor.get_y(),
               z = Ui::spring_anchor.get_z();

@@ -34,8 +34,8 @@ namespace math {
             float norm() const;
             Vector3 normalize() const;
             Vector3 invert() const;
-            Vector3 transform(Matrix3 tranform_matrix);
-            Vector3 transform(Matrix4 tranform_matrix);
+            Vector3 transform(const Matrix3& tranform_matrix) const;
+            Vector3 transform(const Matrix4& tranform_matrix) const;
             
             glm::vec3 to_glm_vec3();
 
