@@ -3,3 +3,5 @@
 void TestCable::init() {}
 
 void TestCable::update() {}
+
+void TestCable::cleanup() {}

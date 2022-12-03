@@ -7,7 +7,7 @@ ImGui_ImplVulkanH_Window* Ui::get_window_data() {
     return &this->main_window_data;
 }
 
-void Ui::draw(Camera& camera, std::vector<std::shared_ptr<Particle>>& particles) {
+void Ui::draw(Camera& camera) {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();

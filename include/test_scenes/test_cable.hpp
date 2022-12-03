@@ -7,6 +7,7 @@ class TestCable : public GameEngine {
     private:
         virtual void init() override;
         virtual void update() override;
+        virtual void cleanup() override;
 };
 
 #endif // TEST_CABLE_HPP

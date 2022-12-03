@@ -25,14 +25,6 @@ void VulkanRenderer::cleanup() {
     vkDestroyBuffer(this->device, this->uniform_buffers.dynamic, nullptr);
     vkFreeMemory(this->device, this->uniform_buffers.dynamic_buffer_memory, nullptr);
 
-    for (Mesh& mesh : this->meshes) {
-        vkDestroyBuffer(this->device, mesh.vertex_buffer, nullptr);
-        vkFreeMemory(this->device, mesh.vertex_buffer_memory, nullptr);
-
-        vkDestroyBuffer(this->device, mesh.index_buffer, nullptr);
-        vkFreeMemory(this->device, mesh.index_buffer_memory, nullptr);
-    }
-
     vkDestroyDescriptorPool(this->device, this->descriptor_pool, nullptr);
     vkDestroyDescriptorSetLayout(this->device, this->descriptor_set_layout, nullptr);
 
@@ -58,6 +50,14 @@ void VulkanRenderer::cleanup() {
 
     glfwDestroyWindow(this->window);
     glfwTerminate();
+}
+
+void VulkanRenderer::cleanup_mesh(Mesh& mesh) {
+    vkFreeMemory(this->device, mesh.index_buffer_memory, nullptr);
+    vkFreeMemory(this->device, mesh.vertex_buffer_memory, nullptr);
+
+    vkDestroyBuffer(this->device, mesh.index_buffer, nullptr);
+    vkDestroyBuffer(this->device, mesh.vertex_buffer, nullptr);
 }
 
 void VulkanRenderer::cleanup_swapchain() {

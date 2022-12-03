@@ -60,6 +60,7 @@ struct UniformBuffers {
 
     VkBuffer dynamic;
     VkDeviceMemory dynamic_buffer_memory;
+    size_t dynamic_buffer_size = 1;
 };
 
 struct UboVS {

@@ -31,7 +31,7 @@
 #include "camera.hpp"
 #include "time.hpp"
 #include "mesh.hpp"
-#include "physics_engine/rigid_body.hpp"
+#include "object.hpp"
 
 static const int WIDTH = 800;
 static const int HEIGHT = 600;
@@ -64,10 +64,11 @@ class VulkanRenderer {
     public:
         ~VulkanRenderer();
         GLFWwindow* init();
-        void draw(std::vector<std::shared_ptr<Particle>>& particles, std::vector<std::shared_ptr<RigidBody>>& rigid_bodies);
+        void draw(std::vector<Object>& objects);
         void update_camera();
-        void add_mesh(Mesh mesh);
-        void remove_last_mesh();
+
+        void init_mesh(Mesh& mesh);
+        void cleanup_mesh(Mesh& mesh);
 
     private:
         Ui ui;
@@ -116,8 +117,6 @@ class VulkanRenderer {
         VkDeviceMemory depth_image_memory;
         VkImageView depth_image_view;
 
-        std::vector<Mesh> meshes;
-
         Camera camera;
 
         /* std::vector<Vertex> vertices; */
@@ -149,9 +148,10 @@ class VulkanRenderer {
 
         // --- Update renderer
         void main_loop();
-        void record_command_buffer(VkCommandBuffer command_buffer, uint32_t image_index, std::vector<std::shared_ptr<Particle>>& particles, std::vector<std::shared_ptr<RigidBody>>& RigidBodies);
-        void draw_frame(std::vector<std::shared_ptr<Particle>>& particles, std::vector<std::shared_ptr<RigidBody>>& rigid_bodies);
-        void update_uniform_buffer(uint32_t current_image, std::vector<std::shared_ptr<Particle>>& particles, std::vector<std::shared_ptr<RigidBody>>& rigid_bodies);
+        void record_command_buffer(VkCommandBuffer command_buffer, uint32_t image_index, std::vector<Object>& objects);
+        void draw_frame(std::vector<Object>& objects);
+        void recreate_dyn_uniform_buffer(size_t n_elements);
+        void update_uniform_buffer(uint32_t current_image, std::vector<Object>& objects);
         static void framebuffer_resize_callback(GLFWwindow* window, int width, int height);
         static void mouse_callback(GLFWwindow* window, double x_pos, double z_pos);
         static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);

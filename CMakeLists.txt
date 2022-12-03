@@ -35,6 +35,8 @@ add_executable(physics-engine
 
     src/time.cpp
 
+    src/object.cpp
+
     src/math/vector3.cpp
     src/math/quaternion.cpp
     src/math/matrix3.cpp

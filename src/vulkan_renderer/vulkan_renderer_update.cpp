@@ -1,16 +1,10 @@
 #include "vulkan_renderer/vulkan_renderer.hpp"
 
-void VulkanRenderer::draw(
-    std::vector<std::shared_ptr<Particle>>& particles,
-    std::vector<std::shared_ptr<RigidBody>>& rigid_bodies
-) {
-    this->draw_frame(particles, rigid_bodies);
+void VulkanRenderer::draw(std::vector<Object>& objects) {
+    this->draw_frame(objects);
 }
 
-void VulkanRenderer::draw_frame(
-    std::vector<std::shared_ptr<Particle>>& particles,
-    std::vector<std::shared_ptr<RigidBody>>& rigid_bodies
-) {
+void VulkanRenderer::draw_frame(std::vector<Object>& objects) {
     uint32_t image_index;
     VkResult result = vkAcquireNextImageKHR(
         this->device,
@@ -31,13 +25,8 @@ void VulkanRenderer::draw_frame(
     vkResetFences(this->device, 1, &this->in_flight_fences[this->current_frame]);
 
     vkResetCommandBuffer(this->command_buffers[this->current_frame], 0);
-    this->record_command_buffer(
-        this->command_buffers[this->current_frame],
-        image_index,
-        particles,
-        rigid_bodies
-    );
-    this->update_uniform_buffer(this->current_frame, particles, rigid_bodies);
+    this->record_command_buffer(this->command_buffers[this->current_frame], image_index, objects);
+    this->update_uniform_buffer(this->current_frame, objects);
 
     VkSubmitInfo submit_info {};
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -98,8 +87,7 @@ void VulkanRenderer::draw_frame(
 void VulkanRenderer::record_command_buffer(
     VkCommandBuffer command_buffer,
     uint32_t image_index,
-    std::vector<std::shared_ptr<Particle>>& particles,
-    std::vector<std::shared_ptr<RigidBody>>& rigid_bodies
+    std::vector<Object>& objects
 ) {
     VkCommandBufferBeginInfo begin_info {};
     begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -149,15 +137,16 @@ void VulkanRenderer::record_command_buffer(
 
     /* vkCmdBindIndexBuffer(command_buffer, this->index_buffer, 0, VK_INDEX_TYPE_UINT32); */
 
-    for (uint32_t i = 0; i < MAX_OBJECT_INSTANCES; i++) {
-        if (i >= rigid_bodies.size() || i >= this->meshes.size()) {
-            break;
-        }
-
-        VkBuffer vertex_buffers[] = {this->meshes[i].vertex_buffer};
+    for (uint32_t i = 0; i < MAX_OBJECT_INSTANCES && i < objects.size(); i++) {
+        VkBuffer vertex_buffers[] = {objects[i].get_mesh().vertex_buffer};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
-        vkCmdBindIndexBuffer(command_buffer, this->meshes[i].index_buffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(
+            command_buffer,
+            objects[i].get_mesh().index_buffer,
+            0,
+            VK_INDEX_TYPE_UINT32
+        );
 
         uint32_t dynamic_offset = i * static_cast<uint32_t>(this->dynamic_alignment);
 
@@ -177,7 +166,7 @@ void VulkanRenderer::record_command_buffer(
         /* } */
         vkCmdDrawIndexed(
             command_buffer,
-            static_cast<uint32_t>(this->meshes[i].indices.size()),
+            static_cast<uint32_t>(objects[i].get_mesh().indices.size()),
             1,
             0,
             0,
@@ -185,7 +174,7 @@ void VulkanRenderer::record_command_buffer(
         );
     }
 
-    ui.draw(this->camera, particles);
+    ui.draw(this->camera);
     ui.render(command_buffer);
 
     vkCmdEndRenderPass(command_buffer);
@@ -196,22 +185,17 @@ void VulkanRenderer::record_command_buffer(
 
 void VulkanRenderer::update_uniform_buffer(
     [[maybe_unused]] uint32_t current_image,
-    std::vector<std::shared_ptr<Particle>>& particles,
-    std::vector<std::shared_ptr<RigidBody>>& rigid_bodies
+    std::vector<Object>& objects
 ) {
     /* float x_i = 0.0f, y_i = 0.0f, z_i = 0.0f; */
 
-    for (uint32_t i = 0; i < MAX_OBJECT_INSTANCES; i++) {
-        if (i >= rigid_bodies.size() || i >= this->meshes.size()) {
-            break;
-        }
-
+    for (uint32_t i = 0; i < MAX_OBJECT_INSTANCES && i < objects.size(); i++) {
         uint32_t index = i * this->dynamic_alignment;
         UboData* ubo_data = (UboData*)((uint64_t)this->ubo_data_dynamic + index);
 
-        ubo_data->model = rigid_bodies[i]->get_transform().to_glm_mat4();
-        ubo_data->model = glm::scale(ubo_data->model, meshes[i].scale.to_glm_vec3());
-        ubo_data->color = meshes[i].color.to_glm_vec3();
+        ubo_data->model = objects[i].get_rigid_body()->get_transform().to_glm_mat4();
+        ubo_data->model = glm::scale(ubo_data->model, objects[i].get_mesh().scale.to_glm_vec3());
+        ubo_data->color = objects[i].get_mesh().color.to_glm_vec3();
     }
 
     void* data;
@@ -274,24 +258,9 @@ void VulkanRenderer::update_camera() {
     camera.update();
 }
 
-void VulkanRenderer::add_mesh(Mesh mesh) {
+void VulkanRenderer::init_mesh(Mesh& mesh) {
     this->create_vertex_buffer(mesh.vertices, mesh.vertex_buffer, mesh.vertex_buffer_memory);
     this->create_index_buffer(mesh.indices, mesh.index_buffer, mesh.index_buffer_memory);
-
-    this->meshes.push_back(mesh);
-}
-
-void VulkanRenderer::remove_last_mesh() {
-    if (this->meshes.empty()) {
-        return;
-    }
-
-    vkDestroyBuffer(this->device, meshes[this->meshes.size() - 1].vertex_buffer, nullptr);
-    vkFreeMemory(this->device, meshes[this->meshes.size() - 1].vertex_buffer_memory, nullptr);
-    vkDestroyBuffer(this->device, meshes[this->meshes.size() - 1].index_buffer, nullptr);
-    vkFreeMemory(this->device, meshes[this->meshes.size() - 1].index_buffer_memory, nullptr);
-
-    this->meshes.pop_back();
 }
 
 void VulkanRenderer::framebuffer_resize_callback(

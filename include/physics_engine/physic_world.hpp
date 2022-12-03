@@ -11,6 +11,7 @@
 
 #include "particle.hpp"
 #include "rigid_body.hpp"
+#include "object.hpp"
 #include "forces/particles/particle_force_registry.hpp"
 #include "forces/particles/particle_spring.hpp"
 #include "forces/particles/particle_anchored_spring.hpp"
@@ -27,19 +28,7 @@ class PhysicWorld {
         ForceRegistry force_registry;
         PhysicWorld();
 
-        void update();
-
-        void add_particle(const Particle particle);
-        void add_particle(std::shared_ptr<Particle> particle);
-
-        void add_rigid_body(const RigidBody rb);
-        void add_rigid_body(std::shared_ptr<RigidBody> rb);
-
-        std::vector<std::shared_ptr<Particle>> get_particles() const;
-        std::vector<std::shared_ptr<Particle>>& get_particles_ref();
-
-        std::vector<std::shared_ptr<RigidBody>> get_rigid_bodies() const;
-        std::vector<std::shared_ptr<RigidBody>>& get_rigid_bodies_ref();
+        void update(std::vector<Object>& objects);
 
     private:
         std::vector<std::shared_ptr<Particle>> particles;

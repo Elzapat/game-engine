@@ -15,7 +15,7 @@
 
 class Ui {
     public:
-        void draw(Camera& camera, std::vector<std::shared_ptr<Particle>>& particles);
+        void draw(Camera& camera);
         void render(VkCommandBuffer& command_buffer);
         ImGui_ImplVulkanH_Window* get_window_data();
         static math::Vector3 spring_anchor;
