@@ -110,7 +110,6 @@ void Node::test_all_collisions(std::vector<std::shared_ptr<Node>> ancestors = st
     for(int i = 0; i < 8; i++) {
         this->pChild[i]->test_all_collisions(ancestors);
     }
-    
 }
 
 
