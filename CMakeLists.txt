@@ -64,6 +64,8 @@ add_executable(physics-engine
     src/physics_engine/contacts/particles/naive_particle_contact_generator.cpp
     src/physics_engine/contacts/particles/particle_contact_resolver.cpp
 
+    src/physics_engine/collisions/bounding_sphere.cpp
+
     src/vulkan_renderer/vulkan_renderer_init.cpp
     src/vulkan_renderer/vulkan_renderer_cleanup.cpp
     src/vulkan_renderer/vulkan_renderer_update.cpp
