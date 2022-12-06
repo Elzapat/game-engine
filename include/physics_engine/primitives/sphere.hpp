@@ -3,14 +3,9 @@
 
 #include "primitive.hpp"
 
-class Sphere : public Primitive
-{
-private:
-    float radius;
-public:
-    Sphere(/* args */);
-    ~Sphere();
+class Sphere: public Primitive {
+    public:
+        float radius;
 };
-
 
 #endif
