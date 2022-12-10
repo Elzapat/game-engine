@@ -3,11 +3,9 @@
 
 #include <vector>
 
-#include "physics_engine/contacts/rigid_bodies/contact.hpp"
-#include "physics_engine/primitives/sphere.hpp"
-#include "physics_engine/primitives/plane.hpp"
-
 #include "math/vector3.hpp"
+#include "physics_engine/contacts/rigid_bodies/contact.hpp"
+#include "physics_engine/primitives.hpp"
 
 struct CollisionData {
     std::vector<Contact> contacts;
@@ -19,6 +17,18 @@ class CollisionDetector {
     public:
         void sphere_sphere(const Sphere& first, const Sphere& second, CollisionData& data);
         void sphere_half_space(const Sphere& sphere, const Plane& plane, CollisionData& data);
+        void sphere_plane(const Sphere& sphere, const Plane& plane, CollisionData& data);
+        void box_half_space(const Box& box, const Plane& plane, CollisionData& data);
+        void box_sphere(const Box& box, const Sphere& sphere, CollisionData& data);
+
+    private:
+        static inline math::Vector3 projection_on_axis(const math::Vector3& vector, const math::Vector3& axis);
+        static inline float penetration_on_axis(
+            const Box& box1,
+            const Box& box2,
+            const math::Vector3& axis,
+            const math::Vector3& to_center
+        );
 };
 
-#endif // COLLISION_DETECTOR_HPP
+#endif  // COLLISION_DETECTOR_HPP
