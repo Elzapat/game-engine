@@ -122,6 +122,10 @@ Matrix4 Matrix4::operator*(const Matrix4& rhs) const {
     return res;
 }
 
+Vector3 Matrix4::get_axis_vector(int i) const {
+    return Vector3(this->values[i], this->values[i + 4], this->values[i + 8]);
+}
+
 glm::mat4 Matrix4::to_glm_mat4() const {
     float matrix[16];
     std::copy(this->values.data(), this->values.data() + 12, matrix);

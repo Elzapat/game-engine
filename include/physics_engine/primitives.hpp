@@ -10,7 +10,10 @@ class Primitive {
     public:
         std::shared_ptr<RigidBody> rigid_body;
         math::Matrix4 offset;
-};
+
+        math::Matrix4 get_transform() const;
+        math::Vector3 get_axis(int i) const;
+  };
 
 class Box: public Primitive {
     public:

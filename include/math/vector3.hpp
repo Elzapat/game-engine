@@ -41,6 +41,7 @@ namespace math {
 
             // Returns the vector data as a pointer to float;
             float* data();
+            std::array<float, 3> values() const;
 
             Vector3 operator+(const Vector3& rhs) const;
             Vector3& operator+=(const Vector3& rhs);

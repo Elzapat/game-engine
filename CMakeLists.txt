@@ -45,6 +45,7 @@ add_executable(physics-engine
     src/physics_engine/physic_world.cpp
     src/physics_engine/particle.cpp
     src/physics_engine/rigid_body.cpp
+    src/physics_engine/primitives.cpp
 
     src/physics_engine/forces/particles/particle_force_registry.cpp
     src/physics_engine/forces/particles/particle_force_generator.cpp

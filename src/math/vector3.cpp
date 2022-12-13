@@ -72,6 +72,10 @@ float* Vector3::data() {
     return this->coords.data();
 }
 
+std::array<float, 3> Vector3::values() const {
+    return this->values;
+}
+
 Vector3 Vector3::operator+(const Vector3& rhs) const {
     return Vector3(
         this->coords[0] + rhs.coords[0],
