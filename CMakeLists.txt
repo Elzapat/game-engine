@@ -69,6 +69,7 @@ add_executable(physics-engine
 
     src/physics_engine/collisions/bounding_sphere.cpp
     src/physics_engine/collisions/collision_detector.cpp
+    src/physics_engine/collisions/node.cpp
 
     src/vulkan_renderer/vulkan_renderer_init.cpp
     src/vulkan_renderer/vulkan_renderer_cleanup.cpp
@@ -78,6 +79,8 @@ add_executable(physics-engine
     src/vulkan_renderer/renderer_utils.cpp
     src/vulkan_renderer/camera.cpp
     src/vulkan_renderer/mesh.cpp
+
+    
 
     src/test_scenes/test_cable.cpp
 )

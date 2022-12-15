@@ -122,6 +122,14 @@ void RigidBody::set_inertia_tensor(const math::Matrix3& inertia_tensor) {
     this->inv_inertia_tensor = inertia_tensor.inverse();
 }
 
+void RigidBody::set_bounding_sphere(const BoundingSphere bounding_sphere) {
+    this->bounding_sphere = bounding_sphere;
+}
+
+void RigidBody::set_bouding_radius(const float radius) {
+    this->bounding_sphere = BoundingSphere(this->position, radius);
+}
+
 math::Vector3 RigidBody::get_position() const {
     return this->position;
 }
@@ -160,6 +168,10 @@ float RigidBody::get_inv_mass() const {
 
 float RigidBody::get_mass() const {
     return 1.0f / this->inv_mass;
+}
+
+BoundingSphere RigidBody::get_bounding_sphere() const {
+    return this->bounding_sphere;
 }
 
 bool RigidBody::has_infinite_mass() const {

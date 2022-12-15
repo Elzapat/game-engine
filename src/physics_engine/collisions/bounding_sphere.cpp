@@ -1,5 +1,9 @@
 #include "physics_engine/collisions/bounding_sphere.hpp"
 
+BoundingSphere::BoundingSphere() {
+    
+}
+
 BoundingSphere::BoundingSphere(math::Vector3 _center, float _radius) :
     center(_center),
     radius(_radius) {}
@@ -31,4 +35,8 @@ BoundingSphere::BoundingSphere(BoundingSphere first, BoundingSphere second) {
 bool BoundingSphere::overlaps(const BoundingSphere& other) const {
     float distance_squared = std::pow((this->center - other.center).norm(), 2);
     return distance_squared < (this->radius + other.radius) * (this->radius + other.radius);
+}
+
+float BoundingSphere::get_radius() {
+    return this->radius;
 }

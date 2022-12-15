@@ -11,6 +11,8 @@
 #include "math/quaternion.hpp"
 #include "math/vector3.hpp"
 
+#include "physics_engine/collisions/bounding_sphere.hpp"
+
 #include "time.hpp"
 
 /* 
@@ -38,6 +40,8 @@ class RigidBody {
         
         math::Vector3 forces = math::Vector3();
         math::Vector3 torques = math::Vector3();
+
+        BoundingSphere bounding_sphere = BoundingSphere();
 
         void compute_derived_data();
         math::Matrix3 transform_inertia_tensor(
@@ -68,6 +72,9 @@ class RigidBody {
         void set_inv_mass(const float inv_mass);
         void set_mass(const float mass);
         void set_inertia_tensor(const math::Matrix3& inertia_tensor);
+        void set_bounding_sphere(const BoundingSphere bounding_sphere);
+
+        void set_bouding_radius(const float radius);
 
         math::Vector3 get_position() const;
         math::Vector3 get_velocity() const;
@@ -81,6 +88,7 @@ class RigidBody {
         float get_mass() const;
         bool has_infinite_mass() const;
         math::Matrix3 get_inertia_tensor() const;
+        BoundingSphere get_bounding_sphere() const;
 
         void integrate();
 };
