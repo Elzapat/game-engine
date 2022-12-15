@@ -20,7 +20,11 @@ void RigidBody::add_force_at_local_point(const math::Vector3& force, math::Vecto
 }
 
 void RigidBody::apply_impulse(const math::Vector3& impulse) {
-    this->velocity += impulse;
+    this->velocity += impulse * inv_mass;
+}
+
+void RigidBody::apply_torque_impulse(const math::Vector3& torque) {
+    this->rotation += torque.transform(this->inv_inertia_tensor_world);
 }
 
 math::Vector3 RigidBody::get_point_in_world_space(const math::Vector3& point) {
@@ -124,6 +128,10 @@ math::Vector3 RigidBody::get_position() const {
 
 math::Vector3 RigidBody::get_velocity() const {
     return this->velocity;
+}
+
+math::Vector3 RigidBody::get_acceleration() const {
+    return this->linear_acceleration;
 }
 
 float RigidBody::get_linear_damping() const {

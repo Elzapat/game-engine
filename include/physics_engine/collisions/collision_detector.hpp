@@ -8,9 +8,9 @@
 #include "physics_engine/primitives.hpp"
 
 struct CollisionData {
-        std::vector<Contact> contacts;
-        float friction;
-        float restitution;
+    std::vector<Contact> contacts;
+    float friction;
+    float restitution;
 };
 
 class CollisionDetector {

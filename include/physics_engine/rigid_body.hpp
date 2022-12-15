@@ -55,6 +55,7 @@ class RigidBody {
         void add_force_at_local_point(const math::Vector3& force, math::Vector3 point);
         void add_torque(const math::Vector3& torque);
         void apply_impulse(const math::Vector3& impulse);
+        void apply_torque_impulse(const math::Vector3& torque);
 
         math::Vector3 get_point_in_world_space(const math::Vector3& point);
         void set_position(const math::Vector3 pos);
@@ -70,6 +71,7 @@ class RigidBody {
 
         math::Vector3 get_position() const;
         math::Vector3 get_velocity() const;
+        math::Vector3 get_acceleration() const;
         float get_linear_damping() const;
         float get_angular_damping() const;
         math::Vector3 get_rotation() const;
