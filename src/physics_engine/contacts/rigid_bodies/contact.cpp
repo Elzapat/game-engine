@@ -14,14 +14,14 @@ Contact::Contact(
 void Contact::calculate_internals() {
     this->calculate_contact_basis();
 
-    this->first_relative_contact_pos = this->contact_point - first->get_position();
+    this->relative_contact_pos[0] = this->contact_point - first->get_position();
     if (this->second != nullptr) {
-        this->second_relative_contact_pos = this->contact_point - second->get_position();
+        this->relative_contact_pos[1] = this->contact_point - second->get_position();
     }
 
-    this->contact_velocity = this->calculate_local_velocity(first, first_relative_contact_pos);
+    this->contact_velocity = this->calculate_local_velocity(first, this->relative_contact_pos[0]);
     if (this->second != nullptr) {
-        this->calculate_local_velocity(second, second_relative_contact_pos);
+        this->calculate_local_velocity(second, this->relative_contact_pos[1]);
     }
 
     this->calculate_desired_delta_velocity();
@@ -99,18 +99,19 @@ void Contact::calculate_contact_basis() {
 }
 
 math::Vector3 Contact::calculate_frictionless_impulse(math::Matrix3& inverse_inertia_tensor) {
-    math::Vector3 delta_vel_world = this->first_relative_contact_pos.cross(this->contact_normal)
+    math::Vector3 delta_vel_world = this->relative_contact_pos[0]
+                                        .cross(this->contact_normal)
                                         .transform(inverse_inertia_tensor)
-                                        .cross(this->first_relative_contact_pos);
+                                        .cross(this->relative_contact_pos[0]);
 
     float delta_velocity = delta_vel_world.dot(this->contact_normal);
     delta_velocity += this->first->get_inv_mass();
 
     if (this->second != nullptr) {
-        math::Vector3 delta_vel_world =
-            this->second_relative_contact_pos.cross(this->contact_normal)
-                .transform(inverse_inertia_tensor)
-                .cross(this->second_relative_contact_pos);
+        math::Vector3 delta_vel_world = this->relative_contact_pos[1]
+                                            .cross(this->contact_normal)
+                                            .transform(inverse_inertia_tensor)
+                                            .cross(this->relative_contact_pos[1]);
 
         delta_velocity += delta_vel_world.dot(this->contact_normal);
         delta_velocity += this->second->get_inv_mass();
@@ -118,3 +119,83 @@ math::Vector3 Contact::calculate_frictionless_impulse(math::Matrix3& inverse_ine
 
     return math::Vector3(this->desired_delta_velocity / delta_velocity, 0.0f, 0.0f);
 }
+
+std::shared_ptr<RigidBody> Contact::get_body(int index) {
+    if (index == 0) {
+        return this->first;
+    } else if (index == 1) {
+        return this->second;
+    } else {
+        return nullptr;
+    }
+}
+
+void Contact::resolve_interpenetration(
+    std::array<math::Vector3, 2> linear_change,
+    std::array<math::Vector3, 2> angular_change,
+    float penetration
+) {
+    const float angular_limit = 0.2f;
+    std::array<float, 2> linear_move, angular_move;
+
+    float total_inertia = 0;
+    std::array<float, 2> linear_inertia, angular_inertia;
+
+    std::array<std::shared_ptr<RigidBody>, 2> bodies = {this->first, this->second};
+
+    for (int i = 0; i < 2; i++) {
+        math::Matrix3 inverse_inertia_tensor = bodies[i]->get_inverse_inertia_tensor_world();
+
+        math::Vector3 angular_inertia_world = this->relative_contact_pos[i]
+                                                  .cross(this->contact_normal)
+                                                  .transform(inverse_inertia_tensor)
+                                                  .cross(this->relative_contact_pos[i]);
+
+        angular_inertia[i] = angular_inertia_world.dot(this->contact_normal);
+        linear_inertia[i] = bodies[i]->get_inv_mass();
+
+        total_inertia += linear_inertia[i] + angular_inertia[i];
+    }
+
+    for (int i = 0; i < 2; i++) {
+        float sign = i == 0 ? 1.0f : -1.0f;
+        angular_move[i] = sign * this->penetration * (angular_inertia[i] / total_inertia);
+        linear_move[i] = sign * this->penetration * (linear_inertia[i] / total_inertia);
+
+        math::Vector3 projection = this->relative_contact_pos[i]
+            + this->contact_normal * -relative_contact_pos[i].dot(this->contact_normal);
+
+        float max_magnitude = angular_limit * projection.norm();
+
+        if (angular_move[i] < -max_magnitude) {
+            float total_move = angular_move[i] + linear_move[i];
+            angular_move[i] = -max_magnitude;
+            linear_move[i] = total_move - angular_move[i];
+        } else if (angular_move[i] > max_magnitude) {
+            float total_move = angular_move[i] + linear_move[i];
+            angular_move[i] = max_magnitude;
+            linear_move[i] = total_move - angular_move[i];
+        }
+
+        if (angular_move[i] == 0.0f) {
+            angular_change[i] = math::Vector3(0.0f, 0.0f, 0.0f);
+        } else {
+            math::Vector3 target_angular_direction =
+                this->relative_contact_pos[i].cross(this->contact_normal);
+            math::Matrix3 inverse_inertia_tensor = bodies[i]->get_inverse_inertia_tensor();
+
+            angular_change[i] = target_angular_direction.transform(inverse_inertia_tensor)
+                * (angular_move[i] / angular_inertia[i]);
+        }
+
+        linear_change[i] = this->contact_normal * linear_move[i];
+
+        math::Vector3 pos = bodies[i]->get_position() + (this->contact_normal * linear_move[i]);
+        bodies[i]->set_position(pos);
+
+        math::Quaternion q = bodies[i]->get_orientation() + angular_change[i];
+        bodies[i]->set_orientation(q);
+    }
+}
+
+void Contact::resolve_velocity() {}

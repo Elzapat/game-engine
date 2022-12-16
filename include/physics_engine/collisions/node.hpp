@@ -1,7 +1,7 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-#include "math/Vector3.hpp"
+#include "math/vector3.hpp"
 
 #include <vector>
 #include <memory>

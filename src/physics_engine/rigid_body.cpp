@@ -20,11 +20,11 @@ void RigidBody::add_force_at_local_point(const math::Vector3& force, math::Vecto
 }
 
 void RigidBody::apply_impulse(const math::Vector3& impulse) {
-    this->velocity += impulse * inv_mass;
+    this->velocity += impulse;
 }
 
 void RigidBody::apply_torque_impulse(const math::Vector3& torque) {
-    this->rotation += torque.transform(this->inv_inertia_tensor_world);
+    this->rotation += torque;
 }
 
 math::Vector3 RigidBody::get_point_in_world_space(const math::Vector3& point) {
@@ -172,6 +172,14 @@ float RigidBody::get_mass() const {
 
 BoundingSphere RigidBody::get_bounding_sphere() const {
     return this->bounding_sphere;
+}
+
+math::Matrix3 RigidBody::get_inverse_inertia_tensor() const {
+    return this->inv_inertia_tensor;
+}
+
+math::Matrix3 RigidBody::get_inverse_inertia_tensor_world() const {
+    return this->inv_inertia_tensor_world;
 }
 
 bool RigidBody::has_infinite_mass() const {

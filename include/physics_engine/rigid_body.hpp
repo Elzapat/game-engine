@@ -73,7 +73,6 @@ class RigidBody {
         void set_mass(const float mass);
         void set_inertia_tensor(const math::Matrix3& inertia_tensor);
         void set_bounding_sphere(const BoundingSphere bounding_sphere);
-
         void set_bounding_radius(const float radius);
 
         math::Vector3 get_position() const;
@@ -87,8 +86,9 @@ class RigidBody {
         float get_inv_mass() const;
         float get_mass() const;
         bool has_infinite_mass() const;
-        math::Matrix3 get_inertia_tensor() const;
         BoundingSphere get_bounding_sphere() const;
+        math::Matrix3 get_inverse_inertia_tensor() const;
+        math::Matrix3 get_inverse_inertia_tensor_world() const;
 
         void integrate();
 };

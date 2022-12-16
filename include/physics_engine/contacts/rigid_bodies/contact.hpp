@@ -4,10 +4,26 @@
 #include <memory>
 
 #include "math/vector3.hpp"
+#include "math/matrix3.hpp"
+#include "math/quaternion.hpp"
 #include "physics_engine/rigid_body.hpp"
+
+class ContactResolver;
+class CollisionDetector;
 
 class Contact {
     public:
+        Contact(
+            std::shared_ptr<RigidBody> _first,
+            std::shared_ptr<RigidBody> _second,
+            float _friction,
+            float _restitution
+        );
+
+    private:
+        friend CollisionDetector;
+        friend ContactResolver;
+
         std::shared_ptr<RigidBody> first;
         std::shared_ptr<RigidBody> second;
 
@@ -18,26 +34,27 @@ class Contact {
         math::Vector3 contact_normal;
         float penetration;
 
+        math::Vector3
+        calculate_local_velocity(std::shared_ptr<RigidBody> body, math::Vector3& rel_contact_pos);
+        void calculate_desired_delta_velocity();
+        void calculate_contact_basis();
+        math::Vector3 calculate_frictionless_impulse(math::Matrix3& inverse_inertia_tensor);
+
+    protected:
         math::Matrix3 contact_to_world;
 
-        Contact(
-            std::shared_ptr<RigidBody> _first,
-            std::shared_ptr<RigidBody> _second,
-            float _friction,
-            float _restitution
-        );
-
-    private:
-        math::Vector3 first_relative_contact_pos;
-        math::Vector3 second_relative_contact_pos;
+        std::array<math::Vector3, 2> relative_contact_pos;
 
         math::Vector3 contact_velocity;
         float desired_delta_velocity;
 
         void calculate_internals();
-        math::Vector3 calculate_local_velocity(std::shared_ptr<RigidBody> body, math::Vector3& rel_contact_pos);
-        void calculate_desired_delta_velocity();
-        void calculate_contact_basis();
-        math::Vector3 calculate_frictionless_impulse(math::Matrix3& inverse_inertia_tensor);
+        void resolve_interpenetration(
+            std::array<math::Vector3, 2> linear_change,
+            std::array<math::Vector3, 2> angular_change,
+            float penetration
+        );
+        void resolve_velocity();
+        std::shared_ptr<RigidBody> get_body(int index);
 };
 #endif  // CONTACT_HPP

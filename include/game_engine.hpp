@@ -32,7 +32,6 @@ class GameEngine {
         ~GameEngine();
         
         int run();
-
 };
 
 #endif // GAME_ENGINE_HPP

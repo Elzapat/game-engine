@@ -66,6 +66,7 @@ add_executable(physics-engine
     src/physics_engine/contacts/particles/particle_contact_resolver.cpp
 
     src/physics_engine/contacts/rigid_bodies/contact.cpp
+    src/physics_engine/contacts/rigid_bodies/contact_resolver.cpp
 
     src/physics_engine/collisions/bounding_sphere.cpp
     src/physics_engine/collisions/collision_detector.cpp
