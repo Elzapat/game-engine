@@ -126,7 +126,7 @@ void RigidBody::set_bounding_sphere(const BoundingSphere bounding_sphere) {
     this->bounding_sphere = bounding_sphere;
 }
 
-void RigidBody::set_bouding_radius(const float radius) {
+void RigidBody::set_bounding_radius(const float radius) {
     this->bounding_sphere = BoundingSphere(this->position, radius);
 }
 

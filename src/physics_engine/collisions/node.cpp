@@ -52,27 +52,27 @@ void Node::insert_object(std::shared_ptr<RigidBody> object) {
 
     math::Vector3 delta = object->get_position() - this->center;
 
-    float distance = this->half_width + object->get_bounding_sphere().get_radius();
+    float distance = this->half_width - object->get_bounding_sphere().get_radius();
 
-    if (abs(delta.get_x()) < distance) {
+    if (abs(delta.get_x()) > distance) {
         straddle = true;
     } else if(delta.get_x() > 0.0f) {
         index |= (1 << 2);
     }
 
-    if (abs(delta.get_y()) < distance) {
+    if (abs(delta.get_y()) > distance) {
         straddle = true;
     } else if(delta.get_y() > 0.0f) {
         index |= (1 << 1);
     }
 
-    if (abs(delta.get_z()) < distance) {
+    if (abs(delta.get_z()) > distance) {
         straddle = true;
     } else if(delta.get_z() > 0.0f) {
         index |= (1 << 0);
     }
 
-    if (!straddle && this->p_child[index] != NULL) {
+    if (!straddle && this->p_child[index] != nullptr) {
         this->p_child[index]->insert_object(object);
     } else {
         this->object_list.push_back(object);
@@ -83,15 +83,16 @@ void Node::insert_object(std::shared_ptr<RigidBody> object) {
 void Node::reset_objects() {
     this->object_list = std::vector<std::shared_ptr<RigidBody>>();
     for(int i = 0; i < 8; i++) {
-        this->p_child[i]->reset_objects();
+        if(p_child[i] != nullptr) {
+            this->p_child[i]->reset_objects();
+        }
     }
 }
 
 void Node::test_all_collisions(std::vector<RigidBodiesDuo>* rigid_bodies_list, std::vector<std::shared_ptr<Node>> ancestors) {
-    
+
     int this_size = this->object_list.size();
 
-    ancestors.push_back(std::shared_ptr<Node>(this));
     int ancestors_size = ancestors.size();
 
     //tests ancestors
@@ -109,7 +110,7 @@ void Node::test_all_collisions(std::vector<RigidBodiesDuo>* rigid_bodies_list, s
                 }
             }
         }
-    }
+    } 
 
     //test brothers
     for(int i = 0; i < this_size; i++) {
@@ -121,21 +122,26 @@ void Node::test_all_collisions(std::vector<RigidBodiesDuo>* rigid_bodies_list, s
         }
     }
 
+    
+    ancestors.push_back(std::make_shared<Node>(*this));
+
     for(int i = 0; i < 8; i++) {
-        this->p_child[i]->test_all_collisions(rigid_bodies_list, ancestors);
-    }
+        if(p_child[i] != nullptr) {
+            this->p_child[i]->test_all_collisions(rigid_bodies_list, ancestors);
+        }
+    } 
 }
 
 
-std::vector<RigidBodiesDuo> Node::process(std::vector<std::shared_ptr<RigidBody>> object_list) {
-
+std::vector<RigidBodiesDuo> Node::process(std::vector<Object> object_list) {
+    
     this->reset_objects();
     
     int s = object_list.size();
     for(int i = 0; i < s; i++) {
-        this->insert_object(object_list[i]);
+        this->insert_object(object_list[i].get_rigid_body());
     }
-
+    
     std::vector<RigidBodiesDuo> list = std::vector<RigidBodiesDuo>();
     this->test_all_collisions(&list, std::vector<std::shared_ptr<Node>>());
     return list;
@@ -144,7 +150,7 @@ std::vector<RigidBodiesDuo> Node::process(std::vector<std::shared_ptr<RigidBody>
 
 std::shared_ptr<Node> BuildOctree(math::Vector3 center, float half_width, int stop_depth) {
     if (stop_depth < 0) {
-        return NULL;
+        return nullptr;
     } else {
         std::shared_ptr<Node> pNode = std::make_shared<Node>();
         pNode->set_center(center);

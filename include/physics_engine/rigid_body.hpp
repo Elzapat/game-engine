@@ -74,7 +74,7 @@ class RigidBody {
         void set_inertia_tensor(const math::Matrix3& inertia_tensor);
         void set_bounding_sphere(const BoundingSphere bounding_sphere);
 
-        void set_bouding_radius(const float radius);
+        void set_bounding_radius(const float radius);
 
         math::Vector3 get_position() const;
         math::Vector3 get_velocity() const;

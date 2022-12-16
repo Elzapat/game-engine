@@ -6,13 +6,13 @@
 #include <vector>
 #include <memory>
 #include "physics_engine/rigid_body.hpp"
+#include "object.hpp"
 
 struct RigidBodiesDuo
 {
     std::shared_ptr<RigidBody> rigid_body;
     std::shared_ptr<RigidBody> other_rigid_body;
 };
-
 
 class Node
 {
@@ -23,9 +23,9 @@ private:
     std::vector<std::shared_ptr<Node>> p_child;
 
 public:
-    Node(/* args */);
+    Node();
     ~Node();
-    
+
     math::Vector3 get_center();
     float get_half_width();
     std::vector<std::shared_ptr<RigidBody>> get_object_list();
@@ -43,9 +43,9 @@ public:
 
     void test_all_collisions(std::vector<RigidBodiesDuo>* rigid_bodies_list, std::vector<std::shared_ptr<Node>> ancestors);
 
-    std::vector<RigidBodiesDuo> process(std::vector<std::shared_ptr<RigidBody>> object_list);
-
-    friend std::shared_ptr<Node> BuildOctree(math::Vector3 center, float half_width, int stop_depth);
+    std::vector<RigidBodiesDuo> process(std::vector<Object> object_list);
 };
+
+std::shared_ptr<Node> BuildOctree(math::Vector3 center, float half_width, int stop_depth);
 
 #endif

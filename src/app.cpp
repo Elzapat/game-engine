@@ -10,6 +10,7 @@ void App::init() {
         1.0f / 12.0f * rb_mass * (2.0f * 2.0f + 1.0f * 1.0f),
         1.0f / 12.0f * rb_mass * (2.0f * 2.0f + 0.6f * 0.6f)
     ));
+    attached_body_rb->set_bounding_radius(1.0f);
 
     Mesh attached_body_mesh = Mesh::cube();
     attached_body_mesh.scale = math::Vector3(2.0f, 0.6f, 1.0f);
@@ -21,6 +22,7 @@ void App::init() {
     std::shared_ptr<RigidBody> anchor_rb = std::make_shared<RigidBody>();
     anchor_rb->set_position(math::Vector3(0.0f, 0.0f, 10.0f));
     anchor_rb->set_mass(rb_mass);
+    anchor_rb->set_bounding_radius(1.0f);
 
     Mesh anchor_mesh = Mesh::sphere(1.0f, 20, 20);
     anchor_mesh.color =
@@ -30,6 +32,7 @@ void App::init() {
 
     std::shared_ptr<RigidBody> rb3 = std::make_shared<RigidBody>(*attached_body_rb);
     rb3->set_position(math::Vector3(0.0f, 10.0f, 0.0f));
+    rb3->set_bounding_radius(1.0f);
 
     Mesh rb3_mesh = Mesh::cube();
     rb3_mesh.scale = math::Vector3(2.0f, 0.6f, 1.0f);
@@ -51,6 +54,8 @@ void App::init() {
 
     this->physic_world.force_registry.add_entry(attached_body_rb, std::move(spring));
     this->physic_world.force_registry.add_entry(attached_body_rb, std::move(gravity));
+
+    octree = BuildOctree(math::Vector3(16.0f,16.0f,16.0f), 200.0f, 3);
 }
 
 void App::update() {
@@ -63,6 +68,10 @@ void App::update() {
             math::Vector3(-0.5f, 0.5f, 0.3f)
         );
     }
+
+    std::vector<RigidBodiesDuo> duo_list = octree->process(objects);
+
+    std::cout << duo_list.size() << std::endl;
 
     /*
     // Update spring visual
