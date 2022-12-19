@@ -24,6 +24,13 @@ Auteurs : Morgan Van Amerongen, Benoit Lorcy, Tom Gibert
 * Il est possible qu'une erreur liée aux 'm.lib' empêche la compilation. Dans ce cas, il faut aller dans le fichier 'physics-engine.vcxproj' et retirer tous les 'm.lib;' (au nombre de 4). Ensuite, relancer la commande de build devrait fonctionner.
 
 
+## Phase 4
+
+* Un plan (blanc) fait office de sol sur lequelle les corps rigides vont tomber
+* Les 10 boules jaunes sont attachés par un ressort à la boule bleue et subissent la gravité.
+* Les 10 boules vertes subissent juste la gravité et apparaissent alignées en hauteur.
+* La boîte ne subit que la gravité, mais la resolution de collision avec le plan n'est pas entierement fonctionnelle. Ca semble être la resolution de vélocité car la boîte reste bien sur le sol.
+
 ## Phase 3
  
 * Un corp rigide (pavé qui pend) attaché a une corp rigide "ancre" (sphere), qui subit la gravité et donc pend. Le ressort n'est pas attaché a son centre de gravité mais sur une de ces faces donc on voit le pavé tourner.

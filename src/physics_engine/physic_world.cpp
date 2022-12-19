@@ -26,69 +26,17 @@ void PhysicWorld::update(std::vector<Object>& objects) {
         collision_data.restitution = 0.4f;
 
         std::vector<PossibleCollision> possible_collisions = this->octree->process(objects);
-        // std::cout << "possible collisions:" << possible_collisions.size() << std::endl;
 
-        std::vector<std::pair<size_t, size_t>> checked;
-
-        // for (PossibleCollision& possible_collision : possible_collisions) {
-        for (Object& o1 : objects) {
-            for (Object& o2 : objects) {
-                if (o1.get_rigid_body().get() == o2.get_rigid_body().get()) {
-                    continue;
-                }
-                if (std::find_if(
-                        checked.cbegin(),
-                        checked.cend(),
-                        [&](auto pair) {
-                            return pair
-                                == std::make_pair(
-                                       (size_t)o1.get_rigid_body().get(),
-                                       (size_t)o2.get_rigid_body().get()
-                                )
-                                || pair
-                                == std::make_pair(
-                                       (size_t)o2.get_rigid_body().get(),
-                                       (size_t)o1.get_rigid_body().get()
-                                );
-                        }
-                    )
-                    != checked.cend()) {
-                    continue;
-                }
-
-                checked.push_back(std::make_pair(
-                    (size_t)o1.get_rigid_body().get(),
-                    (size_t)o2.get_rigid_body().get()
-                ));
-                std::shared_ptr<Primitive> first_volume =
-                    o1.get_rigid_body()->get_collision_volume();
-                std::shared_ptr<Primitive> second_volume =
-                    o2.get_rigid_body()->get_collision_volume();
-
-                this->collision_detector
-                    .check_collision(first_volume, second_volume, collision_data);
-
-                if (first_volume && second_volume) {
-                    // std::cout << "checking collisioin\n";
-                    // first_volume->rigid_body = o1.get_rigid_body();
-                    // second_volume->rigid_body = o2.get_rigid_body();
-                }
-            }
-        }
-
-        if (collision_data.contacts.size() > 0) {
-            // std::cout << "collision_data contacts len: " << collision_data.contacts.size()
-                      // << std::endl;
+        for (PossibleCollision& possible_collision : possible_collisions) {
+            this->collision_detector.check_collision(
+                possible_collision.first->get_collision_volume(),
+                possible_collision.second->get_collision_volume(),
+                collision_data
+            );
         }
 
         this->contact_resolver.iterations = collision_data.contacts.size() * 4;
-        // this->contact_resolver.iterations = 2;
         this->contact_resolver.resolve_contacts(collision_data.contacts);
-
-        // std::transform(possible_collisions.cbegin(), possible_collisions.cend(), possible_collisions.begin(), [](PossibleCollision possible_collision) {
-        //     CollisionData collision_data;
-        //     collision_data.
-        // });
     }
 
     for (Object& object : objects) {
