@@ -5,6 +5,7 @@
 #include <cmath>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <memory>
 
 #include "math/matrix4.hpp"
 #include "math/matrix3.hpp"
@@ -15,10 +16,13 @@
 
 #include "time.hpp"
 
+class Primitive;
+
 /* 
  * Class representing a rigid body wich can be rotated and translated
  */
 class RigidBody {
+
     private:
         float inv_mass = 0.0f;
 
@@ -42,6 +46,7 @@ class RigidBody {
         math::Vector3 torques = math::Vector3();
 
         BoundingSphere bounding_sphere = BoundingSphere();
+        std::shared_ptr<Primitive> collision_volume;
 
         void compute_derived_data();
         math::Matrix3 transform_inertia_tensor(
@@ -74,6 +79,7 @@ class RigidBody {
         void set_inertia_tensor(const math::Matrix3& inertia_tensor);
         void set_bounding_sphere(const BoundingSphere bounding_sphere);
         void set_bounding_radius(const float radius);
+        void set_collision_volume(std::shared_ptr<Primitive> primitive);
 
         math::Vector3 get_position() const;
         math::Vector3 get_velocity() const;
@@ -87,6 +93,7 @@ class RigidBody {
         float get_mass() const;
         bool has_infinite_mass() const;
         BoundingSphere get_bounding_sphere() const;
+        std::shared_ptr<Primitive> get_collision_volume() const;
         math::Matrix3 get_inverse_inertia_tensor() const;
         math::Matrix3 get_inverse_inertia_tensor_world() const;
 

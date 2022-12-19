@@ -11,7 +11,23 @@ Contact::Contact(
     friction(_friction),
     restitution(_restitution) {}
 
+void Contact::swap_bodies() {
+    this->contact_normal *= -1.0f;
+
+    std::shared_ptr<RigidBody> temp = this->first;
+    this->first = this->second;
+    this->second = temp;
+}
+
 void Contact::calculate_internals() {
+    if (first == nullptr) {
+        this->swap_bodies();
+    }
+
+    if (first == nullptr) {
+        throw std::runtime_error("Both rigidbodies are nullptr in calculate_internals()");
+    }
+
     this->calculate_contact_basis();
 
     this->relative_contact_pos[0] = this->contact_point - first->get_position();
@@ -21,7 +37,8 @@ void Contact::calculate_internals() {
 
     this->contact_velocity = this->calculate_local_velocity(first, this->relative_contact_pos[0]);
     if (this->second != nullptr) {
-        this->calculate_local_velocity(second, this->relative_contact_pos[1]);
+        this->contact_velocity -=
+            this->calculate_local_velocity(second, this->relative_contact_pos[1]);
     }
 
     this->calculate_desired_delta_velocity();
@@ -47,7 +64,9 @@ void Contact::calculate_desired_delta_velocity() {
     float vel_from_acc = 0.0f;
 
     vel_from_acc += (first->get_acceleration() * Time::delta_time()).dot(this->contact_normal);
-    vel_from_acc -= (second->get_acceleration() * Time::delta_time()).dot(this->contact_normal);
+    if (second != nullptr) {
+        vel_from_acc -= (second->get_acceleration() * Time::delta_time()).dot(this->contact_normal);
+    }
 
     float restitution = this->restitution;
     if (std::abs(this->contact_velocity.get_x()) < vel_limit) {
@@ -86,7 +105,7 @@ void Contact::calculate_contact_basis() {
         contact_tangent[0].set_z(this->contact_normal.get_y() * scale);
 
         contact_tangent[1].set_x(
-            this->contact_normal.get_y() * contact_tangent[1].get_z()
+            this->contact_normal.get_y() * contact_tangent[0].get_z()
             - this->contact_normal.get_z() * contact_tangent[0].get_y()
         );
         contact_tangent[1].set_y(-this->contact_normal.get_x() * contact_tangent[0].get_z());
@@ -98,10 +117,11 @@ void Contact::calculate_contact_basis() {
     this->contact_to_world.set_column(2, contact_tangent[1]);
 }
 
-math::Vector3 Contact::calculate_frictionless_impulse(math::Matrix3& inverse_inertia_tensor) {
+math::Vector3
+Contact::calculate_frictionless_impulse(std::array<math::Matrix3, 2> inverse_inertia_tensors) {
     math::Vector3 delta_vel_world = this->relative_contact_pos[0]
                                         .cross(this->contact_normal)
-                                        .transform(inverse_inertia_tensor)
+                                        .transform(inverse_inertia_tensors[0])
                                         .cross(this->relative_contact_pos[0]);
 
     float delta_velocity = delta_vel_world.dot(this->contact_normal);
@@ -110,7 +130,7 @@ math::Vector3 Contact::calculate_frictionless_impulse(math::Matrix3& inverse_ine
     if (this->second != nullptr) {
         math::Vector3 delta_vel_world = this->relative_contact_pos[1]
                                             .cross(this->contact_normal)
-                                            .transform(inverse_inertia_tensor)
+                                            .transform(inverse_inertia_tensors[1])
                                             .cross(this->relative_contact_pos[1]);
 
         delta_velocity += delta_vel_world.dot(this->contact_normal);
@@ -131,8 +151,8 @@ std::shared_ptr<RigidBody> Contact::get_body(int index) {
 }
 
 void Contact::resolve_interpenetration(
-    std::array<math::Vector3, 2> linear_change,
-    std::array<math::Vector3, 2> angular_change,
+    std::array<math::Vector3, 2>& linear_change,
+    std::array<math::Vector3, 2>& angular_change,
     float penetration
 ) {
     const float angular_limit = 0.2f;
@@ -144,6 +164,10 @@ void Contact::resolve_interpenetration(
     std::array<std::shared_ptr<RigidBody>, 2> bodies = {this->first, this->second};
 
     for (int i = 0; i < 2; i++) {
+        if (bodies[i] == nullptr) {
+            continue;
+        }
+
         math::Matrix3 inverse_inertia_tensor = bodies[i]->get_inverse_inertia_tensor_world();
 
         math::Vector3 angular_inertia_world = this->relative_contact_pos[i]
@@ -158,9 +182,13 @@ void Contact::resolve_interpenetration(
     }
 
     for (int i = 0; i < 2; i++) {
+        if (bodies[i] == nullptr) {
+            continue;
+        }
+
         float sign = i == 0 ? 1.0f : -1.0f;
-        angular_move[i] = sign * this->penetration * (angular_inertia[i] / total_inertia);
-        linear_move[i] = sign * this->penetration * (linear_inertia[i] / total_inertia);
+        angular_move[i] = sign * penetration * (angular_inertia[i] / total_inertia);
+        linear_move[i] = sign * penetration * (linear_inertia[i] / total_inertia);
 
         math::Vector3 projection = this->relative_contact_pos[i]
             + this->contact_normal * -relative_contact_pos[i].dot(this->contact_normal);
@@ -198,4 +226,42 @@ void Contact::resolve_interpenetration(
     }
 }
 
-void Contact::resolve_velocity() {}
+void Contact::resolve_velocity(
+    std::array<math::Vector3, 2>& velocity_change,
+    std::array<math::Vector3, 2>& rotation_change
+) {
+    std::array<math::Matrix3, 2> inverse_inertia_tensors;
+
+    inverse_inertia_tensors[0] = this->first->get_inverse_inertia_tensor_world();
+    if (this->second != nullptr) {
+        inverse_inertia_tensors[1] = this->second->get_inverse_inertia_tensor_world();
+    }
+
+    math::Vector3 impulse_contact;
+
+    if (this->friction == 0.0f) {
+        impulse_contact = this->calculate_frictionless_impulse(inverse_inertia_tensors);
+    } else {
+        throw std::runtime_error("Contact with friction not implemented yet!");
+    }
+
+    math::Vector3 impulse = impulse_contact.transform(this->contact_to_world);
+
+    math::Vector3 torque_impulse = this->relative_contact_pos[0].cross(impulse);
+    rotation_change[0] = torque_impulse.transform(inverse_inertia_tensors[0]);
+    velocity_change[0] = impulse * first->get_inv_mass();
+
+    this->first->apply_impulse(velocity_change[0]);
+    this->first->apply_torque_impulse(rotation_change[0]);
+
+    if (this->second == nullptr) {
+        return;
+    }
+
+    torque_impulse = impulse.cross(relative_contact_pos[1]);
+    rotation_change[1] = torque_impulse.transform(inverse_inertia_tensors[1]);
+    velocity_change[1] = impulse * -this->second->get_inv_mass();
+
+    this->second->apply_impulse(velocity_change[1]);
+    this->second->apply_torque_impulse(rotation_change[1]);
+}

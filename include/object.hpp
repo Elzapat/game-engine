@@ -6,6 +6,8 @@
 #include "physics_engine/rigid_body.hpp"
 #include "vulkan_renderer/mesh.hpp"
 
+class BoundingSphere;
+
 class Object {
     public:
         Object(std::shared_ptr<RigidBody> rb, Mesh m);
@@ -16,6 +18,7 @@ class Object {
     private:
         std::shared_ptr<RigidBody> rigid_body;
         Mesh mesh;
+        BoundingSphere bounding_sphere;
 };
 
 #endif // OBJECT_HPP

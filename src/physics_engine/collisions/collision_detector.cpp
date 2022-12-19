@@ -1,5 +1,35 @@
 #include "physics_engine/collisions/collision_detector.hpp"
 
+void CollisionDetector::check_collision(
+    std::shared_ptr<Primitive> _first,
+    std::shared_ptr<Primitive> _second,
+    CollisionData& data
+) {
+    if (auto first = std::dynamic_pointer_cast<Sphere>(_first)) {
+        if (auto second = std::dynamic_pointer_cast<Sphere>(_second)) {
+            this->sphere_sphere(*first.get(), *second.get(), data);
+        } else if (auto second = std::dynamic_pointer_cast<Box>(_second)) {
+            this->box_sphere(*second.get(), *first.get(), data);
+        } else if (auto second = std::dynamic_pointer_cast<Plane>(_second)) {
+            this->sphere_half_space(*first.get(), *second.get(), data);
+        }
+    } else if (auto first = std::dynamic_pointer_cast<Box>(_first)) {
+        if (auto second = std::dynamic_pointer_cast<Sphere>(_second)) {
+            this->box_sphere(*first.get(), *second.get(), data);
+        } else if (auto second = std::dynamic_pointer_cast<Box>(_second)) {
+            this->box_box(*second.get(), *first.get(), data);
+        } else if (auto second = std::dynamic_pointer_cast<Plane>(_second)) {
+            this->box_half_space(*first.get(), *second.get(), data);
+        }
+    } else if (auto first = std::dynamic_pointer_cast<Plane>(_first)) {
+        if (auto second = std::dynamic_pointer_cast<Sphere>(_second)) {
+            this->sphere_half_space(*second.get(), *first.get(), data);
+        } else if (auto second = std::dynamic_pointer_cast<Box>(_second)) {
+            this->box_half_space(*second.get(), *first.get(), data);
+        }
+    }
+}
+
 inline float CollisionDetector::projection_on_axis(const Box& box, const math::Vector3& axis) {
     return box.half_size.get_x() * std::abs(axis.dot(box.get_axis(0)))
         + box.half_size.get_y() * std::abs(axis.dot(box.get_axis(1)))
@@ -225,9 +255,11 @@ void CollisionDetector::box_half_space(const Box& box, const Plane& plane, Colli
 
         Contact contact(box.rigid_body, plane.rigid_body, data.friction, data.restitution);
         contact.contact_point = plane.normal * (vertex_distance - plane.offset) + vertex_pos;
-        contact.contact_normal = plane.normal;
+        contact.contact_normal = plane.normal * 1.0f;
         contact.penetration = plane.offset - vertex_distance;
 
+        std::cout << "contact point:" << contact.contact_point << std::endl;
+        std::cout << "contact normal:" << contact.contact_normal << std::endl;
         data.contacts.push_back(contact);
     }
 }
@@ -296,7 +328,9 @@ void CollisionDetector::box_box(const Box& first, const Box& second, CollisionDa
     CHECK_OVERLAP(first.get_axis(2).cross(second.get_axis(2)), 14);
 
     if (best == std::numeric_limits<unsigned>().max()) {
-        throw std::runtime_error("No best axis result");
+        std::cerr << "No best axis result" << std::endl;
+        return;
+        // throw std::runtime_error("No best axis result");
     }
 
     if (best < 3) {

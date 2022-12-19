@@ -14,6 +14,8 @@ namespace math {
             std::array<float, 12> values;
 
         public:
+            Matrix4();
+
             float determinant() const;
             Matrix4 inverse();
 

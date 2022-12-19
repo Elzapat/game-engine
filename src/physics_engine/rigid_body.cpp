@@ -130,6 +130,10 @@ void RigidBody::set_bounding_radius(const float radius) {
     this->bounding_sphere = BoundingSphere(this->position, radius);
 }
 
+void RigidBody::set_collision_volume(std::shared_ptr<Primitive> primitive) {
+    this->collision_volume = primitive;
+}
+
 math::Vector3 RigidBody::get_position() const {
     return this->position;
 }
@@ -172,6 +176,10 @@ float RigidBody::get_mass() const {
 
 BoundingSphere RigidBody::get_bounding_sphere() const {
     return this->bounding_sphere;
+}
+
+std::shared_ptr<Primitive> RigidBody::get_collision_volume() const {
+    return this->collision_volume;
 }
 
 math::Matrix3 RigidBody::get_inverse_inertia_tensor() const {

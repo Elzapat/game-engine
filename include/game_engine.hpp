@@ -8,7 +8,6 @@
 #include "vulkan_renderer/vulkan_renderer.hpp"
 #include "physics_engine/physic_world.hpp"
 #include "object.hpp"
-#include "physics_engine/collisions/node.hpp"
 
 class GameEngine {
     private:
@@ -22,7 +21,6 @@ class GameEngine {
         PhysicWorld physic_world;
         GLFWwindow* window;
         std::vector<Object> objects;
-        std::shared_ptr<Node> octree;
 
         void add_object(Object object);
         void remove_object(size_t index);

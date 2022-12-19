@@ -2,6 +2,13 @@
 
 using namespace math;
 
+Matrix4::Matrix4() {
+    this->values[1] = this->values[2] = this->values[3] = this->values[4] = this->values[6] =
+        this->values[7] = this->values[8] = this->values[9] = this->values[11] = 0.0f;
+
+    this->values[0] = this->values[5] = this->values[10] = 1.0f;
+}
+
 float Matrix4::determinant() const {
     const std::array<float, 12>& values = this->values;
 

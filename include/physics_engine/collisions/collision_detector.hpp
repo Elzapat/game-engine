@@ -2,6 +2,7 @@
 #define COLLISION_DETECTOR_HPP
 
 #include <vector>
+#include <memory>
 
 #include "math/vector3.hpp"
 #include "physics_engine/contacts/rigid_bodies/contact.hpp"
@@ -21,6 +22,8 @@ class CollisionDetector {
         void box_half_space(const Box& box, const Plane& plane, CollisionData& data);
         void box_sphere(const Box& box, const Sphere& sphere, CollisionData& data);
         void box_box(const Box& first, const Box& second, CollisionData& data);
+
+        void check_collision(std::shared_ptr<Primitive> first, std::shared_ptr<Primitive> second, CollisionData& data);
 
     private:
         static inline float projection_on_axis(const Box& box, const math::Vector3& axis);

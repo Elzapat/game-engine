@@ -2,6 +2,7 @@
 #define APPLICATION_HPP
 
 #include "game_engine.hpp"
+#include "physics_engine/primitives.hpp"
 
 class App : public GameEngine {
     private:

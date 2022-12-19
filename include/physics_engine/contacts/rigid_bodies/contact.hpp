@@ -3,9 +3,9 @@
 
 #include <memory>
 
-#include "math/vector3.hpp"
 #include "math/matrix3.hpp"
 #include "math/quaternion.hpp"
+#include "math/vector3.hpp"
 #include "physics_engine/rigid_body.hpp"
 
 class ContactResolver;
@@ -38,7 +38,7 @@ class Contact {
         calculate_local_velocity(std::shared_ptr<RigidBody> body, math::Vector3& rel_contact_pos);
         void calculate_desired_delta_velocity();
         void calculate_contact_basis();
-        math::Vector3 calculate_frictionless_impulse(math::Matrix3& inverse_inertia_tensor);
+        math::Vector3 calculate_frictionless_impulse(std::array<math::Matrix3, 2> inverse_inertia_tensors);
 
     protected:
         math::Matrix3 contact_to_world;
@@ -48,13 +48,17 @@ class Contact {
         math::Vector3 contact_velocity;
         float desired_delta_velocity;
 
+        void swap_bodies();
         void calculate_internals();
         void resolve_interpenetration(
-            std::array<math::Vector3, 2> linear_change,
-            std::array<math::Vector3, 2> angular_change,
+            std::array<math::Vector3, 2>& linear_change,
+            std::array<math::Vector3, 2>& angular_change,
             float penetration
         );
-        void resolve_velocity();
+        void resolve_velocity(
+            std::array<math::Vector3, 2>& velocity_change,
+            std::array<math::Vector3, 2>& rotation_change
+        );
         std::shared_ptr<RigidBody> get_body(int index);
 };
 #endif  // CONTACT_HPP
